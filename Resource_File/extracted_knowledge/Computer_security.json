@@ -1,0 +1,153 @@
+{
+  "id": "computer-security",
+  "title": "Computer security",
+  "category": "security",
+  "required": true,
+  "source": {
+    "name": "Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Computer_security",
+    "license": "CC BY-SA 4.0"
+  },
+  "summary": "Computer security, or cybersecurity, is the practice of protecting software, systems, and networks from threats such as theft, damage, unauthorized disclosure, and service disruption. It works through countermeasures that prevent, detect, and respond to attacks, and it depends on both technical tools and human behavior. In the nuclear field, the NRC sets cyber security requirements for U.S. power plants.",
+  "difficulty": "beginner",
+  "key_points": [
+    {
+      "id": "kp1",
+      "point": "Computer security protects software, systems, and networks, and rests on the CIA triad of confidentiality, integrity, and availability.",
+      "explanation": "The goal is to stop harm such as unauthorized disclosure, theft, damage, or disruption. The CIA triad is a simple way to describe what security aims to achieve: information shared only with authorized people, data that is accurate and unaltered, and systems that stay available.",
+      "importance": 3
+    },
+    {
+      "id": "kp2",
+      "point": "Security is achieved through countermeasures that prevent, detect, and respond to attacks.",
+      "explanation": "A countermeasure is any action, device, procedure, or technique that reduces a threat, vulnerability, or attack. Prevention uses access controls, cryptography, and firewalls, while detection uses intrusion detection systems, audit trails, and logs. No single measure can fully guarantee that an attack will be prevented.",
+      "importance": 3
+    },
+    {
+      "id": "kp3",
+      "point": "Attackers exploit vulnerabilities using methods such as malware, denial-of-service, phishing, and social engineering.",
+      "explanation": "A vulnerability is a weakness a threat actor can exploit. Malware is software written to harm a system or its users. Phishing and social engineering trick people into giving up secrets or access. Attackers may also scan for exposed services first, and their motives vary: money, retaliation, embarrassment, or disruption.",
+      "importance": 3
+    },
+    {
+      "id": "kp4",
+      "point": "Humans are often the weakest link, so training, cyber hygiene, and security culture are essential.",
+      "explanation": "The source estimates over 90% of incidents involve human error, and a Verizon 2020 report found 30% involved internal actors. Awareness training and simple routine habits like managing passwords, updating malware protection, and restricting admin rights lower risk.",
+      "importance": 3
+    },
+    {
+      "id": "kp5",
+      "point": "Reliance on computers exposes utilities, vehicles, and medical devices to attacks that can cause physical harm.",
+      "explanation": "Computers control power grids, nuclear plants, water and gas valves, aircraft, cars, and pacemakers. The Stuxnet worm showed that equipment not connected to the Internet can still be attacked. Attacks on physical infrastructure or lives are called cyber-kinetic attacks.",
+      "importance": 3
+    },
+    {
+      "id": "kp6",
+      "point": "The NRC sets cyber security requirements for U.S. nuclear power plants under 10 CFR 73.54.",
+      "explanation": "In the nuclear field, the Nuclear Regulatory Commission defines the cyber security rules. The Nuclear Energy Institute's NEI 08-09 provides a comprehensive framework for cyber security plans at nuclear power reactors.",
+      "importance": 3
+    },
+    {
+      "id": "kp7",
+      "point": "Technical defenses include access control, application restrictions, firewalls, zero trust, and encryption.",
+      "explanation": "Authentication (passwords, cards, biometrics) limits who can use a system. Applications run with least privilege and are restricted to reduce the attack surface. Firewalls and intrusion-detection systems guard networks, zero trust verifies everyone, and encryption scrambles data so only the intended recipient can read it.",
+      "importance": 2
+    },
+    {
+      "id": "kp8",
+      "point": "Secure design, vulnerability management, backups, and incident response plans make systems more resilient.",
+      "explanation": "Security by design builds in least privilege, defense in depth, secure defaults, and testing. Vulnerability management is a continuing cycle of scanning, penetration testing, patching, and hardening. Backups limit data loss, and an incident response plan (preparation, detection and analysis, containment/eradication/recovery, post-incident activity) helps limit damage.",
+      "importance": 2
+    }
+  ],
+  "terms": [
+    {
+      "term": "Computer security",
+      "definition": "The protection of software, systems, and networks from threats such as unauthorized disclosure, theft, damage, or disruption."
+    },
+    {
+      "term": "CIA triad",
+      "definition": "Confidentiality, integrity, and availability, the foundation of information security."
+    },
+    {
+      "term": "Vulnerability",
+      "definition": "A flaw in the structure, execution, functioning, or internal oversight of a system that compromises its security."
+    },
+    {
+      "term": "Threat actor",
+      "definition": "A person or entity that carries out a threat, likely by exploiting a vulnerability."
+    },
+    {
+      "term": "Malware",
+      "definition": "Software intentionally written to harm a computer system or its users."
+    },
+    {
+      "term": "Social engineering",
+      "definition": "Manipulating people by exploiting trust and deception to get them to disclose secrets or grant access."
+    },
+    {
+      "term": "Countermeasure",
+      "definition": "An action, device, procedure, or technique that reduces a threat, vulnerability, or attack by preventing it, limiting harm, or detecting and reporting it."
+    },
+    {
+      "term": "Cyber hygiene",
+      "definition": "Simple routine measures that minimize risks from cyber threats, comparable to personal hygiene."
+    },
+    {
+      "term": "Least privilege",
+      "definition": "Running applications with only the access they need."
+    },
+    {
+      "term": "10 CFR 73.54",
+      "definition": "The regulation in which the NRC outlines cyber security requirements for U.S. nuclear power plants."
+    }
+  ],
+  "relationships": [
+    {
+      "from": "kp2",
+      "to": "kp1",
+      "label": "implements"
+    },
+    {
+      "from": "kp3",
+      "to": "kp2",
+      "label": "is countered by"
+    },
+    {
+      "from": "kp4",
+      "to": "kp3",
+      "label": "helps defend against"
+    },
+    {
+      "from": "kp5",
+      "to": "kp1",
+      "label": "increases the importance of"
+    },
+    {
+      "from": "kp6",
+      "to": "kp5",
+      "label": "regulates security for"
+    },
+    {
+      "from": "kp7",
+      "to": "kp2",
+      "label": "is an example of"
+    },
+    {
+      "from": "kp8",
+      "to": "kp2",
+      "label": "supports"
+    }
+  ],
+  "common_misconceptions": [
+    "Systems not connected to the Internet are safe; the Stuxnet worm showed that computer-controlled equipment not connected to the Internet can still be attacked.",
+    "Security threats come only from outside; the source cites a report finding 30% of incidents involved internal actors.",
+    "Security is only about keeping information secret; the CIA triad also includes integrity and availability."
+  ],
+  "extraction_status": {
+    "partial": false,
+    "failed_sections": [],
+    "total_sections": 11,
+    "merge_fallback": false
+  }
+}
