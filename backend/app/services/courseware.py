@@ -33,7 +33,11 @@ def module_source(db: Session, module: models.CourseModule) -> str:
 
 
 def training_source(t: models.Training) -> str:
-    return f"{t.title}\n{t.description}\nTopics:\n{t.outline}\nSkills: {', '.join(t.skills or [])}"
+    from .library import excerpt_for
+
+    base = f"{t.title}\n{t.description}\nTopics:\n{t.outline}\nSkills: {', '.join(t.skills or [])}"
+    source = excerpt_for(t.code)  # ground lessons in the library's PDF when lessons haven't been built yet
+    return f"{base}\n\nSource material:\n{source}" if source else base
 
 
 # ---- video lessons ------------------------------------------------------------------

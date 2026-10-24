@@ -1,9 +1,13 @@
 {
- "about": "Training library for the prototype. Course titles, numbers and material links come from public LANL pages (extrain.lanl.gov, lanl.gov/engage/training/its and the Nuclear Fundamentals Orientation page). Division and role assignments are DRAFT defaults for the prototype, not official LANL training matrices: confirm with each division's training coordinator. Material files are downloaded into the admin library on demand and are not committed; original document terms apply.",
+ "about": "Training library for the prototype. Course titles, numbers and material links come from public LANL pages (extrain.lanl.gov, lanl.gov/engage/training/its and the Nuclear Fundamentals Orientation page). Division and role assignments are DRAFT defaults for the prototype, not official LANL training matrices: confirm with each division's training coordinator. Material files are downloaded into the admin library on demand and are not committed; original document terms apply. Courses without a public LANL file use the public DOE order, DOE handbook, federal regulation or federal training material they are built on (extra_materials); LANL's own course content may differ.",
  "sources": [
+  "https://docs.nersc.gov/, https://docs.olcf.ornl.gov/ (DOE computing centers)",
   "https://extrain.lanl.gov/",
+  "https://www.energy.gov/ (DOE orders, handbooks and training)",
+  "https://www.govinfo.gov/ (Code of Federal Regulations)",
   "https://www.lanl.gov/engage/training/its",
-  "https://www.lanl.gov/engage/training/nuclear-fundamentals-orientation"
+  "https://www.lanl.gov/engage/training/nuclear-fundamentals-orientation",
+  "https://www.opm.gov/ (federal supervisory training)"
  ],
  "programs": [
   {
@@ -2066,5 +2070,360 @@
    ],
    "role": "craft-worker"
   }
- ]
+ ],
+ "extra_materials": {
+  "UT-62676": [
+   {
+    "kind": "pdf",
+    "title": "HQ-111DE Comprehensive Security Briefing (DOE)",
+    "url": "https://www.energy.gov/documents/hq-111de-comprehensive-security-briefingpdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "LANL Generic Safeguards and Security Information (NNSA)",
+    "url": "https://www.energy.gov/nnsa/articles/lanlsafeguardssecurityinformationpdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "DOE O 470.7, Safeguards and Security Program",
+    "url": "https://www.energy.gov/documents/doe-o-470-7safeguards-and-security-program2026-07-23pdf"
+   }
+  ],
+  "UT-1425": [
+   {
+    "kind": "pdf",
+    "title": "HQ-111DE Comprehensive Security Briefing (DOE)",
+    "url": "https://www.energy.gov/documents/hq-111de-comprehensive-security-briefingpdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "LANL Generic Safeguards and Security Information (NNSA)",
+    "url": "https://www.energy.gov/nnsa/articles/lanlsafeguardssecurityinformationpdf"
+   }
+  ],
+  "UT-9369": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 471.6, Information Security",
+    "url": "https://www.energy.gov/documents/information-security"
+   },
+   {
+    "kind": "pdf",
+    "title": "Classified Matter Protection and Control (DOE HQ Facility Master Security Plan, Ch. 5)",
+    "url": "https://www.energy.gov/sites/default/files/2022-04/Classified-Matter-Protection-and-Control.pdf"
+   }
+  ],
+  "UT-47075": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 471.6, Information Security",
+    "url": "https://www.energy.gov/documents/information-security"
+   }
+  ],
+  "UT-31112": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 470.5A, Insider Threat Program",
+    "url": "https://www.energy.gov/media/357743"
+   }
+  ],
+  "UT-57950": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 471.7, Controlled Unclassified Information",
+    "url": "https://www.energy.gov/documents/controlled-unclassified-information"
+   },
+   {
+    "kind": "pdf",
+    "title": "32 CFR Part 2002, Controlled Unclassified Information",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title32-vol6/pdf/CFR-2024-title32-vol6-part2002.pdf"
+   }
+  ],
+  "UT-42095": [
+   {
+    "kind": "pdf",
+    "title": "10 CFR Part 707, Workplace Substance Abuse Programs at DOE Sites",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part707.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "LANL Code of Conduct (Rev. 2, July 2025)",
+    "url": "https://cdn.lanl.gov/files/code-of-conduct-25-v4_2e3c7.pdf"
+   }
+  ],
+  "UT-10922": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 232.2A, Occurrence Reporting and Processing of Operations Information",
+    "url": "https://www.energy.gov/documents/occurrence-reporting-and-processing-operations-information"
+   },
+   {
+    "kind": "pdf",
+    "title": "General Occurrence Reporting Training, Module 1 (DOE)",
+    "url": "https://www.energy.gov/documents/o-232-2a-orps-training-module-1pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "DOE G 151.1, Emergency Management Guide",
+    "url": "https://www.energy.gov/media/357603"
+   }
+  ],
+  "UT-27392": [
+   {
+    "kind": "pdf",
+    "title": "LANL Code of Conduct (Rev. 2, July 2025)",
+    "url": "https://cdn.lanl.gov/files/code-of-conduct-25-v4_2e3c7.pdf"
+   }
+  ],
+  "UT-32461": [
+   {
+    "kind": "pdf",
+    "title": "DOE Environmental Management System instructions (DOE O 436.1A, ISO 14001:2015)",
+    "url": "https://www.energy.gov/sites/default/files/2024-02/EMS%20Instructions%20Memo%20and%20Attachments%201-3%20Final%20-%209-18-23%20signed.pdf"
+   }
+  ],
+  "UT-21208": [
+   {
+    "kind": "pdf",
+    "title": "Introduction to Export Controls: the Export Administration Regulations (Commerce BIS)",
+    "url": "https://grow.exim.gov/hubfs/For%20ExIm%20MnthlyWebi%20LD%20July%2014%202023%20oexsecdrpd%20Brief%20Intro%20to%20EAR%20(002).pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "15 CFR Part 730, Export Administration Regulations: General Information",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title15-vol2/pdf/CFR-2024-title15-vol2-part730.pdf"
+   }
+  ],
+  "UT-52144": [
+   {
+    "kind": "pdf",
+    "title": "Introduction to Export Controls: the Export Administration Regulations (Commerce BIS)",
+    "url": "https://grow.exim.gov/hubfs/For%20ExIm%20MnthlyWebi%20LD%20July%2014%202023%20oexsecdrpd%20Brief%20Intro%20to%20EAR%20(002).pdf"
+   }
+  ],
+  "UT-55173": [
+   {
+    "kind": "pdf",
+    "title": "10 CFR Part 850, Chronic Beryllium Disease Prevention Program",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part850.pdf"
+   }
+  ],
+  "UT-15238": [
+   {
+    "kind": "pdf",
+    "title": "10 CFR Part 810, Assistance to Foreign Atomic Energy Activities",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part810.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "10 CFR 810 final rule and explanation (Federal Register, 2015)",
+    "url": "https://www.govinfo.gov/content/pkg/FR-2015-02-23/pdf/2015-03479.pdf"
+   }
+  ],
+  "UT-15240": [
+   {
+    "kind": "pdf",
+    "title": "DOE Property Management and Control (DOE O 580.1A overview)",
+    "url": "https://www.energy.gov/sites/prod/files/NES%20-%20Rev%20D-final.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "Property Management Plan and High-Risk Property Checklist (NNSA NSDD)",
+    "url": "https://www.energy.gov/sites/default/files/2023-02/NSDD%20Property%20Management%20Plan%20and%20Checklist_R1.3%20(2020-05).pdf"
+   }
+  ],
+  "UT-16028": [
+   {
+    "kind": "pdf",
+    "title": "Classified Matter Protection and Control (DOE HQ Facility Master Security Plan, Ch. 5)",
+    "url": "https://www.energy.gov/sites/default/files/2022-04/Classified-Matter-Protection-and-Control.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "DOE O 471.6, Information Security",
+    "url": "https://www.energy.gov/documents/information-security"
+   }
+  ],
+  "UT-35043": [
+   {
+    "kind": "pdf",
+    "title": "Classified Matter Protection and Control (DOE HQ Facility Master Security Plan, Ch. 5)",
+    "url": "https://www.energy.gov/sites/default/files/2022-04/Classified-Matter-Protection-and-Control.pdf"
+   }
+  ],
+  "UT-22925": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 471.1B, Identification and Protection of UCNI",
+    "url": "https://www.energy.gov/documents/identification-and-protection-unclassified-controlled-nuclear-information"
+   },
+   {
+    "kind": "pdf",
+    "title": "10 CFR Part 1017, Unclassified Controlled Nuclear Information",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part1017.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "What is UCNI? (DOE brochure)",
+    "url": "https://www.energy.gov/sites/prod/files/hss/Classification/docs/UCNI-Tri-fold.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "UCNI Reviewing Official Training (DOE)",
+    "url": "https://www.energy.gov/sites/prod/files/2015/07/f24/CTI-Training-UCNI-RO.pdf"
+   }
+  ],
+  "UT-38843": [
+   {
+    "kind": "pdf",
+    "title": "10 CFR Part 835, Occupational Radiation Protection",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part835.pdf"
+   }
+  ],
+  "UT-43094": [
+   {
+    "kind": "pdf",
+    "title": "10 CFR Part 835, Occupational Radiation Protection",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part835.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "DOE-HDBK-1130-2022, Radiological Worker Training",
+    "url": "https://www.energy.gov/documents/doe-hdbk-1130-2022pdf"
+   }
+  ],
+  "UT-47968": [
+   {
+    "kind": "pdf",
+    "title": "DOE-HDBK-1130-2022, Radiological Worker Training",
+    "url": "https://www.energy.gov/documents/doe-hdbk-1130-2022pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "10 CFR Part 835, Occupational Radiation Protection",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part835.pdf"
+   }
+  ],
+  "RAD-101": [
+   {
+    "kind": "pdf",
+    "title": "DOE-HDBK-1130-2022, Radiological Worker Training",
+    "url": "https://www.energy.gov/documents/doe-hdbk-1130-2022pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "10 CFR Part 835, Occupational Radiation Protection",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part835.pdf"
+   }
+  ],
+  "COO-320": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 422.1, Conduct of Operations",
+    "url": "https://www.energy.gov/documents/conduct-operations"
+   },
+   {
+    "kind": "pdf",
+    "title": "DOE O 422.1 Self-Study Module (DOE Orders Self-Study Program)",
+    "url": "https://www.energy.gov/sites/default/files/2014/12/f19/O-422-1_ssm.pdf"
+   }
+  ],
+  "QA-330": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 414.1E, Quality Assurance",
+    "url": "https://www.energy.gov/documents/quality-assurance"
+   }
+  ],
+  "PM-200": [
+   {
+    "kind": "pdf",
+    "title": "DOE O 413.3C, Program and Project Management for the Acquisition of Capital Assets",
+    "url": "https://www.energy.gov/documents/doe-o-413-3-cprogram-and-project-management-acquisition-capital-assets2026-07-23pdf"
+   }
+  ],
+  "PM-310": [
+   {
+    "kind": "pdf",
+    "title": "Earned Value Management Tutorial, Module 1 (DOE)",
+    "url": "https://www.energy.gov/documents/evmmodule1pdf"
+   }
+  ],
+  "COM-320": [
+   {
+    "kind": "pdf",
+    "title": "Difficult Conversations for Supervisors (OPM course, text version)",
+    "url": "https://www.opm.gov/policy-data-oversight/training-and-development/reference-materials/online-courses/difficult-conversations/difficultconversations.pdf"
+   }
+  ],
+  "MEN-140": [
+   {
+    "kind": "pdf",
+    "title": "Best Practices: Mentoring (OPM)",
+    "url": "https://www.opm.gov/policy-data-oversight/training-and-development/career-development/bestpractices-mentoring.pdf"
+   }
+  ],
+  "SUP-500": [
+   {
+    "kind": "pdf",
+    "title": "HR Basics for Supervisors (OPM)",
+    "url": "https://www.opm.gov/services-for-agencies/fact-sheets/hr-basics-for-supervisors-fact-sheet.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "Difficult Conversations for Supervisors (OPM course, text version)",
+    "url": "https://www.opm.gov/policy-data-oversight/training-and-development/reference-materials/online-courses/difficult-conversations/difficultconversations.pdf"
+   },
+   {
+    "kind": "pdf",
+    "title": "Best Practices: Mentoring (OPM)",
+    "url": "https://www.opm.gov/policy-data-oversight/training-and-development/career-development/bestpractices-mentoring.pdf"
+   }
+  ],
+  "HPC-101": [
+   {
+    "kind": "web",
+    "title": "NERSC: Getting Started (DOE user facility documentation)",
+    "url": "https://docs.nersc.gov/getting-started/"
+   },
+   {
+    "kind": "web",
+    "title": "OLCF Frontier User Guide (Oak Ridge Leadership Computing Facility)",
+    "url": "https://docs.olcf.ornl.gov/systems/frontier_user_guide.html"
+   }
+  ],
+  "HPC-210": [
+   {
+    "kind": "pdf",
+    "title": "MPI: A Message-Passing Interface Standard, Version 4.1",
+    "url": "https://www.mpi-forum.org/docs/mpi-4.1/mpi41-report.pdf"
+   }
+  ],
+  "PY-150": [
+   {
+    "kind": "web",
+    "title": "The Python Tutorial: An Informal Introduction to Python",
+    "url": "https://docs.python.org/3/tutorial/introduction.html"
+   },
+   {
+    "kind": "pdf",
+    "title": "NumPy User Guide",
+    "url": "https://numpy.org/doc/stable/numpy-user.pdf"
+   }
+  ],
+  "ML-250": [
+   {
+    "kind": "web",
+    "title": "scikit-learn: Getting Started (machine learning in Python)",
+    "url": "https://scikit-learn.org/stable/getting_started.html"
+   }
+  ],
+  "UT-7292": [
+   {
+    "kind": "pdf",
+    "title": "29 CFR 1910.1030, Bloodborne Pathogens (OSHA standard)",
+    "url": "https://www.govinfo.gov/content/pkg/CFR-2024-title29-vol6/pdf/CFR-2024-title29-vol6-sec1910-1030.pdf"
+   }
+  ]
+ }
 }

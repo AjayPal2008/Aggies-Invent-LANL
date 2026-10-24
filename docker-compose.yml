@@ -36,6 +36,8 @@ services:
       - ./backend/data:/app/backend/data:ro
       # Diagnostic resources and the locally reviewed question bank (Resource_File/cache stays out of git)
       - ./Resource_File:/app/Resource_File:ro
+      # The shared training-library folder is writable so scripts.export_library can add files to commit
+      - ./Resource_File/library:/app/Resource_File/library
     command: ["python", "-m", "scripts.prestart"]
     depends_on:
       db: { condition: service_healthy }

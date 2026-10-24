@@ -189,11 +189,16 @@ def _learner_block(emp: models.Employee, profile: dict) -> str:
 
 
 def _training_block(t: models.Training) -> str:
+    from .library import excerpt_for
+
+    source = excerpt_for(t.code)  # the admin library's material for this training, when it has one
     return (
         f"Training {t.code}: {t.title}\nCategory: {t.category}. Delivery: {t.delivery}. Source: {t.source_system} {t.source_url}\n"
         f"Description: {t.description}\nSkills: {', '.join(t.skills or [])}\n"
         f"Equipment: {', '.join(t.equipment or []) or 'none'}. Facilities: {', '.join(t.facilities or []) or 'none'}\n"
         f"Outline:\n{t.outline}"
+        + (f"\n\nSource material from the training library (teach from this; don't invent requirements it doesn't state):\n"
+           f"<source>\n{source}\n</source>" if source else "")
     )
 
 

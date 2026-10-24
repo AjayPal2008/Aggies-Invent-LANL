@@ -25,7 +25,8 @@ def test_library_is_loaded_in_three_layers(client, admin):
     assert inst["UT-1425"]["frequency"] == "annual" and inst["UT-62676"]["audience"] == "new_hire"
     assert inst["UT-47075"]["refresher_of"] == "UT-9369"
     wrtc = {t["code"]: t for t in o["trainings"] if t["source_system"] == "White Rock Training Center"}
-    assert len(wrtc) >= 35 and all(m["url"].startswith("https://cdn.lanl.gov/files/") for t in wrtc.values() for m in t["materials"] if m["kind"] == "pdf")
+    assert len(wrtc) >= 35 and all(library.allowed_url(m["url"]) for t in wrtc.values() for m in t["materials"] if m["kind"] == "pdf")
+    assert sum(m["url"].startswith("https://cdn.lanl.gov/files/") for t in wrtc.values() for m in t["materials"]) >= 38
     roles = {r["key"]: r for r in o["roles"]}
     assert {"project-lead", "engineer", "scientist", "craft-worker"} <= set(roles)
     assert set(roles["project-lead"]["programs"]) == {"weapons", "ste", "operations"}
@@ -69,13 +70,18 @@ def test_same_role_differs_by_division(client, manager):
     ("https://cdn.lanl.gov/other/a.pdf", False),
     ("https://cdn.lanl.gov/files/a.pdf?x=1", False),
     ("https://cdn.lanl.gov/files/a.exe", False),
+    ("https://www.energy.gov/documents/conduct-operations", True),
+    ("https://www.govinfo.gov/content/pkg/CFR-2024-title10-vol4/pdf/CFR-2024-title10-vol4-part835.pdf", True),
+    ("http://www.energy.gov/documents/conduct-operations", False),
+    ("https://www.energy.gov.evil.example/documents/x", False),
+    ("https://docs.nersc.gov/getting-started/?utm=1", False),
 ])
 def test_only_official_public_pdfs_are_fetched(url, ok):
     assert library.allowed_url(url) is ok
 
 
 def test_import_material_extracts_text_and_dedupes(client, admin, monkeypatch):
-    def fake_download(url, target):
+    def fake_download(url, target, expect="pdf"):
         target.write_bytes(SAMPLE_PDF.read_bytes())
         return target.stat().st_size
 
@@ -219,7 +225,7 @@ def test_deleting_a_catalog_pdf_hides_it_and_sync_does_not_bring_it_back(client,
     mat = _mats(client, admin, "UT-4464")[0]
     assert client.delete(f"/api/library/materials/{mat['id']}", headers=admin).status_code == 200
     assert all(x["id"] != mat["id"] for x in _mats(client, admin, "UT-4464"))
-    monkeypatch.setattr(library, "_download", lambda url, target: (_ for _ in ()).throw(AssertionError("no network in tests")))
+    monkeypatch.setattr(library, "_download", lambda url, target, expect="pdf": (_ for _ in ()).throw(AssertionError("no network in tests")))
     from app import models
 
     with SessionLocal() as db:
@@ -233,7 +239,7 @@ def test_deleting_a_catalog_pdf_hides_it_and_sync_does_not_bring_it_back(client,
 
 
 def test_redownload_a_linked_pdf(client, admin, monkeypatch):
-    def fake_download(url, target):
+    def fake_download(url, target, expect="pdf"):
         target.write_bytes(SAMPLE_PDF.read_bytes())
         return target.stat().st_size
 
@@ -273,3 +279,103 @@ def test_manager_assigns_a_role_list(client, manager):
     again = client.post("/api/library/roles/esh-professional/assign", json=body, headers=manager).json()["people"][0]
     assert again["assigned"] == []
     assert client.post("/api/library/roles/esh-professional/assign", json={**body, "employee_ids": []}, headers=manager).status_code == 400
+
+
+
+def test_every_library_course_has_a_real_source(client, admin):
+    """No course is left with only a generic link: each one names a document the AI can read."""
+    o = client.get("/api/library", headers=admin).json()
+    lib = [t for t in o["trainings"] if t["layer"] in ("institutional", "division", "role")]
+    empty = [t["code"] for t in lib if not any(m["kind"] in ("pdf", "web", "pptx", "docx", "text") for m in t["materials"])]
+    assert not empty, f"courses without source material: {empty}"
+    assert all(library.allowed_url(m["url"]) for t in lib for m in t["materials"] if m["url"] and m["kind"] != "link")
+
+
+def test_web_pages_become_readable_text(client, admin, monkeypatch):
+    from app import models
+    from app.database import SessionLocal
+
+    page = "<html><head><script>var x=1</script></head><body><nav>Menu Home</nav><h1>Getting started</h1>" \
+           "<p>Never run parallel jobs on a login node. Submit them with sbatch to the batch queue.</p>" * 3 + "</body></html>"
+
+    def fake_download(url, target, expect="pdf"):
+        assert expect == "web"
+        target.write_text(page)
+        return len(page)
+
+    monkeypatch.setattr(library, "_download", fake_download)
+    with SessionLocal() as db:
+        m = db.query(models.TrainingMaterial).filter_by(training_code="HPC-101", kind="web").first()
+        m.document_id, m.status = None, "linked"
+        db.commit()
+        library.import_material(db, m)
+        doc = db.get(models.Document, m.document_id)
+        text = " ".join(p.text for p in doc.page_texts)
+        assert m.status == "imported" and "login node" in text and "var x" not in text and "Menu Home" not in text
+
+
+def test_shared_folder_import_places_files_and_respects_deletes(client, admin, tmp_path):
+    from app.database import SessionLocal
+
+    (tmp_path / "UT-10922").mkdir()
+    (tmp_path / "UT-10922" / "Incident reporting quick guide.txt").write_text(
+        "Report every injury to your supervisor before the end of the shift. Call 911 for emergencies. " * 10)
+    (tmp_path / "unassigned").mkdir()
+    (tmp_path / "unassigned" / "Lab orientation notes.md").write_text("Wear safety glasses in every laboratory at all times. " * 10)
+    (tmp_path / "README.md").write_text("not a material")
+    with SessionLocal() as db:
+        r = library.import_folder(db, tmp_path)
+        assert r["imported"] == 2 and r["unassigned"] == 1
+        assert library.import_folder(db, tmp_path)["imported"] == 0  # rerun: nothing new
+    o = client.get("/api/library", headers=admin).json()
+    placed = next(m for t in o["trainings"] if t["code"] == "UT-10922" for m in t["materials"] if m["title"] == "Incident reporting quick guide")
+    waiting = next(m for m in o["unassigned"] if m["title"] == "Lab orientation notes")
+    assert client.post(f"/api/library/materials/{waiting['id']}/place", json={"training_code": "UT-32461"}, headers=admin).status_code == 200
+    assert all(m["id"] != waiting["id"] for m in client.get("/api/library", headers=admin).json()["unassigned"])
+    # The admin's own files come first when lessons are built
+    with SessionLocal() as db:
+        assert library.primary_document(db, "UT-10922").title == "Incident reporting quick guide"
+    client.delete(f"/api/library/materials/{placed['id']}", headers=admin)
+    with SessionLocal() as db:
+        library.import_folder(db, tmp_path)  # deleted catalog/folder files don't come back
+    assert all(m["title"] != "Incident reporting quick guide" for t in client.get("/api/library", headers=admin).json()["trainings"]
+               if t["code"] == "UT-10922" for m in t["materials"])
+
+
+def test_export_copies_uploads_into_the_shared_folder(client, admin, tmp_path):
+    from app.database import SessionLocal
+
+    _upload_text(client, admin, "UT-57950", "cui-notes.txt", "Mark CUI documents with the CUI banner at the top and bottom of each page. " * 5)
+    with SessionLocal() as db:
+        r = library.export_to_folder(db, tmp_path)
+        assert r["copied"] >= 1 and any(f.startswith("UT-57950/") for f in r["files"])
+        assert library.export_to_folder(db, tmp_path)["copied"] == 0  # already there
+
+
+def test_build_missing_and_publish_all(client, admin, hire):
+    from app.database import SessionLocal
+
+    _upload_text(client, admin, "UT-32461", "ems-basics.txt",
+                 "Module 1: Aspects. Workers must identify environmental aspects of their work before starting. " * 6)
+    with SessionLocal() as db:
+        out = library.build_missing(db, codes=["UT-32461"])
+        assert out["built"] == ["UT-32461"]
+    o = client.get("/api/library", headers=admin).json()
+    assert o["lessons"]["draft"] >= 1
+    assert client.post("/api/library/publish-all", json={"codes": ["UT-32461"]}, headers=admin).status_code == 400
+    assert client.post("/api/library/publish-all", json={"codes": ["UT-32461"], "reviewed": True}, headers=hire).status_code == 403
+    r = client.post("/api/library/publish-all", json={"codes": ["UT-32461"], "reviewed": True}, headers=admin).json()
+    assert r["published"] == ["UT-32461"]
+
+
+def test_unbuilt_lessons_still_use_the_library_text(client, admin):
+    from app import models
+    from app.database import SessionLocal
+    from app.services import ai
+
+    _upload_text(client, admin, "UT-21208", "export-basics.txt", "An export includes releasing technology to a foreign person in the United States. " * 5)
+    library._EXCERPTS.clear()
+    with SessionLocal() as db:
+        t = db.query(models.Training).filter_by(code="UT-21208").one()
+        block = ai._training_block(t)
+    assert "<source>" in block and "foreign person" in block

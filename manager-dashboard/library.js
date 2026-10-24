@@ -30,10 +30,12 @@ export async function libraryView(view) {
       <div class="stat ${c.materials_ready < c.materials ? "warn" : "ok"}"><div class="label">Materials in library</div>
         <div class="value num">${c.materials_ready}<span class="small muted"> / ${c.materials}</span></div></div>
     </div>
+    ${lessonsBanner()}
     <details class="small muted" style="margin-bottom:12px"><summary>About this data</summary><p>${esc(data.about)}</p>
       <p>Sources: ${data.sources.map((s) => `<a href="${esc(s)}" target="_blank" rel="noopener">${esc(s)}</a>`).join(" · ")}</p></details>
     <div class="chips" role="tablist" style="margin-bottom:12px">
-      ${[["institutional", "Institutional"], ...programTabs, ["roles", "Roles"], ["catalog", "Course catalog"], ["path", "Plan preview"]]
+      ${[["institutional", "Institutional"], ...programTabs, ["roles", "Roles"], ["catalog", "Course catalog"], ["path", "Plan preview"],
+         ...(data.unassigned?.length ? [["unassigned", `Unassigned (${data.unassigned.length})`]] : [])]
         .map(([k, v]) => `<button class="chip ${tab === k ? "active" : ""}" role="tab" aria-selected="${tab === k}" data-tab="${k}">${esc(v)}</button>`).join("")}
     </div>
     <div id="lib-body"></div>`;
@@ -44,12 +46,19 @@ export async function libraryView(view) {
     if (r.queued) setTimeout(() => libraryView(view), 6000);
   });
   $("#lib-annual")?.addEventListener("click", () => annualCycle(view));
+  $("#lib-build-all")?.addEventListener("click", async (e) => {
+    e.target.disabled = true;
+    try { const r = await api.post("/api/library/build-all"); toast(r.queued.length ? `Building lessons for ${r.queued.length} trainings…` : "Every training with material already has lessons"); setTimeout(() => libraryView(view), 5000); }
+    catch (err) { toast(err.message, true); e.target.disabled = false; }
+  });
+  $("#lib-publish")?.addEventListener("click", () => publishDrafts(view));
   $("#lib-new")?.addEventListener("click", () => newTraining(view));
   const body = $("#lib-body");
   if (tab === "institutional") institutional(view, body);
   else if (tab === "roles") rolesTab(view, body);
   else if (tab === "catalog") catalog(view, body);
   else if (tab === "path") pathPreview(body);
+  else if (tab === "unassigned") unassignedTab(view, body);
   else division(view, body, data.programs.find((p) => p.key === tab));
 }
 
@@ -402,4 +411,73 @@ async function reviewLessons(view, code) {
   $("#rv-unpublish", m.root)?.addEventListener("click", async () => {
     await api.post(`/api/library/trainings/${encodeURIComponent(code)}/publish`, { publish: false }); toast("Back to draft"); m.close(); libraryView(view);
   });
+}
+
+
+/** What learners can see: how many trainings have published lessons, drafts waiting for review, and material not built yet. */
+function lessonsBanner() {
+  const l = data.lessons || { published: 0, draft: 0, ready_to_build: 0 };
+  return `<section class="card flat" style="margin-bottom:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <div class="grow" style="flex:1;min-width:240px"><strong>Lessons from library material</strong>
+      <div class="small muted">${l.published} trainings published to learners · ${l.draft} drafts waiting for review · ${l.ready_to_build} with material but no lessons yet.
+        Learners only see published lessons; until then their lessons draw on the training's source text.</div></div>
+    ${data.can_edit ? `${l.ready_to_build ? `<button class="btn secondary small" id="lib-build-all">Build missing lessons</button>` : ""}
+      ${l.draft ? `<button class="btn small" id="lib-publish">Review &amp; publish drafts (${l.draft})</button>` : ""}` : ""}
+  </section>`;
+}
+
+function publishDrafts(view) {
+  const drafts = data.trainings.filter((t) => t.modules && t.lessons_status === "draft");
+  const m = modal(`
+    <div class="modal-head"><div><h2>Publish draft lessons</h2><div class="small muted">${drafts.length} trainings have built lessons that learners can't see yet.</div></div>
+      <button class="btn ghost" data-close>Close</button></div>
+    <p class="small muted">Open a training to read its modules against the source pages. Tick the ones you've checked, then publish.</p>
+    <form id="pd">
+      <div class="toolbar" style="margin:0 0 6px"><button type="button" class="btn ghost small" id="pd-all">Select all</button>
+        <button type="button" class="btn ghost small" id="pd-none">Select none</button></div>
+      <div class="list" style="max-height:50vh;overflow-y:auto">${drafts.map((t) => `
+        <label class="item small" style="cursor:pointer"><input type="checkbox" name="code" value="${esc(t.code)}">
+          <div class="grow"><strong>${esc(t.title)}</strong><div class="muted">${esc(t.code)} · ${esc(LAYER[t.layer] || t.layer)} · ${t.modules} modules
+            · from ${esc((t.materials.find((x) => x.document_id) || {}).title || "library material")}</div></div>
+          <button type="button" class="btn ghost small" data-review="${esc(t.code)}">Review</button></label>`).join("")}</div>
+      <label class="small" style="display:flex;gap:8px;align-items:flex-start;margin-top:10px"><input type="checkbox" name="reviewed" required>
+        <span>I've checked the selected trainings' modules against their source documents.</span></label>
+      <button class="btn" style="margin-top:8px">Publish selected</button>
+    </form>`, { wide: true });
+  $("#pd-all", m.root).onclick = () => $$("[name=code]", m.root).forEach((c) => (c.checked = true));
+  $("#pd-none", m.root).onclick = () => $$("[name=code]", m.root).forEach((c) => (c.checked = false));
+  $$("[data-review]", m.root).forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); m.close(); reviewLessons(view, b.dataset.review); }));
+  $("#pd", m.root).onsubmit = async (e) => {
+    e.preventDefault();
+    const codes = $$("[name=code]:checked", m.root).map((c) => c.value);
+    if (!codes.length) return toast("Tick at least one training", true);
+    try { const r = await api.post("/api/library/publish-all", { reviewed: true, codes }); toast(`Published ${r.published.length} trainings to learners`); m.close(); libraryView(view); }
+    catch (err) { toast(err.message, true); }
+  };
+}
+
+/** Files from the shared folder's unassigned/ (or an unknown training folder) waiting for an admin to place them. */
+function unassignedTab(view, body) {
+  const options = data.trainings.map((t) => `<option value="${esc(t.code)}">${esc(t.code)} · ${esc(t.title)}</option>`).join("");
+  body.innerHTML = `<section class="card"><h2>Unassigned materials</h2>
+    <p class="small muted">These came from the shared folder (Resource_File/library/unassigned) without a training. Pick the training each one belongs to.</p>
+    <div class="list">${data.unassigned.map((x) => `<div class="item small"><div class="grow"><strong>${esc(x.title)}</strong>
+        <div class="muted">${esc(x.kind.toUpperCase())}${x.bytes ? ` · ${(x.bytes / 1e6).toFixed(1)} MB` : ""}</div></div>
+        ${x.document_id ? `<button class="btn ghost small" data-open-doc="${x.document_id}">Open</button>` : ""}
+        ${data.can_edit ? `<select data-place-sel="${x.id}" aria-label="Training for ${esc(x.title)}"><option value="">Choose a training…</option>${options}</select>
+          <button class="btn small" data-place="${x.id}">Place</button>
+          <button class="btn ghost small danger" data-del-unassigned="${x.id}">Delete</button>` : ""}</div>`).join("")}</div></section>`;
+  $$("[data-open-doc]", body).forEach((b) => b.addEventListener("click", async () => {
+    try { window.open(await api.blobUrl(`/api/documents/${b.dataset.openDoc}/file`), "_blank"); } catch (err) { toast(err.message, true); }
+  }));
+  $$("[data-place]", body).forEach((b) => b.addEventListener("click", async () => {
+    const code = $(`[data-place-sel="${b.dataset.place}"]`, body).value;
+    if (!code) return toast("Choose a training first", true);
+    try { await api.post(`/api/library/materials/${b.dataset.place}/place`, { training_code: code }); toast("Placed. Build its lessons from the training."); libraryView(view); }
+    catch (err) { toast(err.message, true); }
+  }));
+  $$("[data-del-unassigned]", body).forEach((b) => b.addEventListener("click", async () => {
+    if (!confirm("Delete this material?")) return;
+    await api.del(`/api/library/materials/${b.dataset.delUnassigned}`); toast("Deleted"); libraryView(view);
+  }));
 }

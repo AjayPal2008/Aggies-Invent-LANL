@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     diagnostic_bank_path: str = str(REPO_DIR / "Resource_File" / "cache" / "assessment" / "bank.json")
     # Empty = store diagnostic sessions in the platform database (DATABASE_URL). A path keeps a separate SQLite file.
     diagnostic_db_path: str = ""
+    # Shared training-library folder, committed to git: <folder>/<TRAINING-CODE>/<file>.pdf (or unassigned/).
+    # Every PDF, slide deck or document in it is imported into the admin library on startup.
+    library_dir: str = str(REPO_DIR / "Resource_File" / "library")
     ai_model: str = "claude-opus-5-5"
     ai_effort: str = "medium"
 

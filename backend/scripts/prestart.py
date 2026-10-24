@@ -37,6 +37,7 @@ def main():
             stats = sync_library(db)  # only adds library items that are missing, so updates reach existing databases
             db.commit()
             logging.info("Database already has data; library sync added %s", stats)
+            _import_shared_folder(db)
             return
         from app.services.demo import load_demo_documents
         from app.services.sync import sync_all
@@ -44,6 +45,18 @@ def main():
         logging.info("Empty database: running first sync")
         sync_all(db)
         load_demo_documents(db)
+        _import_shared_folder(db)
+
+
+def _import_shared_folder(db):
+    """Files committed to Resource_File/library are part of the library on every computer."""
+    from app.services.library import build_missing, import_folder
+
+    r = import_folder(db)
+    logging.info("Shared library folder: %s", {k: v for k, v in r.items() if k != "errors"})
+    if r["imported"]:
+        b = build_missing(db)  # offline lessons for the new files; drafts until an admin publishes them
+        logging.info("Built lessons for %s", b["built"])
 
 
 if __name__ == "__main__":

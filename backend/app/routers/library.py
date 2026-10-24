@@ -81,6 +81,10 @@ def overview(mgr: models.Employee = Depends(require_manager), db: Session = Depe
         "programs": [{"key": p["key"], "name": p["name"], "description": p["description"], "divisions": divisions.get(p["key"], []),
                       "requirements": reqs.get(p["key"], [])} for p in library.manifest()["programs"]],
         "trainings": [_training_json(t, mats.get(t.code, []), modules.get(t.id, 0)) for t in trainings],
+        "unassigned": [_material_json(m) for m in mats.get("", [])],
+        "lessons": {"published": sum(1 for t in trainings if modules.get(t.id) and t.lessons_status != "draft"),
+                    "draft": sum(1 for t in trainings if modules.get(t.id) and t.lessons_status == "draft"),
+                    "ready_to_build": sum(1 for t in trainings if not modules.get(t.id) and any(m.document_id for m in mats.get(t.code, [])))},
         "roles": list_roles(mgr, db),
         "can_edit": mgr.role == "admin",
     }
@@ -250,7 +254,7 @@ def refresh_material(material_id: int, background: BackgroundTasks, admin: model
     """Download the official PDF again from its public link (when LANL publishes a new revision)."""
     m = _material(db, material_id)
     if m.url.startswith("upload:") or not library.allowed_url(m.url):
-        raise HTTPException(400, "Only materials linked to an official LANL PDF can be downloaded again")
+        raise HTTPException(400, "Only materials linked to an official public source can be downloaded again")
     m.document_id, m.status, m.error = None, "linked", ""
     db.commit()
     background.add_task(_refresh_job, m.id)
@@ -304,6 +308,65 @@ def review_modules(code: str, admin: models.Employee = Depends(require_admin), d
 class PublishIn(BaseModel):
     reviewed: bool = False
     publish: bool = True
+
+
+class PublishAllIn(BaseModel):
+    reviewed: bool = False
+    codes: list[str] | None = None
+
+
+@router.post("/publish-all")
+def publish_all(body: PublishAllIn, admin: models.Employee = Depends(require_admin), db: Session = Depends(get_db)):
+    """Publish every draft that has built lessons (or just `codes`), after the admin confirms review."""
+    if not body.reviewed:
+        raise HTTPException(400, "Confirm you reviewed the draft lessons before publishing them")
+    built = set(db.scalars(select(models.CourseModule.training_id)))
+    done = []
+    for t in db.scalars(select(models.Training).where(models.Training.lessons_status == "draft")):
+        if t.id in built and (not body.codes or t.code in body.codes):
+            t.lessons_status = "published"
+            done.append(t.code)
+    db.commit()
+    catalog_cache.clear()
+    return {"published": done}
+
+
+def _build_all_job():
+    from ..database import SessionLocal
+
+    with SessionLocal() as db:
+        library.build_missing(db)
+
+
+@router.post("/build-all")
+def build_all(background: BackgroundTasks, admin: models.Employee = Depends(require_admin), db: Session = Depends(get_db)):
+    """Build draft lessons (offline builder) for every training that has material but no lessons yet."""
+    built = set(db.scalars(select(models.CourseModule.training_id)))
+    todo = sorted({m.training_code for v in _materials(db).values() for m in v if m.document_id and m.training_code}
+                  - {t.code for t in db.scalars(select(models.Training)) if t.id in built})
+    background.add_task(_build_all_job)
+    return {"queued": todo}
+
+
+class PlaceIn(BaseModel):
+    training_code: str
+
+
+@router.post("/materials/{material_id}/place")
+def place_material(material_id: int, body: PlaceIn, admin: models.Employee = Depends(require_admin), db: Session = Depends(get_db)):
+    """Attach a material (for example one from the shared folder's unassigned/) to a training."""
+    m = _material(db, material_id)
+    _training(db, body.training_code)
+    if db.scalar(select(models.TrainingMaterial.id).where(models.TrainingMaterial.training_code == body.training_code,
+                                                          models.TrainingMaterial.url == m.url, models.TrainingMaterial.id != m.id)):
+        raise HTTPException(409, "That training already has this material")
+    m.training_code = body.training_code
+    if m.document_id:
+        doc = db.get(models.Document, m.document_id)
+        if doc and not doc.training_code:
+            doc.training_code = body.training_code
+    db.commit()
+    return _material_json(m)
 
 
 @router.post("/trainings/{code}/publish")

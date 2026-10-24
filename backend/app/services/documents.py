@@ -24,6 +24,7 @@ from ..config import settings
 from . import ai
 
 log = logging.getLogger(__name__)
+logging.getLogger("pypdf").setLevel(logging.ERROR)  # font-encoding notices on some government PDFs are harmless
 
 MAX_CHARS = 3_000_000  # ~750k tokens; anything bigger should be split before upload
 KIND_CATEGORY = {"policy": "compliance", "procedure": "safety", "manual": "technical", "requirements": "technical",
@@ -159,14 +160,15 @@ def _role_title(db: Session, doc: models.Document) -> str:
     return "an employee in this role"
 
 
-def build_course(db: Session, doc_id: int) -> models.Training:
+def build_course(db: Session, doc_id: int, use_ai: bool = True) -> models.Training:
+    """Turn a document into modules, lessons, quizzes and scenarios. use_ai=False uses the offline builder only."""
     doc = db.get(models.Document, doc_id)
     doc.status, doc.error = "generating", ""
     db.commit()
     try:
         role = _role_title(db, doc)
         text = document_text(doc)
-        if len(text) >= MAX_CHARS:
+        if use_ai and len(text) >= MAX_CHARS:
             raise ValueError(f"Document is too long to process in one pass ({doc.pages} pages). Split it into parts.")
         prompt = (
             f"This is an internal LANL document ({doc.kind.replace('_', ' ')}) titled \"{doc.title}\", {doc.pages} pages. "
@@ -185,7 +187,7 @@ def build_course(db: Session, doc_id: int) -> models.Training:
             "people or making judgment calls. 'both' when the role must know the rules AND apply judgment with people.\n\n"
             f"<document>\n{text}\n</document>"
         )
-        data = ai.call_json_long(prompt, COURSE_SCHEMA, max_tokens=32000)
+        data = ai.call_json_long(prompt, COURSE_SCHEMA, max_tokens=32000) if use_ai else None
         doc.generated_by = settings.ai_model if data else "offline"
         if not data:
             vocab = sorted({s for t in db.scalars(select(models.Training)) for s in (t.skills or [])}
@@ -299,9 +301,26 @@ def _is_toc(lines: list[str]) -> bool:
     return sum(1 for l in lines if DOTS.search(l)) >= 3 or any(l.strip().lower() in ("contents", "table of contents") for l in lines[:5])
 
 
+BOILERPLATE = {"cancels/supersedes", "contact", "approved", "available online at", "initiated by", "references",
+               "revision history", "table of contents", "contents", "foreword", "distribution", "caveats"}
+
+
 def _heading_text(line: str) -> str | None:
     """A clean heading, or None if the line is a TOC entry, a question, a sentence or a page stamp."""
     line = re.sub(r"\s+", " ", line).strip().rstrip(":").strip()
+    if re.search(r"CFR Ch\.|\bEdition\)|^\d+ CFR\b|^Pt\. \d+", line):
+        return None  # running page headers of the Code of Federal Regulations
+    if re.match(r"^(chapter|section|attachment|appendix) \d+\s*-\s*[ivx\d]+$", line, re.IGNORECASE) or line.lower() in BOILERPLATE:
+        return None  # page stamps ("Chapter 5 - ii") and directive front-matter fields
+    sec = re.match(r"^§\s*(\d+\.\d+)\s+([A-Z][^.;]{3,80})\.?$", line)
+    if sec:  # a regulation section title, e.g. "§ 850.26 Regulated areas."
+        title = re.sub(r"\s+\S+-$", "", sec.group(2).strip())  # drop a word split across lines ("Substantial dam-")
+        return f"§ {sec.group(1)} {title}"
+    caps = re.match(r"^(?:[0-9A-Za-z]{1,3}[.)]\s+)?((?:[A-Z0-9/&,'()-]+\s+){0,10}[A-Z0-9/&'()-]{2,})\.\s+[A-Z][a-z]", line)
+    if caps and len(caps.group(1)) >= 6:  # "SAFEGUARDS AND SECURITY AWARENESS. Contractor will..." keeps the heading
+        small = {"And", "Or", "Of", "The", "For", "To", "In", "On", "A", "An"}
+        words = caps.group(1).title().split()
+        return " ".join(w.lower() if i and w in small else w for i, w in enumerate(words))
     if not line or DOTS.search(line) or line.endswith(("?", ".", ",", ";")) or len(line.split()) > 12:
         return None
     if sum(c.isdigit() for c in line) > len(line) * 0.3:
@@ -320,6 +339,8 @@ def _heading_text(line: str) -> str | None:
     words = [w for w in re.findall(r"[A-Za-z]+", text) if len(w) >= 4]
     if words and sum(w[0].isupper() for w in words) < len(words) * 0.6:
         return None  # sentence-case numbered lines are steps or list items; real headings are Title Case
+    if text.lower().rstrip(".") in BOILERPLATE:
+        return None
     return text
 
 
@@ -436,6 +457,10 @@ def offline_course(doc: models.Document, role: str, vocabulary: list[str] | None
         sents = [x for x in sents if not re.match(r"^(this chapter|read it|see |figure|table)\b", x, re.IGNORECASE)]
         rules = [x for x in sents if RULE.search(x)][:7] or sents[:4]
         title = g[0][1] if len(g) == 1 else f"{g[0][1]} and related topics"
+        if len(g) > 1 and all(h.startswith("§ ") for _, h in g):  # regulation sections: "§§ 850.20–850.24: Baseline inventory, …"
+            nums = [h.split()[1] for _, h in g]
+            names = [" ".join(h.split()[2:]) for _, h in g]
+            title = f"§§ {nums[0]}–{nums[-1]}: " + ", ".join(names[:3]) + (", …" if len(names) > 3 else "")
         subs = [h for p, h in heads if start <= p <= end and h != g[0][1]][:4]
         modules.append({
             "title": title[:120],

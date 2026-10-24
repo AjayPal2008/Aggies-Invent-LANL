@@ -34,6 +34,41 @@ cd backend
 ../.venv/bin/python -m scripts.import_library --build  # and build offline lessons for each
 ```
 
+### Where the AI's material comes from
+
+Every library course has at least one document the AI reads; none is left with only the extrain.lanl.gov home page.
+
+| Source | Used for |
+|---|---|
+| LANL public files (cdn.lanl.gov): White Rock Training Center student manuals, NFO brochures, the LANL Code of Conduct | Role and hazard courses, NFO, ethics |
+| DOE orders, guides and handbooks (energy.gov): O 470.5A insider threat, O 470.7 safeguards and security, O 471.6 information security, O 471.7 CUI, O 471.1B UCNI, O 232.2A occurrence reporting, O 422.1 conduct of operations, O 414.1E quality assurance, O 413.3C project management, DOE-HDBK-1130-2022 radiological worker training, the HQ-111DE security briefing, EVM tutorial | Institutional security courses, GERT and Rad Worker, CONOPS, QA, project management |
+| Federal regulations (govinfo.gov): 10 CFR 707, 810, 835, 850, 1017; 15 CFR 730; 32 CFR 2002 | Substance abuse, foreign technology transfer, radiation protection, beryllium, UCNI, export control, CUI |
+| OPM supervisory training (opm.gov) | Difficult conversations, mentoring, new supervisors |
+| DOE computing-center docs (NERSC, OLCF) and NumPy, Python, scikit-learn, MPI Forum | HPC onboarding, MPI, Python, machine learning |
+
+These are the public documents LANL's own courses are based on; LANL's internal course content may differ. The
+`extra_materials` section of `backend/data/library/catalog.json` lists them, and only these official hosts can be
+downloaded (https, no query strings, redirects only to the same hosts). Web pages are stored as readable text.
+
+Run `python -m scripts.import_library` (in Docker: `docker compose exec -T app python -m scripts.import_library`) to
+download everything and build draft lessons. Lessons are built offline unless an Anthropic API key is set; with a key,
+`--ai` builds them with Claude, and every learner's lesson, video script, quiz and interview is written by Claude
+from these pages either way.
+
+### The shared library folder (team files)
+
+`Resource_File/library/` is committed to git so everyone has the same files. Each file in `<TRAINING-CODE>/` is
+imported into that training on startup; files in `unassigned/` appear under **Unassigned** for an admin to place.
+To share files you uploaded through the admin page on your computer, run `python -m scripts.export_library`, then
+commit `Resource_File/library` and push. Only add files the team may share in the repository.
+
+### Draft lessons and publishing
+
+Built lessons are drafts until an admin publishes them. The banner at the top of the library shows how many are
+published, waiting, or not built yet, with **Build missing lessons** and **Review & publish drafts** (tick the
+trainings you checked, confirm, publish). Rebuilding never touches published lessons unless an admin rebuilds that
+training. Until a training is published, a learner's lessons for it still draw on its source text.
+
 ### Managing each material (admin)
 
 Every material in a training's detail window has its own buttons:
@@ -77,6 +112,9 @@ Course titles, numbers and material links come from public LANL pages. The **div
 | `DELETE /api/library/materials/{id}` | Delete a material |
 | `GET /api/library/roles/{key}/detail?program=` | Role page: job description, skills, positions and the list for each entry path |
 | `POST /api/library/roles/{key}/assign` | Assign a role's list to people (`entry_path`, `exclude`, optional `position_code`) |
+| `POST /api/library/build-all` | Build draft lessons for every training with material but no lessons |
+| `POST /api/library/publish-all` | `{reviewed: true, codes: [...]}` publishes those drafts |
+| `POST /api/library/materials/{id}/place` | Attach an unassigned material to a training |
 | `POST /api/library/trainings/{code}/build` | Build lessons from the training's materials |
 | `GET /api/library/trainings/{code}/modules` | Review built modules (admin) |
 | `POST /api/library/trainings/{code}/publish` | `{reviewed: true, publish: true}` publishes; `{publish: false}` returns to draft |
