@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · LANL Adaptive Training</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/shared/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/shared/assets/lanl-icon-192.png">
+  <link rel="apple-touch-icon" href="/shared/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="/shared/styles.css?v=20261024e">
+</head>
+<body>
+  <div class="login-page">
+    <section class="login-brand">
+      <div>
+        <img src="/shared/assets/lanl-logo-white.svg" alt="Los Alamos National Laboratory">
+        <h1>Adaptive Training Platform</h1>
+        <p>Every LANL training in one place, and a learning experience that adjusts to you: your role, your equipment, your facility, and how you learn best.</p>
+      </div>
+      <p class="small">Aggies Invent · Prototype</p>
+    </section>
+    <section class="login-form">
+      <form id="form" autocomplete="on">
+        <div>
+          <h2>Sign in</h2>
+          <p class="muted">Use your company email.</p>
+        </div>
+        <div id="notice" class="badge warn hidden"></div>
+        <div id="google" class="hidden"></div>
+        <div id="google-divider" class="divider hidden">or</div>
+        <label class="field">Company email
+          <input id="email" type="email" required placeholder="name@lanl.gov" autocomplete="username">
+        </label>
+        <label class="field">Password
+          <input id="password" type="password" required autocomplete="current-password">
+        </label>
+        <button class="btn" type="submit" id="submit">Sign in</button>
+        <p id="error" class="small" style="color: var(--bad)"></p>
+        <div class="card flat" style="background: var(--navy-tint)">
+          <h4>Demo accounts</h4>
+          <p class="small muted">Click one to sign in. Password <code>demo1234</code> unless your admin changed it.</p>
+          <div class="chips">
+            <button type="button" class="chip" data-demo="hire@lanl.gov">New hire</button>
+            <button type="button" class="chip" data-demo="manager@lanl.gov">Manager</button>
+            <button type="button" class="chip" data-demo="admin@lanl.gov">Admin</button>
+          </div>
+        </div>
+      </form>
+    </section>
+  </div>
+  <script type="module">
+    import { api, session } from "/shared/api.js?v=20261024e";
+    const $ = (s) => document.querySelector(s);
+    const go = (home) => (location.href = home);
+
+    if (new URLSearchParams(location.search).has("expired")) {
+      $("#notice").textContent = "Your session ended. Sign in again.";
+      $("#notice").classList.remove("hidden");
+    } else if (session.token) {
+      api.get("/api/auth/me").then((me) => go(me.role === "hire" ? "/hire/" : "/manager/")).catch(() => session.clear());
+    }
+
+    // Demo buttons fill in the account and sign straight in.
+    document.querySelectorAll("[data-demo]").forEach((b) => b.addEventListener("click", () => {
+      $("#email").value = b.dataset.demo; $("#password").value = "demo1234";
+      $("#form").requestSubmit();
+    }));
+
+    $("#form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      $("#error").textContent = "";
+      $("#submit").disabled = true;
+      $("#submit").textContent = "Signing in…";
+      try {
+        // No silent retries here: if sign-in is refused, say so right away.
+        const res = await api.post("/api/auth/login", { email: $("#email").value.trim(), password: $("#password").value }, { retry: false });
+        session.save(res.token, res.user);
+        go(res.home);
+      } catch (err) {
+        $("#error").textContent = err.message;
+      } finally {
+        $("#submit").disabled = false;
+        $("#submit").textContent = "Sign in";
+      }
+    });
+
+    // Google sign-in appears only when the backend has GOOGLE_CLIENT_ID set.
+    const cfg = await fetch("/api/auth/config").then((r) => r.json());
+    if (cfg.email_domains?.length) $("#email").placeholder = `name@${cfg.email_domains[0]}`;
+    if (cfg.google_client_id) {
+      const s = document.createElement("script");
+      s.src = "https://accounts.google.com/gsi/client";
+      s.onload = () => {
+        google.accounts.id.initialize({
+          client_id: cfg.google_client_id,
+          hd: cfg.email_domains?.[0],
+          callback: async ({ credential }) => {
+            try {
+              const res = await api.post("/api/auth/google", { id_token: credential });
+              session.save(res.token, res.user);
+              go(res.home);
+            } catch (err) { $("#error").textContent = err.message; }
+          },
+        });
+        google.accounts.id.renderButton($("#google"), { theme: "outline", size: "large", width: 380, text: "signin_with" });
+        $("#google").classList.remove("hidden");
+        $("#google-divider").classList.remove("hidden");
+      };
+      document.head.append(s);
+    }
+  </script>
+</body>
+</html>

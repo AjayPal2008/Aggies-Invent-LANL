@@ -1,0 +1,103 @@
+# Production-style stack on one host:  docker compose up --build   ->  http://localhost:8000
+#
+#   nginx    load balancer + static files + per-IP limits + friendly "busy" responses
+#   app      FastAPI, 2 replicas x 2 workers (scale with: docker compose up --scale app=4)
+#   reports  same image, separate workers for heavy manager reports (bulkhead)
+#   migrate  runs once: creates/upgrades tables and loads data, so replicas never race at startup
+#   db       PostgreSQL
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: lanl
+      POSTGRES_PASSWORD: lanl
+      POSTGRES_DB: lanl_training
+    command: ["postgres", "-c", "max_connections=300", "-c", "shared_buffers=256MB"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lanl"]
+      interval: 3s
+      retries: 20
+    restart: unless-stopped
+
+  migrate:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment: &appenv
+      DATABASE_URL: postgresql+psycopg://lanl:lanl@db:5432/lanl_training
+      AUTO_SEED: "false"
+      DATA_DIR: ${DATA_DIR:-/app/backend/data/sample}
+    volumes: &appvolumes
+      - uploads:/app/backend/uploads
+      - ./backend/data:/app/backend/data:ro
+    command: ["python", "-m", "scripts.prestart"]
+    depends_on:
+      db: { condition: service_healthy }
+    restart: "no"
+
+  app:
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      <<: *appenv
+      WEB_CONCURRENCY: ${WEB_CONCURRENCY:-2}
+    volumes: *appvolumes
+    command: ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers $${WEB_CONCURRENCY} --limit-concurrency 400 --backlog 2048 --timeout-keep-alive 5 --proxy-headers --forwarded-allow-ips='*'"]
+    deploy:
+      replicas: ${APP_REPLICAS:-2}
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/ready', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: unless-stopped
+
+  reports:
+    # Same image, separate workers for heavy manager reports (see the bulkhead in deploy/nginx.conf).
+    build: .
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      <<: *appenv
+      WEB_CONCURRENCY: ${REPORT_WORKERS:-2}
+    volumes: *appvolumes
+    command: ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers $${WEB_CONCURRENCY} --limit-concurrency 200 --timeout-keep-alive 5 --proxy-headers --forwarded-allow-ips='*'"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/ready', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:1.27-alpine
+    ports: ["8000:80"]
+    environment:
+      # Per-IP ceilings (many LANL users can share one proxy IP, so keep these generous).
+      NGINX_IP_RATE: ${NGINX_IP_RATE:-300r/s}
+      NGINX_IP_CONNECTIONS: ${NGINX_IP_CONNECTIONS:-2000}
+      NGINX_ENVSUBST_OUTPUT_DIR: /etc/nginx
+    volumes:
+      - ./deploy/nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
+      - ./shared:/srv/shared:ro
+      - ./hire-dashboard:/srv/hire-dashboard:ro
+      - ./manager-dashboard:/srv/manager-dashboard:ro
+    depends_on:
+      app: { condition: service_healthy }
+      reports: { condition: service_healthy }
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  uploads:

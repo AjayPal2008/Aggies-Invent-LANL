@@ -1,0 +1,87 @@
+# Front door for the platform: load balancing, static files, compression, limits and friendly errors.
+worker_processes auto;
+events { worker_connections 4096; }
+
+http {
+  include       /etc/nginx/mime.types;
+  default_type  application/octet-stream;
+  sendfile      on;
+  keepalive_timeout 30;
+  server_tokens off;
+
+  gzip on;
+  gzip_comp_level 5;
+  gzip_min_length 1000;
+  gzip_types application/json application/javascript text/css text/plain image/svg+xml;
+
+  # Per-IP safety net in front of every worker. Generous, because many LANL users may share a proxy IP;
+  # the app enforces per-user limits behind this.
+  limit_req_zone  $binary_remote_addr zone=api:20m rate=${NGINX_IP_RATE};
+  limit_conn_zone $binary_remote_addr zone=conn:20m;
+
+  # Bulkhead: heavy manager reports (rolling up thousands of people) run on their own workers,
+  # so a busy reporting hour can never slow down employees taking trainings. There is deliberately
+  # no fallback to the main app: if reports are overloaded, only reports say "busy, retry".
+  upstream reports {
+    server reports:8000;
+    keepalive 16;
+  }
+
+  upstream app {
+    # Docker DNS returns every replica of the "app" service; nginx spreads requests across them
+    # and takes a replica out for 10s after 3 failures.
+    server app:8000 max_fails=3 fail_timeout=10s;
+    keepalive 64;
+  }
+
+  server {
+    listen 80;
+    client_max_body_size 60m;
+    limit_conn conn ${NGINX_IP_CONNECTIONS};
+
+    # Static dashboards are served by nginx directly, so app workers only handle API calls.
+    # Code (HTML/JS/CSS) must never go stale after a deploy: browsers revalidate every time and get a
+    # tiny 304 when nothing changed, so it stays fast. File URLs also carry a ?v= version.
+    location /shared/  { alias /srv/shared/;            add_header Cache-Control "no-cache"; etag on; }
+    location /hire/    { alias /srv/hire-dashboard/;    index index.html; add_header Cache-Control "no-cache"; etag on; }
+    location /manager/ { alias /srv/manager-dashboard/; index index.html; add_header Cache-Control "no-cache"; etag on; }
+    location /login/   { alias /srv/shared/login/;      index index.html; add_header Cache-Control "no-cache"; etag on; }
+    location = /       { return 302 /login/; }
+
+    location ~ ^/api/manager/(team|overview|org|retraining|promotions|insights/|positions/[^/]+/candidates|team\.csv) {
+      limit_req zone=api burst=600 nodelay;
+      limit_req_status 429;
+      proxy_pass http://reports;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header Host $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_connect_timeout 5s;
+      proxy_read_timeout 120s;
+      proxy_next_upstream error timeout http_502 http_503;
+    }
+
+    location / {
+      limit_req zone=api burst=600 nodelay;
+      limit_req_status 429;
+      proxy_pass http://app;
+      proxy_http_version 1.1;
+      proxy_set_header Connection "";
+      proxy_set_header Host $host;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $scheme;
+      proxy_connect_timeout 5s;
+      proxy_read_timeout 180s;  # long AI generations (course builds run in the background, not in a request)
+      # If a replica crashes or is restarting, retry safe requests on another one.
+      proxy_next_upstream error timeout http_502 http_503;
+      proxy_next_upstream_tries 2;
+    }
+
+    error_page 502 503 504 = @busy;
+    location @busy {
+      default_type application/json;
+      add_header Retry-After 5 always;
+      return 503 '{"detail": "The system is busy. Please try again in a few seconds."}';
+    }
+  }
+}

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Training · LANL</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/shared/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/shared/assets/lanl-icon-192.png">
+  <link rel="apple-touch-icon" href="/shared/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="/shared/styles.css?v=20261024e">
+</head>
+<body>
+  <header class="topbar" id="topbar"></header>
+  <div class="shell">
+    <nav class="sidenav" aria-label="Sections">
+      <div class="section">Learning</div>
+      <button data-view="overview">Overview</button>
+      <button data-view="trainings">My trainings</button>
+      <button data-view="calendar">Calendar</button>
+      <button data-view="studio">Learning studio</button>
+      <div class="section">Explore</div>
+      <button data-view="catalog">All trainings</button>
+      <button data-view="profile">My learning profile</button>
+    </nav>
+    <main id="view"></main>
+  </div>
+  <script type="module" src="./app.js?v=20261024e"></script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+*.db
+*.sqlite
+.pytest_cache/
+.DS_Store
+backend/data/live/
+backend/uploads/
+backend/data/scale*/
