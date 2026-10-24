@@ -14,5 +14,5 @@ pytest>=8.0
 # oracledb>=2.0
 # PostgreSQL driver (used when DATABASE_URL starts with postgresql+psycopg://)
 psycopg[binary]>=3.2
-pypdf>=5.0
+pypdf==6.21.2  # matches scripts/requirements.txt and the verified environment
 reportlab>=4.0  # only for generating the sample handbook PDF

@@ -83,20 +83,13 @@ export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
     setPlaying(false);
     $$(".vp-seg", container).forEach((seg) => (seg.firstElementChild.style.width = "100%"));
     const after = $(".vp-after", container);
-    const q = video.check_question;
+    const q = null; // Legacy video checks are not reviewed diagnostic questions.
     after.classList.remove("hidden");
     after.innerHTML = `<div class="card flat" style="margin-top:10px;background:var(--navy-tint)">
       <h3>Takeaways</h3><ul>${(video.takeaways || []).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
       ${q ? `<h4>Quick check</h4><p><strong>${esc(q.question)}</strong></p><div>${q.options.map((o, n) => `<button class="choice" data-o="${n}">${esc(o)}</button>`).join("")}</div><div class="feedback"></div>` : ""}
       <div style="margin-top:8px;display:flex;gap:8px"><button class="btn secondary small" data-act="replay">Watch again</button>
         <button class="btn small" data-act="done">Mark this lesson done</button></div></div>`;
-    $$("[data-o]", after).forEach((b) => b.addEventListener("click", () => {
-      const ok = Number(b.dataset.o) === q.answer_index;
-      $$("[data-o]", after).forEach((x, n) => { x.disabled = true; if (n === q.answer_index) x.classList.add("right"); });
-      if (!ok) b.classList.add("wrong");
-      $(".feedback", after).textContent = q.explanation;
-      onAnswer?.(ok, q.question);
-    }));
     $('[data-act="replay"]', after).onclick = () => { after.classList.add("hidden"); i = 0; setPlaying(true); };
     $('[data-act="done"]', after).onclick = () => onDone?.();
   }

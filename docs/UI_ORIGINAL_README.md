@@ -4,10 +4,10 @@ An AI-powered training platform for Los Alamos National Laboratory. It pulls eve
 
 | Part | Folder | Owner |
 | --- | --- | --- |
-| Manager dashboard | [`manager-dashboard/`](manager-dashboard/) | Nick |
-| Hire dashboard | [`hire-dashboard/`](hire-dashboard/) | AJ |
-| Backend, data integration, hosting | [`backend/`](backend/) | Roa |
-| Login page, styles, API client (shared) | [`shared/`](shared/) | everyone |
+| Manager dashboard | [`manager-dashboard/`](https://github.com/AjayPal2008/Aggies-Invent-LANL/tree/cf16ec04f2e8cbce5df6a71c17966e858c4c813e/manager-dashboard) | Nick |
+| Hire dashboard | [`hire-dashboard/`](https://github.com/AjayPal2008/Aggies-Invent-LANL/tree/cf16ec04f2e8cbce5df6a71c17966e858c4c813e/hire-dashboard) | AJ |
+| Backend, data integration, hosting | [`backend/`](https://github.com/AjayPal2008/Aggies-Invent-LANL/tree/cf16ec04f2e8cbce5df6a71c17966e858c4c813e/backend) | Roa |
+| Login page, styles, API client (shared) | [`shared/`](https://github.com/AjayPal2008/Aggies-Invent-LANL/tree/cf16ec04f2e8cbce5df6a71c17966e858c4c813e/shared) | everyone |
 
 ## Run it
 
@@ -66,19 +66,19 @@ To turn on Claude for course building, lessons, videos, interview scoring, pract
 
 ## How the adaptation works
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). In short: per-skill knowledge tracing (Bayesian Knowledge Tracing) sets difficulty; recent accuracy sets pacing; a running success rate per delivery method, seeded by the learner's stated style, picks the format; gaps are required skills below 70% mastery; retraining dates come from assessment scores.
+See [docs/ARCHITECTURE.md](https://github.com/AjayPal2008/Aggies-Invent-LANL/blob/cf16ec04f2e8cbce5df6a71c17966e858c4c813e/docs/ARCHITECTURE.md). In short: per-skill knowledge tracing (Bayesian Knowledge Tracing) sets difficulty; recent accuracy sets pacing; a running success rate per delivery method, seeded by the learner's stated style, picks the format; gaps are required skills below 70% mastery; retraining dates come from assessment scores.
 
 ## Scale and reliability
 
-Built for LANL's 20,000+ employees at peak times (annual retraining deadlines, new-hire waves). It runs as identical stateless app servers behind nginx, with heavy manager reports isolated on their own servers, shared caching of generated content, rate limits, an AI circuit breaker with offline fallback, health checks, and automatic client retries. Load-tested with 20,000 employees: **1,000 simultaneous users, 99.97% success, 95% of employee requests under 16 ms** on one laptop; 2,000 users slowed but never crashed. Details, failure scenarios and production sizing: [docs/SCALABILITY.md](docs/SCALABILITY.md).
+Built for LANL's 20,000+ employees at peak times (annual retraining deadlines, new-hire waves). It runs as identical stateless app servers behind nginx, with heavy manager reports isolated on their own servers, shared caching of generated content, rate limits, an AI circuit breaker with offline fallback, health checks, and automatic client retries. Load-tested with 20,000 employees: **1,000 simultaneous users, 99.97% success, 95% of employee requests under 16 ms** on one laptop; 2,000 users slowed but never crashed. Details, failure scenarios and production sizing: [docs/SCALABILITY.md](https://github.com/AjayPal2008/Aggies-Invent-LANL/blob/cf16ec04f2e8cbce5df6a71c17966e858c4c813e/docs/SCALABILITY.md).
 
 ## Using real LANL data
 
-The backend doesn't assume our column names. Drop exports from Oracle HR, UTrain and the directory into a folder, or switch a connector to live mode. See [docs/DATA_INTEGRATION.md](docs/DATA_INTEGRATION.md).
+The backend doesn't assume our column names. Drop exports from Oracle HR, UTrain and the directory into a folder, or switch a connector to live mode. See [docs/DATA_INTEGRATION.md](https://github.com/AjayPal2008/Aggies-Invent-LANL/blob/cf16ec04f2e8cbce5df6a71c17966e858c4c813e/docs/DATA_INTEGRATION.md).
 
 ## Hosting
 
-- **Render (free):** in Render choose New > Blueprint and pick this repo. [`render.yaml`](render.yaml) creates the web service and a free PostgreSQL database. Add `ANTHROPIC_API_KEY` and `PUBLIC_URL` in the Render dashboard.
+- **Render (free):** in Render choose New > Blueprint and pick this repo. [`render.yaml`](https://github.com/AjayPal2008/Aggies-Invent-LANL/blob/cf16ec04f2e8cbce5df6a71c17966e858c4c813e/render.yaml) creates the web service and a free PostgreSQL database. Add `ANTHROPIC_API_KEY` and `PUBLIC_URL` in the Render dashboard.
 - **Docker anywhere:** `docker compose up --build` runs the production-style stack at http://localhost:8000: nginx load balancer, 2 app containers, a reports container and PostgreSQL. Add capacity with `APP_REPLICAS=4 docker compose up -d`.
 - **Database:** SQLite by default; set `DATABASE_URL` for PostgreSQL (Render, Neon and Supabase all have free tiers).
 

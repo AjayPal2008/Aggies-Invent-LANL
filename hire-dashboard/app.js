@@ -411,14 +411,8 @@ function renderLesson(t, l) {
       <div class="card flat" style="margin-top:12px;background:var(--navy-tint)"><h3>Key points</h3><ul>${l.key_points.map((k) => `<li>${esc(k)}</li>`).join("")}</ul>
         <button class="btn small" id="finish">I finished this lesson</button></div>
     </div>`;
-  $$("[data-choice]", box).forEach((btn) => btn.addEventListener("click", async () => {
-    const s = l.sections[Number(btn.dataset.sec)];
-    const c = s.choices[Number(btn.dataset.choice)];
-    const wrap = btn.parentElement;
-    $$(".choice", wrap).forEach((x) => (x.disabled = true));
-    btn.classList.add(c.correct ? "right" : "wrong");
-    $(".feedback", wrap).innerHTML = `${c.correct ? "✔" : "✘"} ${esc(c.feedback)}`;
-    await recordAnswer(t, s.skill, c.correct, "simulation", s.scenario);
+  $$("[data-choice]", box).forEach((btn) => btn.addEventListener("click", () => {
+    toast("This is an ungraded studio demonstration. Use Diagnostic assessment for reviewed, server-graded evidence.");
   }));
   $$("[data-exercise]", box).forEach((btn) => btn.addEventListener("click", async () => {
     const s = l.sections[Number(btn.dataset.exercise)];
@@ -465,31 +459,9 @@ async function recordAnswer(t, skill, correct, modality, question = "") {
 }
 
 async function practice(t) {
-  const box = $("#lesson");
-  loading(box, "Writing practice questions…");
-  const r = await api.post(`/api/me/trainings/${encodeURIComponent(t.code)}/practice`, { count: 5 });
-  box.innerHTML = `<div class="card">
-    <div class="card-head"><h2>Practice: ${esc(t.title)}</h2><span class="badge plain">Focus: ${r.focus_skills.map(esc).join(", ") || "all"}</span></div>
-    <div class="list">${r.questions.map((q, i) => `
-      <div class="lesson-section" data-q="${i}"><div class="kind">Question ${i + 1} · ${esc(q.skill)}</div><strong>${esc(q.question)}</strong>
-        <div>${q.options.map((o, k) => `<button class="choice" data-opt="${k}">${esc(o)}</button>`).join("")}</div><div class="feedback"></div></div>`).join("")}
-    </div>
-    <div style="margin-top:12px;display:flex;gap:8px"><button class="btn secondary" id="more">More questions</button><span id="tally" class="muted small"></span></div></div>`;
-  let right = 0, answered = 0;
-  $$("[data-q]", box).forEach((qel) => {
-    const q = r.questions[Number(qel.dataset.q)];
-    $$(".choice", qel).forEach((btn) => btn.addEventListener("click", async () => {
-      const k = Number(btn.dataset.opt);
-      const ok = k === q.answer_index;
-      $$(".choice", qel).forEach((x, j) => { x.disabled = true; if (j === q.answer_index) x.classList.add("right"); });
-      if (!ok) btn.classList.add("wrong");
-      $(".feedback", qel).textContent = q.explanation;
-      answered++; if (ok) right++;
-      $("#tally").textContent = `${right}/${answered} correct`;
-      await recordAnswer(t, q.skill, ok, "quiz", q.question);
-    }));
-  });
-  $("#more").onclick = () => practice(t);
+  // Consolidation boundary: use the existing reviewed server-graded diagnostic.
+  // Legacy outline practice is not a second learner-side grading implementation.
+  go("diagnostic");
 }
 
 function renderChat() {

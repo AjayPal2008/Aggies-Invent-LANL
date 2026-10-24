@@ -6,6 +6,19 @@ shared styles and supporting FastAPI application. It is not a React/Vite app.
 The visual shell, logos, navigation, learning studio and manager pages are kept.
 The diagnostic does not mark catalog assignments complete or certify mastery.
 
+Repository consolidation is documented in [REPOSITORY_INTEGRATION.md](REPOSITORY_INTEGRATION.md),
+with a complete source-file disposition inventory. Open
+`Aggies-Invent-Integrated.code-workspace` for the backend and both role interfaces
+in one portable VS Code workspace. The older `Aggies-Invent.code-workspace` is
+local user work and is preserved separately, not required by a fresh clone.
+
+Layout: `backend/app/` is the sole HTTP app; `backend/assessment.py` and
+`backend/question_bank.py` are its reused diagnostic domain logic. `scripts/`
+contains resource/bank CLIs; `backend/scripts/` contains the colleague's demo-data
+utilities. `hire-dashboard/`, `manager-dashboard/`, and `shared/` are the actual
+static UI roots. `Resource_File/` contains attributed reproducible source assets.
+There is no active React app or second HTTP app under the empty `frontend/` folder.
+
 ## Start locally (PowerShell, from this project folder)
 
 ```powershell
@@ -18,6 +31,12 @@ python -m venv .venv
 # Backend AND frontend: one same-origin server, no second frontend process needed
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000
 ```
+
+`backend/requirements-lock.txt` captures the verified installed versions for
+optional exact environment reproduction. The extraction-only
+`scripts/requirements.txt` agrees on the PDF parser version. `.env.example` is a
+placeholder reference only: set variables in the terminal, never populate or
+commit credential files. No environment file is loaded by the application.
 
 Open **http://127.0.0.1:8000/login/** and choose **New hire**. The supplied
 fictional demo account is `hire@lanl.gov` / `demo1234`. Choose **Diagnostic
@@ -121,7 +140,8 @@ Claude calls or learner-provided code are executed by these tests.
 - Original backend project: `C:/Users/write/OneDrive/Desktop/AGGIES INVENT LANL`.
 - Original UI worktree: sibling `Aggies-Invent-UI`, detached at `cf16ec0`.
 - Integration branch: `integration/local-ui`, created from `onboarding-diagnostic`
-  with `45803a8` retained as its ancestor. No merge or push is performed.
+  with `45803a8` retained as its ancestor. Subsequent repository-only consolidation
+  is on `integration/repository-consolidation`; only that branch is published.
 - Eighty UI/supporting files were copied after checking for destination conflicts;
   no existing backend file was overwritten during import. No `.env` files or
   examples were imported. The original UI folder is left unchanged.

@@ -1,0 +1,1098 @@
+{
+  "backend_source": "45803a8",
+  "ui_source": "cf16ec04f2e8cbce5df6a71c17966e858c4c813e",
+  "integration_baseline": "48e4190",
+  "baseline_tracked_files": [
+    ".gitignore",
+    "ASSESSMENT_DEMO.md",
+    "README.md",
+    "Resource_File/Computer_security.pdf",
+    "Resource_File/Ionizing_radiation.pdf",
+    "Resource_File/Nuclear_fission.pdf",
+    "Resource_File/Nuclear_reactor.pdf",
+    "Resource_File/extracted_knowledge/Computer_security.json",
+    "Resource_File/extracted_knowledge/Ionizing_radiation.json",
+    "Resource_File/extracted_knowledge/Nuclear_fission.json",
+    "Resource_File/extracted_knowledge/Nuclear_reactor.json",
+    "Resource_File/raw_text/Computer_security.txt",
+    "Resource_File/raw_text/Ionizing_radiation.txt",
+    "Resource_File/raw_text/Nuclear_fission.txt",
+    "Resource_File/raw_text/Nuclear_reactor.txt",
+    "backend/ai_client.py",
+    "backend/app/__init__.py",
+    "backend/app/assessment_rules.py",
+    "backend/app/auth.py",
+    "backend/app/config.py",
+    "backend/app/connectors/__init__.py",
+    "backend/app/connectors/base.py",
+    "backend/app/connectors/directory.py",
+    "backend/app/connectors/oracle_hr.py",
+    "backend/app/connectors/utrain.py",
+    "backend/app/database.py",
+    "backend/app/main.py",
+    "backend/app/models.py",
+    "backend/app/routers/__init__.py",
+    "backend/app/routers/admin.py",
+    "backend/app/routers/auth.py",
+    "backend/app/routers/catalog.py",
+    "backend/app/routers/content.py",
+    "backend/app/routers/diagnostic.py",
+    "backend/app/routers/hire.py",
+    "backend/app/routers/learn.py",
+    "backend/app/routers/manager.py",
+    "backend/app/safeguards.py",
+    "backend/app/serialize.py",
+    "backend/app/services/__init__.py",
+    "backend/app/services/adaptive.py",
+    "backend/app/services/ai.py",
+    "backend/app/services/courseware.py",
+    "backend/app/services/demo.py",
+    "backend/app/services/diagnostic.py",
+    "backend/app/services/documents.py",
+    "backend/app/services/insights.py",
+    "backend/app/services/loader.py",
+    "backend/app/services/matching.py",
+    "backend/app/services/notify.py",
+    "backend/app/services/roles.py",
+    "backend/app/services/sync.py",
+    "backend/assessment.py",
+    "backend/data/sample/divisions.csv",
+    "backend/data/sample/documents/documents.json",
+    "backend/data/sample/documents/project_lead_job_description.txt",
+    "backend/data/sample/documents/project_management_handbook.pdf",
+    "backend/data/sample/employees.csv",
+    "backend/data/sample/positions.csv",
+    "backend/data/sample/training_history.csv",
+    "backend/data/sample/training_sessions.csv",
+    "backend/data/sample/trainings.csv",
+    "backend/data/sample/trainings_esh_training_portal.csv",
+    "backend/data/sample/trainings_hpc_training_site.csv",
+    "backend/data/sample/trainings_leadership_development.csv",
+    "backend/data/sample/trainings_plutonium_facility_training.csv",
+    "backend/data/sample/trainings_security_education_portal.csv",
+    "backend/prompts.py",
+    "backend/pytest.ini",
+    "backend/question_bank.py",
+    "backend/requirements.txt",
+    "backend/scripts/loadtest.py",
+    "backend/scripts/make_sample_data.py",
+    "backend/scripts/make_sample_handbook.py",
+    "backend/scripts/prestart.py",
+    "backend/scripts/seed.py",
+    "backend/tests/conftest.py",
+    "backend/tests/test_access.py",
+    "backend/tests/test_diagnostic_api.py",
+    "backend/tests/test_frontend_wiring.py",
+    "backend/tests/test_learning.py",
+    "backend/tests/test_manager_and_data.py",
+    "backend/tests/test_role_content.py",
+    "backend/tests/test_safeguards.py",
+    "backend/tests/test_team_management.py",
+    "docs/UI_ORIGINAL_README.md",
+    "hire-dashboard/README.md",
+    "hire-dashboard/app.js",
+    "hire-dashboard/diagnostic.js",
+    "hire-dashboard/index.html",
+    "hire-dashboard/learning.js",
+    "manager-dashboard/README.md",
+    "manager-dashboard/app.js",
+    "manager-dashboard/index.html",
+    "manager-dashboard/roles.js",
+    "scripts/build_frontend.py",
+    "scripts/extract_knowledge.py",
+    "scripts/generate_question_bank.py",
+    "scripts/pdf_to_text.py",
+    "scripts/requirements.txt",
+    "scripts/review_question_bank.py",
+    "scripts/run_diagnostic.py",
+    "scripts/test_ai_client.py",
+    "scripts/test_ai_client_offline.py",
+    "scripts/test_assessment.py",
+    "scripts/test_knowledge_pipeline.py",
+    "scripts/validate_knowledge.py",
+    "shared/api.js",
+    "shared/assets/apple-touch-icon.png",
+    "shared/assets/favicon-32.png",
+    "shared/assets/lanl-icon-192.png",
+    "shared/assets/lanl-icon.png",
+    "shared/assets/lanl-logo-white.svg",
+    "shared/assets/lanl-logo.svg",
+    "shared/login/index.html",
+    "shared/styles.css",
+    "tests/fixtures/synthetic_diagnostic.json"
+  ],
+  "original_backend_files": [
+    ".gitignore",
+    "ASSESSMENT_DEMO.md",
+    "Resource_File/Computer_security.pdf",
+    "Resource_File/Ionizing_radiation.pdf",
+    "Resource_File/Nuclear_fission.pdf",
+    "Resource_File/Nuclear_reactor.pdf",
+    "Resource_File/extracted_knowledge/Computer_security.json",
+    "Resource_File/extracted_knowledge/Ionizing_radiation.json",
+    "Resource_File/extracted_knowledge/Nuclear_fission.json",
+    "Resource_File/extracted_knowledge/Nuclear_reactor.json",
+    "Resource_File/raw_text/Computer_security.txt",
+    "Resource_File/raw_text/Ionizing_radiation.txt",
+    "Resource_File/raw_text/Nuclear_fission.txt",
+    "Resource_File/raw_text/Nuclear_reactor.txt",
+    "backend/ai_client.py",
+    "backend/assessment.py",
+    "backend/prompts.py",
+    "backend/question_bank.py",
+    "scripts/extract_knowledge.py",
+    "scripts/generate_question_bank.py",
+    "scripts/pdf_to_text.py",
+    "scripts/requirements.txt",
+    "scripts/review_question_bank.py",
+    "scripts/run_diagnostic.py",
+    "scripts/test_ai_client.py",
+    "scripts/test_ai_client_offline.py",
+    "scripts/test_assessment.py",
+    "scripts/test_knowledge_pipeline.py",
+    "scripts/validate_knowledge.py"
+  ],
+  "upstream_dispositions": [
+    {
+      "source": "ui",
+      "path": ".dockerignore",
+      "disposition": "Excluded: no Docker deployment verified; preserve via source commit."
+    },
+    {
+      "source": "ui",
+      "path": ".env.example",
+      "disposition": "Credential template not read/copied; new empty/placeholder-only template authored locally."
+    },
+    {
+      "source": "ui",
+      "path": ".gitignore",
+      "disposition": "Combined with existing root rules; added live-data, scale-data, database and runtime exclusions."
+    },
+    {
+      "source": "ui",
+      "path": "Dockerfile",
+      "disposition": "Excluded: original deployment omits integrated resources/persistence and is not the verified startup."
+    },
+    {
+      "source": "ui",
+      "path": "Ionizing_radiation.json",
+      "disposition": "Excluded duplicate/empty upstream root artifact; canonical populated JSON is under Resource_File/extracted_knowledge/."
+    },
+    {
+      "source": "ui",
+      "path": "Ionizing_radiation.pdf",
+      "disposition": "Combined with the existing Resource_File/Ionizing_radiation.pdf; compare hashes below."
+    },
+    {
+      "source": "ui",
+      "path": "README.md",
+      "target": "docs/UI_ORIGINAL_README.md",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "4a526e031ede784ee1f6d5b16767fa2cc0ee3ae746858b9612c487306bda7604"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/__init__.py",
+      "target": "backend/app/__init__.py",
+      "disposition": "identical",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/assessment_rules.py",
+      "target": "backend/app/assessment_rules.py",
+      "disposition": "identical",
+      "source_sha256": "dc9f503f733ee7efaa41359d0177e192fe660c2d3ae82e35981de8bab8ab1266"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/auth.py",
+      "target": "backend/app/auth.py",
+      "disposition": "identical",
+      "source_sha256": "770387aa2f917feb136e505255ff89cd072813623ddc4602607a9e4cc2edb618"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/config.py",
+      "target": "backend/app/config.py",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "28a5ad534d997ee3d31d62fb26f691bbc1cce4821fe1cbf9d54f278abe1c2687"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/connectors/__init__.py",
+      "target": "backend/app/connectors/__init__.py",
+      "disposition": "identical",
+      "source_sha256": "066ba00399c95856cff4a8215bd865bafb9edfbbafd84e6e46b998db2c099afd"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/connectors/base.py",
+      "target": "backend/app/connectors/base.py",
+      "disposition": "identical",
+      "source_sha256": "d4c707f95dd2861fc7adc22921e84a79348ec90f03908547961069337b07cd1d"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/connectors/directory.py",
+      "target": "backend/app/connectors/directory.py",
+      "disposition": "identical",
+      "source_sha256": "cf97d6c0bd1eeead2400018a9566c6fb4d9b67bb17177107ae3321354df43321"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/connectors/oracle_hr.py",
+      "target": "backend/app/connectors/oracle_hr.py",
+      "disposition": "identical",
+      "source_sha256": "0398e171bc63710372605ffe63e9879c4adb3dea167bebf151ce9b960a29f858"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/connectors/utrain.py",
+      "target": "backend/app/connectors/utrain.py",
+      "disposition": "identical",
+      "source_sha256": "689f6c85cb3b892bdadd7f95f5955efa47f50ddb101334495a74c15a2c14fbb1"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/database.py",
+      "target": "backend/app/database.py",
+      "disposition": "identical",
+      "source_sha256": "1f45c5861a1cefd70926f1b40912459960cc9a649fde651b6322942bcda3ee63"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/main.py",
+      "target": "backend/app/main.py",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "b3549644555ec69d9a07645ff87de1a0255e588972c340851ccc46f7c2024972"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/models.py",
+      "target": "backend/app/models.py",
+      "disposition": "identical",
+      "source_sha256": "9a79474021cf62c22c234220c9f8c51ad21514f82c323475e5149459426df1ed"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/routers/__init__.py",
+      "target": "backend/app/routers/__init__.py",
+      "disposition": "identical",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/routers/admin.py",
+      "target": "backend/app/routers/admin.py",
+      "disposition": "identical",
+      "source_sha256": "aac374c1bfae96177af58a74610707cab4d7287d1bcd05a4a1a3cfae0603930e"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/routers/auth.py",
+      "target": "backend/app/routers/auth.py",
+      "disposition": "identical",
+      "source_sha256": "e92a2c1fe6154fe2d2519a1b1e28e2ac25180b8f661876a343e0898b34497079"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/routers/catalog.py",
+      "target": "backend/app/routers/catalog.py",
+      "disposition": "identical",
+      "source_sha256": "bd7d52831885e6d8b04aacefcdf365bdbf49a0c935329c8e58f1fd6de8f1d92c"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/routers/content.py",
+      "target": "backend/app/routers/content.py",
+      "disposition": "identical",
+      "source_sha256": "3c4c25a95560dc9f1629a7a707acae1dd28c734073abfaa29c318129e363a77e"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/routers/hire.py",
+      "target": "backend/app/routers/hire.py",
+      "disposition": "identical",
+      "source_sha256": "cc895c37c297e6b9535510342fea896d520b22d1959ba2f02691ac12a39b2ebf"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/routers/learn.py",
+      "target": "backend/app/routers/learn.py",
+      "disposition": "identical",
+      "source_sha256": "15835be968a00c103b0df1a8fc881c61e38a4a5426dcc8abc8454c03f9ddf7d1"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/routers/manager.py",
+      "target": "backend/app/routers/manager.py",
+      "disposition": "identical",
+      "source_sha256": "fe2f284c30d7068bb88a72ec6f351fcb348e72911e6c3a2659f0e5e4c1e0d944"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/safeguards.py",
+      "target": "backend/app/safeguards.py",
+      "disposition": "identical",
+      "source_sha256": "3d394ea83f1b0f4ba1d16a74ecd99b7f932be977b4826fe413941c12da23d4fd"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/serialize.py",
+      "target": "backend/app/serialize.py",
+      "disposition": "identical",
+      "source_sha256": "ff69a927e18020d5e1bf94e6b43ee2dd020e9111f2c0d4edfb72b7968daaad00"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/__init__.py",
+      "target": "backend/app/services/__init__.py",
+      "disposition": "identical",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/adaptive.py",
+      "target": "backend/app/services/adaptive.py",
+      "disposition": "identical",
+      "source_sha256": "66243fe12a9419c14772e8e085e26d17af23de0698bbdeea9962551691735862"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/ai.py",
+      "target": "backend/app/services/ai.py",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "0f62b3b1753a0b4fc3b03529f82da58429f697ec5f5a48b59caaf4a1eca05815"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/courseware.py",
+      "target": "backend/app/services/courseware.py",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "754a2ac893d507e3e07968a11c3148d9181c0f038b7dfd4f5bce64ec19a5ce73"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/demo.py",
+      "target": "backend/app/services/demo.py",
+      "disposition": "identical",
+      "source_sha256": "9909c4488d14d29a63a67d2b1d5eb760e299ffa88b2aef71d97114c81ed7a6aa"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/documents.py",
+      "target": "backend/app/services/documents.py",
+      "disposition": "identical",
+      "source_sha256": "742f95a9760c126c1ef11e18446a809d12818242466069b02ef513a1742e30e9"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/insights.py",
+      "target": "backend/app/services/insights.py",
+      "disposition": "identical",
+      "source_sha256": "d72c1abbee06f4914a36aef99518129b67a987dc5200ea19f1b1c1e8628205a5"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/loader.py",
+      "target": "backend/app/services/loader.py",
+      "disposition": "identical",
+      "source_sha256": "cd75075aa7cd6ac13d3b6e314f31ed381e2db432a4e21d8e2e5d401ed94cd037"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/matching.py",
+      "target": "backend/app/services/matching.py",
+      "disposition": "identical",
+      "source_sha256": "3c56226d79e78e6be9930ffa83a2ca9bf90467f3def4470ea0f7a6cfc7dc91cd"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/notify.py",
+      "target": "backend/app/services/notify.py",
+      "disposition": "identical",
+      "source_sha256": "715fff41e7efe4aa40d5985d22e927c9f268c6238c9cf1211780f18468baf40a"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/roles.py",
+      "target": "backend/app/services/roles.py",
+      "disposition": "identical",
+      "source_sha256": "950c38d9b51dd01fef796185f5983928ad8b4052ff756a8dd791096da48fcb89"
+    },
+    {
+      "source": "ui",
+      "path": "backend/app/services/sync.py",
+      "target": "backend/app/services/sync.py",
+      "disposition": "identical",
+      "source_sha256": "ceb9524e904e2b42a8d48ee3afcfc30ce95fd1ba267171ab3bb268505fd535e3"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/divisions.csv",
+      "target": "backend/data/sample/divisions.csv",
+      "disposition": "identical",
+      "source_sha256": "d4343d686ff578ceec81faab81240e57a3c337062d89c21005c5c300db26b5cc"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/documents/documents.json",
+      "target": "backend/data/sample/documents/documents.json",
+      "disposition": "identical",
+      "source_sha256": "2f115aa445cc2d2465aa5bca7d8da32dcbfc31f2f81e6938eebb85e208ccb89f"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/documents/project_lead_job_description.txt",
+      "target": "backend/data/sample/documents/project_lead_job_description.txt",
+      "disposition": "identical",
+      "source_sha256": "bc409f324c810f975275e28cf91d5c7c8dcdfc2a54fe5cce5752ef49b3fd3182"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/documents/project_management_handbook.pdf",
+      "target": "backend/data/sample/documents/project_management_handbook.pdf",
+      "disposition": "identical",
+      "source_sha256": "b43e9f24780b2d0954a5ec295a0d516246b8fbb5407adf613f493d1fb3357aa5"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/employees.csv",
+      "target": "backend/data/sample/employees.csv",
+      "disposition": "identical",
+      "source_sha256": "93e7a67b5c16fe3736dc7a5b70554d25c6660716d215256d8a66fb454c7fff50"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/positions.csv",
+      "target": "backend/data/sample/positions.csv",
+      "disposition": "identical",
+      "source_sha256": "a8338c7a98368a380dc82b5ab0f4d7475088342e15c7b300e2b951d128dda465"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/training_history.csv",
+      "target": "backend/data/sample/training_history.csv",
+      "disposition": "identical",
+      "source_sha256": "257141a6d50e65ab45a15356fd312819ccfbf98905cf623dd288a6560a48db1c"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/training_sessions.csv",
+      "target": "backend/data/sample/training_sessions.csv",
+      "disposition": "identical",
+      "source_sha256": "8d4e5b37a249c47415abac8fb34813a68a1e8e71eecc47553fb6b059737f23a3"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/trainings.csv",
+      "target": "backend/data/sample/trainings.csv",
+      "disposition": "identical",
+      "source_sha256": "064b9b4a477bcd8095a57bf40f263d195d3553df7481bb508c1b70aa87246ae3"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/trainings_esh_training_portal.csv",
+      "target": "backend/data/sample/trainings_esh_training_portal.csv",
+      "disposition": "identical",
+      "source_sha256": "5367b67758c1fcb371c3b1e5be90796a2be1fc1906e73d131786e0517024039f"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/trainings_hpc_training_site.csv",
+      "target": "backend/data/sample/trainings_hpc_training_site.csv",
+      "disposition": "identical",
+      "source_sha256": "34fcc4a31a625030b22d88a6d340bc921890180053dfa7f155187fd3011ab0a3"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/trainings_leadership_development.csv",
+      "target": "backend/data/sample/trainings_leadership_development.csv",
+      "disposition": "identical",
+      "source_sha256": "15287c5ef00a3435568ec2be55f2980aa0ef71ac4678f3ba498c477214edc800"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/trainings_plutonium_facility_training.csv",
+      "target": "backend/data/sample/trainings_plutonium_facility_training.csv",
+      "disposition": "identical",
+      "source_sha256": "5d739997fa2b95899736c076d6ecf8a61d017ad4dc9c981b415bc04180ca5570"
+    },
+    {
+      "source": "ui",
+      "path": "backend/data/sample/trainings_security_education_portal.csv",
+      "target": "backend/data/sample/trainings_security_education_portal.csv",
+      "disposition": "identical",
+      "source_sha256": "da5d4b7b672ffce48245b9223118c8d985ff96e13d2ac66b58c0c8bb01fb1245"
+    },
+    {
+      "source": "ui",
+      "path": "backend/pytest.ini",
+      "target": "backend/pytest.ini",
+      "disposition": "identical",
+      "source_sha256": "cb38af581b54870bccad3a3a97927222e9559841b7abddc3ef591ec298efadce"
+    },
+    {
+      "source": "ui",
+      "path": "backend/requirements.txt",
+      "target": "backend/requirements.txt",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "e1ccf7811973d405faeacd2993eeb38cdfc3d41bab093f18c03b9d28401116ff"
+    },
+    {
+      "source": "ui",
+      "path": "backend/scripts/loadtest.py",
+      "target": "backend/scripts/loadtest.py",
+      "disposition": "identical",
+      "source_sha256": "3abd614f8b39b657f2012856e1e6e350fc6450f39730bc39dd05527255f4e392"
+    },
+    {
+      "source": "ui",
+      "path": "backend/scripts/make_sample_data.py",
+      "target": "backend/scripts/make_sample_data.py",
+      "disposition": "identical",
+      "source_sha256": "59130255ec7fe141e425295cb36b379e2d3a45c11a5a19bfc10d13aa662e4c07"
+    },
+    {
+      "source": "ui",
+      "path": "backend/scripts/make_sample_handbook.py",
+      "target": "backend/scripts/make_sample_handbook.py",
+      "disposition": "identical",
+      "source_sha256": "2309ae9a141e6b11583e9ffc9f99f4282f0878a461047fd16ef4d50c4b4a6ec4"
+    },
+    {
+      "source": "ui",
+      "path": "backend/scripts/prestart.py",
+      "target": "backend/scripts/prestart.py",
+      "disposition": "identical",
+      "source_sha256": "933c5c5bab24445ec790ef4defe76f3ce0e60b6fa2f7fbf5a06a45ef97e0569a"
+    },
+    {
+      "source": "ui",
+      "path": "backend/scripts/seed.py",
+      "target": "backend/scripts/seed.py",
+      "disposition": "identical",
+      "source_sha256": "b81eef023749383d30c503ca7959d175e1dd3dac7953c11ce96451890ed65578"
+    },
+    {
+      "source": "ui",
+      "path": "backend/tests/conftest.py",
+      "target": "backend/tests/conftest.py",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "6fb4022bd6b1f9c5f488d4887f876dc57352ee3060530bbf314ff22f12f64f2e"
+    },
+    {
+      "source": "ui",
+      "path": "backend/tests/test_access.py",
+      "target": "backend/tests/test_access.py",
+      "disposition": "identical",
+      "source_sha256": "531ac69d95300835dad0fbb98fc2dd790cdf9d8264435078bb056f167eb7ce2a"
+    },
+    {
+      "source": "ui",
+      "path": "backend/tests/test_frontend_wiring.py",
+      "target": "backend/tests/test_frontend_wiring.py",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "ba9ea505625385cfd527be3bdd13ef57dc4fb0fefb181d3ffa5e8ed7ecce29db"
+    },
+    {
+      "source": "ui",
+      "path": "backend/tests/test_learning.py",
+      "target": "backend/tests/test_learning.py",
+      "disposition": "identical",
+      "source_sha256": "8b0b198fcdf7895e0aca023e1a3f7957d8f3537899aca36ee7b3347b1eb6e99b"
+    },
+    {
+      "source": "ui",
+      "path": "backend/tests/test_manager_and_data.py",
+      "target": "backend/tests/test_manager_and_data.py",
+      "disposition": "identical",
+      "source_sha256": "a178b59de393f8d32c47ce19ea1b13b92f9dac81df3763424a2ba4db90d99bc8"
+    },
+    {
+      "source": "ui",
+      "path": "backend/tests/test_role_content.py",
+      "target": "backend/tests/test_role_content.py",
+      "disposition": "identical",
+      "source_sha256": "0488c091e4f12e4c10254e803ed8c673201320516b1fdd7f098f4f09cd029734"
+    },
+    {
+      "source": "ui",
+      "path": "backend/tests/test_safeguards.py",
+      "target": "backend/tests/test_safeguards.py",
+      "disposition": "identical",
+      "source_sha256": "2b8fd5e4bffaa6e139280a591580144a48bbe62872337064fd82f18a9d6a5c5f"
+    },
+    {
+      "source": "ui",
+      "path": "backend/tests/test_team_management.py",
+      "target": "backend/tests/test_team_management.py",
+      "disposition": "identical",
+      "source_sha256": "394b32595c296b14b10dcd85a0497122dbf279e628e6954a4f219e496c2ca372"
+    },
+    {
+      "source": "ui",
+      "path": "deploy/nginx.conf.template",
+      "disposition": "Excluded with original Docker deployment; no alternate app root introduced."
+    },
+    {
+      "source": "ui",
+      "path": "docker-compose.yml",
+      "disposition": "Excluded: original multi-replica deployment is outside the verified single-host SQLite diagnostic scope."
+    },
+    {
+      "source": "ui",
+      "path": "docs/ARCHITECTURE.md",
+      "target": "docs/upstream/ARCHITECTURE.md",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "32164c8c9063fefc633843da453bf341795dae87c0b6558d7832a781c6310c5b"
+    },
+    {
+      "source": "ui",
+      "path": "docs/DATA_INTEGRATION.md",
+      "target": "docs/upstream/DATA_INTEGRATION.md",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "723a8b82376ecb11066efc0212f4b4d15585eabea2f5a32f81f588a6dce04f47"
+    },
+    {
+      "source": "ui",
+      "path": "docs/SCALABILITY.md",
+      "target": "docs/upstream/SCALABILITY.md",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "96ca3b35e630f11aff094ca44100b25cfd1e32c98dfde24c1d7160aaa86dfe87"
+    },
+    {
+      "source": "ui",
+      "path": "hire-dashboard/README.md",
+      "target": "hire-dashboard/README.md",
+      "disposition": "identical",
+      "source_sha256": "f557f9b3e2d455f6e7a9b77d794467d5d0df553d4aeb2c08134a58d7b661d4b9"
+    },
+    {
+      "source": "ui",
+      "path": "hire-dashboard/app.js",
+      "target": "hire-dashboard/app.js",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "b36839a770f60b1ffbe45982c1b13bd4f19b6c41b24eb74aed529110e96a7af9"
+    },
+    {
+      "source": "ui",
+      "path": "hire-dashboard/index.html",
+      "target": "hire-dashboard/index.html",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "f8c776b51c257b4415ccd773a4f9e14a8ebe39c4d279783fe483034542c0c8c2"
+    },
+    {
+      "source": "ui",
+      "path": "hire-dashboard/learning.js",
+      "target": "hire-dashboard/learning.js",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "5e5c6b2fd90def5de1d4faa1dfe0cac37a2c4e9f6eac185a0c6b8c7f3900daba"
+    },
+    {
+      "source": "ui",
+      "path": "manager-dashboard/README.md",
+      "target": "manager-dashboard/README.md",
+      "disposition": "identical",
+      "source_sha256": "a3a59a0f3b38d8155fe148a30be34e5e16ad967b66488b5d0da34a2448f0f250"
+    },
+    {
+      "source": "ui",
+      "path": "manager-dashboard/app.js",
+      "target": "manager-dashboard/app.js",
+      "disposition": "identical",
+      "source_sha256": "50ffe1fec29be249c3daddefb8b53799de9da08af545bba08f35aefa99b5fed6"
+    },
+    {
+      "source": "ui",
+      "path": "manager-dashboard/index.html",
+      "target": "manager-dashboard/index.html",
+      "disposition": "deliberately combined/adapted; see integration report",
+      "source_sha256": "c6ce45b9af4a8ba46aa24752273152bf3b2cdd7029e6ee93bac84658df2d5a2f"
+    },
+    {
+      "source": "ui",
+      "path": "manager-dashboard/roles.js",
+      "target": "manager-dashboard/roles.js",
+      "disposition": "identical",
+      "source_sha256": "346d51c395abc47755e6d74405d58753e04f04dfddd8d63e314f364df5dba393"
+    },
+    {
+      "source": "ui",
+      "path": "render.yaml",
+      "disposition": "Excluded: cloud deployment is not configured/verified in this consolidation."
+    },
+    {
+      "source": "ui",
+      "path": "shared/api.js",
+      "target": "shared/api.js",
+      "disposition": "identical",
+      "source_sha256": "63e3234fb85069906a2cae17486e2e419d286853ec52705f0437b4434a81066f"
+    },
+    {
+      "source": "ui",
+      "path": "shared/assets/apple-touch-icon.png",
+      "target": "shared/assets/apple-touch-icon.png",
+      "disposition": "identical",
+      "source_sha256": "a26668ee879ab7cc552218182917f0ec547c03a61d5039387bc0c7b4d8a56130"
+    },
+    {
+      "source": "ui",
+      "path": "shared/assets/favicon-32.png",
+      "target": "shared/assets/favicon-32.png",
+      "disposition": "identical",
+      "source_sha256": "cc7bab6582e85aa8e822f91af0fbcd1268a37d1d4c2ded6848579ed97cc8a7b3"
+    },
+    {
+      "source": "ui",
+      "path": "shared/assets/lanl-icon-192.png",
+      "target": "shared/assets/lanl-icon-192.png",
+      "disposition": "identical",
+      "source_sha256": "4ce9ef3c9cfb0186cc2d8c4abd18bd7446d926612788ec14f48b1271f4f95ed7"
+    },
+    {
+      "source": "ui",
+      "path": "shared/assets/lanl-icon.png",
+      "target": "shared/assets/lanl-icon.png",
+      "disposition": "identical",
+      "source_sha256": "70d7cf90ee389e41d9ae45361578f01ed8af59ab96f0895557276cf3cfe6c2f1"
+    },
+    {
+      "source": "ui",
+      "path": "shared/assets/lanl-logo-white.svg",
+      "target": "shared/assets/lanl-logo-white.svg",
+      "disposition": "identical",
+      "source_sha256": "5bd1c7a19f9c770306203bf1508dedc79dbe2ce7550ed93ce4cb2358970c7f25"
+    },
+    {
+      "source": "ui",
+      "path": "shared/assets/lanl-logo.svg",
+      "target": "shared/assets/lanl-logo.svg",
+      "disposition": "identical",
+      "source_sha256": "5a409604ad456781b7857b6ec83d795b04a440c8be3303b5185bf85f2d5afe0a"
+    },
+    {
+      "source": "ui",
+      "path": "shared/login/index.html",
+      "target": "shared/login/index.html",
+      "disposition": "identical",
+      "source_sha256": "933c593060b8c16264fd4222e3c1b834ebcc5ade354720948a1f763ff2b4643c"
+    },
+    {
+      "source": "ui",
+      "path": "shared/styles.css",
+      "target": "shared/styles.css",
+      "disposition": "identical",
+      "source_sha256": "5bfa738156109f4cbd7b64e9a6f9daf7fccaa44fe55982e2148e403cb645585e"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": ".gitignore",
+      "target": ".gitignore",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "ASSESSMENT_DEMO.md",
+      "target": "ASSESSMENT_DEMO.md",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/Computer_security.pdf",
+      "target": "Resource_File/Computer_security.pdf",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/Ionizing_radiation.pdf",
+      "target": "Resource_File/Ionizing_radiation.pdf",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/Nuclear_fission.pdf",
+      "target": "Resource_File/Nuclear_fission.pdf",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/Nuclear_reactor.pdf",
+      "target": "Resource_File/Nuclear_reactor.pdf",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/extracted_knowledge/Computer_security.json",
+      "target": "Resource_File/extracted_knowledge/Computer_security.json",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/extracted_knowledge/Ionizing_radiation.json",
+      "target": "Resource_File/extracted_knowledge/Ionizing_radiation.json",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/extracted_knowledge/Nuclear_fission.json",
+      "target": "Resource_File/extracted_knowledge/Nuclear_fission.json",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/extracted_knowledge/Nuclear_reactor.json",
+      "target": "Resource_File/extracted_knowledge/Nuclear_reactor.json",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/raw_text/Computer_security.txt",
+      "target": "Resource_File/raw_text/Computer_security.txt",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/raw_text/Ionizing_radiation.txt",
+      "target": "Resource_File/raw_text/Ionizing_radiation.txt",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/raw_text/Nuclear_fission.txt",
+      "target": "Resource_File/raw_text/Nuclear_fission.txt",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "Resource_File/raw_text/Nuclear_reactor.txt",
+      "target": "Resource_File/raw_text/Nuclear_reactor.txt",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "backend/ai_client.py",
+      "target": "backend/ai_client.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "backend/assessment.py",
+      "target": "backend/assessment.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "backend/prompts.py",
+      "target": "backend/prompts.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "backend/question_bank.py",
+      "target": "backend/question_bank.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/extract_knowledge.py",
+      "target": "scripts/extract_knowledge.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/generate_question_bank.py",
+      "target": "scripts/generate_question_bank.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/pdf_to_text.py",
+      "target": "scripts/pdf_to_text.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/requirements.txt",
+      "target": "scripts/requirements.txt",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/review_question_bank.py",
+      "target": "scripts/review_question_bank.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/run_diagnostic.py",
+      "target": "scripts/run_diagnostic.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/test_ai_client.py",
+      "target": "scripts/test_ai_client.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/test_ai_client_offline.py",
+      "target": "scripts/test_ai_client_offline.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/test_assessment.py",
+      "target": "scripts/test_assessment.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/test_knowledge_pipeline.py",
+      "target": "scripts/test_knowledge_pipeline.py",
+      "disposition": "retained (root ignore rules combined)"
+    },
+    {
+      "source": "backend-45803a8",
+      "path": "scripts/validate_knowledge.py",
+      "target": "scripts/validate_knowledge.py",
+      "disposition": "retained (root ignore rules combined)"
+    }
+  ],
+  "relevant_local_files": [
+    ".gitignore",
+    "Aggies-Invent-Integrated.code-workspace",
+    "ASSESSMENT_DEMO.md",
+    "backend/ai_client.py",
+    "backend/app/__init__.py",
+    "backend/app/assessment_rules.py",
+    "backend/app/auth.py",
+    "backend/app/config.py",
+    "backend/app/connectors/__init__.py",
+    "backend/app/connectors/base.py",
+    "backend/app/connectors/directory.py",
+    "backend/app/connectors/oracle_hr.py",
+    "backend/app/connectors/utrain.py",
+    "backend/app/database.py",
+    "backend/app/main.py",
+    "backend/app/models.py",
+    "backend/app/routers/__init__.py",
+    "backend/app/routers/admin.py",
+    "backend/app/routers/auth.py",
+    "backend/app/routers/catalog.py",
+    "backend/app/routers/content.py",
+    "backend/app/routers/diagnostic.py",
+    "backend/app/routers/hire.py",
+    "backend/app/routers/learn.py",
+    "backend/app/routers/manager.py",
+    "backend/app/safeguards.py",
+    "backend/app/serialize.py",
+    "backend/app/services/__init__.py",
+    "backend/app/services/adaptive.py",
+    "backend/app/services/ai.py",
+    "backend/app/services/courseware.py",
+    "backend/app/services/demo.py",
+    "backend/app/services/diagnostic.py",
+    "backend/app/services/documents.py",
+    "backend/app/services/insights.py",
+    "backend/app/services/loader.py",
+    "backend/app/services/matching.py",
+    "backend/app/services/notify.py",
+    "backend/app/services/roles.py",
+    "backend/app/services/sync.py",
+    "backend/assessment.py",
+    "backend/data/sample/divisions.csv",
+    "backend/data/sample/documents/documents.json",
+    "backend/data/sample/documents/project_lead_job_description.txt",
+    "backend/data/sample/documents/project_management_handbook.pdf",
+    "backend/data/sample/employees.csv",
+    "backend/data/sample/positions.csv",
+    "backend/data/sample/training_history.csv",
+    "backend/data/sample/training_sessions.csv",
+    "backend/data/sample/trainings.csv",
+    "backend/data/sample/trainings_esh_training_portal.csv",
+    "backend/data/sample/trainings_hpc_training_site.csv",
+    "backend/data/sample/trainings_leadership_development.csv",
+    "backend/data/sample/trainings_plutonium_facility_training.csv",
+    "backend/data/sample/trainings_security_education_portal.csv",
+    "backend/prompts.py",
+    "backend/pytest.ini",
+    "backend/question_bank.py",
+    "backend/requirements-lock.txt",
+    "backend/requirements.txt",
+    "backend/scripts/loadtest.py",
+    "backend/scripts/make_sample_data.py",
+    "backend/scripts/make_sample_handbook.py",
+    "backend/scripts/prestart.py",
+    "backend/scripts/seed.py",
+    "backend/tests/conftest.py",
+    "backend/tests/test_access.py",
+    "backend/tests/test_diagnostic_api.py",
+    "backend/tests/test_frontend_wiring.py",
+    "backend/tests/test_learning.py",
+    "backend/tests/test_manager_and_data.py",
+    "backend/tests/test_role_content.py",
+    "backend/tests/test_safeguards.py",
+    "backend/tests/test_team_management.py",
+    "docs/REPOSITORY_FILE_INVENTORY.json",
+    "docs/UI_ORIGINAL_README.md",
+    "docs/upstream/ARCHITECTURE.md",
+    "docs/upstream/DATA_INTEGRATION.md",
+    "docs/upstream/SCALABILITY.md",
+    "hire-dashboard/app.js",
+    "hire-dashboard/diagnostic.js",
+    "hire-dashboard/index.html",
+    "hire-dashboard/learning.js",
+    "hire-dashboard/README.md",
+    "manager-dashboard/app.js",
+    "manager-dashboard/index.html",
+    "manager-dashboard/README.md",
+    "manager-dashboard/roles.js",
+    "README.md",
+    "REPOSITORY_INTEGRATION.md",
+    "Resource_File/ATTRIBUTION.md",
+    "Resource_File/Computer_security.pdf",
+    "Resource_File/extracted_knowledge/Computer_security.json",
+    "Resource_File/extracted_knowledge/Ionizing_radiation.json",
+    "Resource_File/extracted_knowledge/Nuclear_fission.json",
+    "Resource_File/extracted_knowledge/Nuclear_reactor.json",
+    "Resource_File/Ionizing_radiation.pdf",
+    "Resource_File/Nuclear_fission.pdf",
+    "Resource_File/Nuclear_reactor.pdf",
+    "Resource_File/raw_text/Computer_security.txt",
+    "Resource_File/raw_text/Ionizing_radiation.txt",
+    "Resource_File/raw_text/Nuclear_fission.txt",
+    "Resource_File/raw_text/Nuclear_reactor.txt",
+    "scripts/audit_repository.py",
+    "scripts/build_frontend.py",
+    "scripts/extract_knowledge.py",
+    "scripts/generate_question_bank.py",
+    "scripts/pdf_to_text.py",
+    "scripts/requirements.txt",
+    "scripts/review_question_bank.py",
+    "scripts/run_diagnostic.py",
+    "scripts/test_ai_client.py",
+    "scripts/test_ai_client_offline.py",
+    "scripts/test_assessment.py",
+    "scripts/test_knowledge_pipeline.py",
+    "scripts/validate_knowledge.py",
+    "shared/api.js",
+    "shared/assets/apple-touch-icon.png",
+    "shared/assets/favicon-32.png",
+    "shared/assets/lanl-icon-192.png",
+    "shared/assets/lanl-icon.png",
+    "shared/assets/lanl-logo-white.svg",
+    "shared/assets/lanl-logo.svg",
+    "shared/login/index.html",
+    "shared/styles.css",
+    "tests/fixtures/synthetic_diagnostic.json"
+  ],
+  "preserved_local_workspace": "Aggies-Invent.code-workspace (ignored, unchanged)",
+  "placeholder_template": ".env.example: newly authored placeholders only; excluded from content scanning by credential-path rule",
+  "duplicate_pdf_identical": true,
+  "secret_pattern_findings": [],
+  "frontend_answer_key_findings": [],
+  "scan_limit": "Limited high-confidence patterns only; credential files excluded; not a comprehensive secret or factual audit."
+}
