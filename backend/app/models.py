@@ -71,6 +71,8 @@ class Employee(Base):
     entry_path: Mapped[str | None] = mapped_column(String(16), nullable=True)  # new_hire | promotion | transfer
     previous_position_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
     role_start_date: Mapped[date | None] = mapped_column(Date, nullable=True)
+    # Personal accessibility settings (text size, contrast, captions, extra time...). Only the person sees these.
+    accessibility: Mapped[dict] = mapped_column(JSON, default=dict)
 
     manager: Mapped["Employee | None"] = relationship(remote_side="Employee.id")
     assignments: Mapped[list["Assignment"]] = relationship(

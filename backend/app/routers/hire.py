@@ -308,3 +308,38 @@ def tutor(body: ChatIn, user: models.Employee = Depends(current_user), db: Sessi
     db.add(models.LearningEvent(employee_id=user.id, training_id=t.id if t else None, kind="chat", payload={"message": body.message[:1000]}))
     db.commit()
     return out
+
+
+# ---- accessibility settings ---------------------------------------------------------
+
+A11Y_CHOICES = {
+    "textScale": {1, 1.25, 1.5, 1.75, 2},
+    "contrast": {"standard", "high-light", "high-dark"},
+    "colorVision": {"standard", "cvd"},
+    "font": {"standard", "readable"},
+    "speechRate": {0.75, 1, 1.25, 1.5},
+    "captions": {"on", "off"},
+    "captionSize": {1, 1.5, 2},
+    "captionStyle": {"standard", "high-contrast"},
+    "extraTime": {0, 1, 1.5, 2},
+}
+A11Y_FLAGS = {"spacing", "underline", "targets", "reduceMotion", "readAloud", "showTranscript"}
+
+
+@router.get("/accessibility")
+def get_accessibility(user: models.Employee = Depends(current_user)):
+    """The signed-in person's accessibility settings. Never shown to managers."""
+    return user.accessibility or {}
+
+
+@router.put("/accessibility")
+def put_accessibility(body: dict, user: models.Employee = Depends(current_user), db: Session = Depends(get_db)):
+    clean = {}
+    for k, v in body.items():
+        if k in A11Y_CHOICES and v in A11Y_CHOICES[k]:
+            clean[k] = v
+        elif k in A11Y_FLAGS and (isinstance(v, bool) or v is None):
+            clean[k] = v
+    user.accessibility = clean
+    db.commit()
+    return clean

@@ -1,50 +1,65 @@
 // Video lessons, interview-style assessments and the role plan card for the hire dashboard.
-import { api, esc, $, $$, fmtDate, toast, modal, bar } from "/shared/api.js?v=20261024e";
+import { api, esc, $, $$, fmtDate, toast, modal, bar } from "/shared/api.js?v=20261024f";
+import { settings, speakButton, speak } from "/shared/a11y.js?v=20261024f";
 
 // ---- video player -------------------------------------------------------------------
 // Plays AI-written scenes as a narrated video: the browser's speech engine reads the narration,
-// on-screen items animate in step with it, and captions follow along.
+// on-screen items animate in step with it, captions show the current sentence, and a full
+// transcript is always available (for deaf and hard-of-hearing learners and screen readers).
 
 const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
 
+const sentencesOf = (text) => (text.match(/[^.!?]+[.!?]+["”’)]*|[^.!?]+$/g) || [text]).map((x) => x.trim()).filter(Boolean);
+
 export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
-  let i = 0, playing = false, speed = 1, voiceOn = !!synth, captions = true, timer = null, revealTimers = [];
+  const prefs = settings();
+  let i = 0, playing = false, speed = 1, voiceOn = !!synth, captions = prefs.captions !== "off", timer = null, revealTimers = [], capTimers = [];
   container.innerHTML = `
-    <div class="vp">
-      <div class="vp-stage" aria-live="polite"><div class="vp-scene"></div><div class="vp-cap"></div></div>
-      <div class="vp-progress">${video.scenes.map((_, k) => `<button class="vp-seg" data-seg="${k}" aria-label="Scene ${k + 1}"><span></span></button>`).join("")}</div>
+    <div class="vp" tabindex="0" aria-label="Video lesson. Space to play or pause, arrow keys to change scene.">
+      <div class="vp-stage"><div class="vp-scene" aria-live="polite"></div><div class="vp-cap" aria-hidden="true"></div></div>
+      <div class="vp-progress">${video.scenes.map((sc, k) => `<button class="vp-seg" data-seg="${k}" aria-label="Scene ${k + 1}: ${esc(sc.heading)}"><span></span></button>`).join("")}</div>
       <div class="vp-controls">
         <button class="btn small" data-act="play">▶ Play</button>
         <button class="btn ghost small" data-act="prev" aria-label="Previous scene">⏮</button>
         <button class="btn ghost small" data-act="next" aria-label="Next scene">⏭</button>
-        <span class="small muted vp-count"></span><span style="flex:1"></span>
-        <label class="small">Speed <select data-act="speed">${[0.75, 1, 1.25, 1.5].map((s) => `<option value="${s}" ${s === 1 ? "selected" : ""}>${s}×</option>`).join("")}</select></label>
+        <span class="small muted vp-count" aria-live="polite"></span><span style="flex:1"></span>
+        <label class="small">Speed <select data-act="speed">${[0.75, 1, 1.25, 1.5].map((x) => `<option value="${x}" ${x === 1 ? "selected" : ""}>${x}×</option>`).join("")}</select></label>
         <label class="small"><input type="checkbox" data-act="voice" ${voiceOn ? "checked" : ""} ${synth ? "" : "disabled"}> Narration</label>
-        <label class="small"><input type="checkbox" data-act="cc" checked> Captions</label>
+        <label class="small"><input type="checkbox" data-act="cc" ${captions ? "checked" : ""}> Captions (CC)</label>
+        <button class="btn ghost small" data-act="transcript" aria-expanded="${prefs.showTranscript ? "true" : "false"}" aria-controls="vp-tx">Transcript</button>
       </div>
+      <section id="vp-tx" class="card flat vp-transcript ${prefs.showTranscript ? "" : "hidden"}" aria-label="Transcript">
+        <h4>Transcript</h4>
+        ${video.scenes.map((sc, k) => `<p data-tx="${k}"><a href="#" data-seg="${k}"><strong>${k + 1}. ${esc(sc.heading)}</strong></a><br>${esc(sc.narration)}</p>`).join("")}
+      </section>
       <div class="vp-after hidden"></div>
     </div>`;
-  const stage = $(".vp-scene", container), cap = $(".vp-cap", container);
+  const root = $(".vp", container), stage = $(".vp-scene", container), cap = $(".vp-cap", container);
 
-  const clear = () => { clearTimeout(timer); revealTimers.forEach(clearTimeout); revealTimers = []; synth?.cancel(); };
-  const seconds = (text) => Math.max(4, text.split(/\s+/).length / 2.6) / speed;
+  const clear = () => {
+    clearTimeout(timer); revealTimers.forEach(clearTimeout); capTimers.forEach(clearTimeout);
+    revealTimers = []; capTimers = []; synth?.cancel();
+  };
+  const rate = () => speed * (Number(settings().speechRate) || 1);
+  const seconds = (text) => Math.max(4, text.split(/\s+/).length / 2.6) / rate();
+  const showCaption = (text) => { cap.textContent = captions ? text : ""; cap.classList.toggle("hidden", !captions || !text); };
 
   function render(k) {
-    const s = video.scenes[k];
-    const items = s.on_screen || [];
+    const sc = video.scenes[k];
+    const items = sc.on_screen || [];
     let body;
-    if (s.visual === "title") body = `<div class="vp-title">${esc(items[0] || s.heading)}</div>${items[1] ? `<div class="vp-sub">${esc(items[1])}</div>` : ""}`;
-    else if (s.visual === "diagram") body = `<div class="vp-flow">${items.map((x, n) => `${n ? `<span class="vp-arrow vp-item">→</span>` : ""}<span class="vp-step vp-item">${esc(x)}</span>`).join("")}</div>`;
-    else if (s.visual === "checklist") body = `<ul class="vp-check">${items.map((x) => `<li class="vp-item">✔ ${esc(x)}</li>`).join("")}</ul>`;
-    else if (s.visual === "quote") body = `<blockquote class="vp-quote vp-item">“${esc(items[0] || "")}”</blockquote>`;
-    else if (s.visual === "scenario") body = `<div class="vp-scen"><div class="vp-item"><div class="vp-label">Situation</div>${esc(items[0] || "")}</div>
+    if (sc.visual === "title") body = `<div class="vp-title">${esc(items[0] || sc.heading)}</div>${items[1] ? `<div class="vp-sub">${esc(items[1])}</div>` : ""}`;
+    else if (sc.visual === "diagram") body = `<ol class="vp-flow" style="list-style:none;padding:0;margin:4% 0 0">${items.map((x, n) => `${n ? `<li class="vp-arrow vp-item" aria-hidden="true">→</li>` : ""}<li class="vp-step vp-item"><span class="sr-only">Step ${n + 1}: </span>${esc(x)}</li>`).join("")}</ol>`;
+    else if (sc.visual === "checklist") body = `<ul class="vp-check">${items.map((x) => `<li class="vp-item"><span aria-hidden="true">✔ </span>${esc(x)}</li>`).join("")}</ul>`;
+    else if (sc.visual === "quote") body = `<blockquote class="vp-quote vp-item">“${esc(items[0] || "")}”</blockquote>`;
+    else if (sc.visual === "scenario") body = `<div class="vp-scen"><div class="vp-item"><div class="vp-label">Situation</div>${esc(items[0] || "")}</div>
       <div class="vp-item"><div class="vp-label">Right move</div>${esc(items.slice(1).join(" ") || "")}</div></div>`;
     else body = `<ul class="vp-bullets">${items.map((x) => `<li class="vp-item">${esc(x)}</li>`).join("")}</ul>`;
-    stage.innerHTML = `<div class="vp-heading">${esc(s.heading)}</div>${body}`;
-    cap.textContent = captions ? s.narration : "";
-    cap.classList.toggle("hidden", !captions);
-    $$(".vp-seg", container).forEach((seg, n) => seg.firstElementChild.style.width = n < k ? "100%" : "0%");
+    stage.innerHTML = `<div class="vp-heading">${esc(sc.heading)}</div>${body}`;
+    showCaption(sentencesOf(sc.narration)[0]);
+    $$(".vp-seg", container).forEach((seg, n) => { seg.firstElementChild.style.width = n < k ? "100%" : "0%"; seg.toggleAttribute("aria-current", n === k); });
     $(".vp-count", container).textContent = `Scene ${k + 1} of ${video.scenes.length}`;
+    $$("[data-tx]", container).forEach((p) => p.classList.toggle("current", Number(p.dataset.tx) === k));
     const els = $$(".vp-item", stage);
     els.forEach((e) => e.classList.add("vp-hidden"));
     return els;
@@ -53,18 +68,33 @@ export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
   function play(k) {
     clear();
     i = k;
-    const s = video.scenes[k];
+    const sc = video.scenes[k];
     const els = render(k);
     if (!playing) { els.forEach((e) => e.classList.remove("vp-hidden")); return; }
-    const dur = seconds(s.narration) * 1000;
+    const dur = seconds(sc.narration) * 1000;
     els.forEach((e, n) => revealTimers.push(setTimeout(() => e.classList.remove("vp-hidden"), (dur * n) / (els.length + 0.5))));
     const seg = $$(".vp-seg", container)[k].firstElementChild;
     seg.style.transition = "none"; seg.style.width = "0%";
     requestAnimationFrame(() => { seg.style.transition = `width ${dur}ms linear`; seg.style.width = "100%"; });
+    // Captions: one sentence at a time. Timed by length, re-synced to the voice when the browser reports word boundaries.
+    const sents = sentencesOf(sc.narration);
+    const words = sents.map((x) => x.split(/\s+/).length);
+    const total = words.reduce((a, b) => a + b, 0);
+    let at = 0;
+    sents.forEach((x, n) => { capTimers.push(setTimeout(() => showCaption(x), (dur * at) / total)); at += words[n]; });
     const next = () => (k + 1 < video.scenes.length ? play(k + 1) : finish());
     if (voiceOn && synth) {
-      const u = new SpeechSynthesisUtterance(s.narration);
-      u.rate = speed;
+      const u = new SpeechSynthesisUtterance(sc.narration);
+      u.rate = rate();
+      const starts = [];
+      let pos = 0;
+      sents.forEach((x) => { const idx = sc.narration.indexOf(x, pos); starts.push(idx < 0 ? pos : idx); pos = (idx < 0 ? pos : idx) + x.length; });
+      u.onboundary = (ev) => {
+        capTimers.forEach(clearTimeout); capTimers = [];
+        let n = 0;
+        while (n + 1 < starts.length && ev.charIndex >= starts[n + 1]) n++;
+        showCaption(sents[n]);
+      };
       u.onend = () => { if (playing && i === k) timer = setTimeout(next, 400); };
       synth.speak(u);
       timer = setTimeout(() => { if (playing && i === k && !synth.speaking) next(); }, dur + 4000); // fallback if speech never starts
@@ -75,7 +105,9 @@ export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
 
   function setPlaying(v) {
     playing = v;
-    $('[data-act="play"]', container).textContent = v ? "❚❚ Pause" : "▶ Play";
+    const b = $('[data-act="play"]', container);
+    b.textContent = v ? "❚❚ Pause" : "▶ Play";
+    b.setAttribute("aria-label", v ? "Pause video" : "Play video");
     if (v) play(i); else clear();
   }
 
@@ -87,18 +119,21 @@ export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
     after.classList.remove("hidden");
     after.innerHTML = `<div class="card flat" style="margin-top:10px;background:var(--navy-tint)">
       <h3>Takeaways</h3><ul>${(video.takeaways || []).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-      ${q ? `<h4>Quick check</h4><p><strong>${esc(q.question)}</strong></p><div>${q.options.map((o, n) => `<button class="choice" data-o="${n}">${esc(o)}</button>`).join("")}</div><div class="feedback"></div>` : ""}
+      ${q ? `<div data-speak-scope><h4>Quick check ${speakButton("Read question")}</h4><p><strong>${esc(q.question)}</strong></p>
+        <div>${q.options.map((o, n) => `<button class="choice" data-o="${n}">${esc(o)}</button>`).join("")}</div></div><div class="feedback" role="status"></div>` : ""}
       <div style="margin-top:8px;display:flex;gap:8px"><button class="btn secondary small" data-act="replay">Watch again</button>
         <button class="btn small" data-act="done">Mark this lesson done</button></div></div>`;
     $$("[data-o]", after).forEach((b) => b.addEventListener("click", () => {
       const ok = Number(b.dataset.o) === q.answer_index;
       $$("[data-o]", after).forEach((x, n) => { x.disabled = true; if (n === q.answer_index) x.classList.add("right"); });
       if (!ok) b.classList.add("wrong");
-      $(".feedback", after).textContent = q.explanation;
+      $(".feedback", after).textContent = `${ok ? "Correct." : "Not quite."} ${q.explanation}`;
       onAnswer?.(ok, q.question);
     }));
     $('[data-act="replay"]', after).onclick = () => { after.classList.add("hidden"); i = 0; setPlaying(true); };
     $('[data-act="done"]', after).onclick = () => onDone?.();
+    after.querySelector("h3").setAttribute("tabindex", "-1");
+    after.querySelector("h3").focus();
   }
 
   container.addEventListener("click", (e) => {
@@ -106,14 +141,25 @@ export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
     if (act === "play") setPlaying(!playing);
     if (act === "prev") play(Math.max(0, i - 1));
     if (act === "next") (i + 1 < video.scenes.length ? play(i + 1) : finish());
+    if (act === "transcript") {
+      const tx = $("#vp-tx", container);
+      tx.classList.toggle("hidden");
+      e.target.setAttribute("aria-expanded", String(!tx.classList.contains("hidden")));
+    }
     const seg = e.target.closest("[data-seg]");
-    if (seg) play(Number(seg.dataset.seg));
+    if (seg) { e.preventDefault(); play(Number(seg.dataset.seg)); }
   });
   container.addEventListener("change", (e) => {
     const act = e.target.dataset.act;
     if (act === "speed") { speed = Number(e.target.value); if (playing) play(i); }
     if (act === "voice") { voiceOn = e.target.checked; if (playing) play(i); }
-    if (act === "cc") { captions = e.target.checked; cap.textContent = captions ? video.scenes[i].narration : ""; cap.classList.toggle("hidden", !captions); }
+    if (act === "cc") { captions = e.target.checked; showCaption(captions ? sentencesOf(video.scenes[i].narration)[0] : ""); }
+  });
+  root.addEventListener("keydown", (e) => {
+    if (e.target !== root) return;
+    if (e.key === " " || e.key === "k") { e.preventDefault(); setPlaying(!playing); }
+    if (e.key === "ArrowRight") { e.preventDefault(); i + 1 < video.scenes.length ? play(i + 1) : finish(); }
+    if (e.key === "ArrowLeft") { e.preventDefault(); play(Math.max(0, i - 1)); }
   });
   render(0).forEach((e) => e.classList.remove("vp-hidden"));
   // Stop talking if the learner navigates away.
@@ -131,17 +177,26 @@ export async function interviewFlow(assignmentId, onFinished, onReview) {
   try { data = await api.post(`/api/me/assignments/${assignmentId}/interview`); }
   catch (e) { m.root.innerHTML = `<p>${esc(e.message)}</p><button class="btn" data-close>Close</button>`; return; }
   const canRecord = !!(navigator.mediaDevices && window.MediaRecorder);
+  // Testing accommodation from accessibility settings: 1.5x, 2x or no time limit (0).
+  const extra = Number(settings().extraTime ?? 1);
+  const scaleTime = (sec) => (extra === 0 ? null : Math.round(sec * (extra || 1)));
+  data.read_seconds = scaleTime(data.read_seconds);
+  data.answer_seconds = { text: scaleTime(data.answer_seconds.text), audio: scaleTime(data.answer_seconds.audio) };
+  const timeNote = extra === 0 ? `<p class="badge ok">Accommodation on: no time limit</p>` : extra > 1 ? `<p class="badge ok">Accommodation on: ${extra}× time</p>` : "";
+  const mins = (sec) => (sec == null ? "no time limit" : `${Math.round((sec / 60) * 10) / 10} minutes per question`);
   m.root.innerHTML = `
     <div class="modal-head"><h2>Situational assessment: ${esc(data.training.title)}</h2><button class="btn ghost" data-close>Exit</button></div>
-    <p>You'll get <strong>${data.scenarios.length} workplace scenarios</strong>. For each one you have about ${data.read_seconds} seconds to read it,
-      then a timed answer for each question, like CASPer or a multiple mini interview. There are no trick questions: explain what you'd do and why,
+    ${timeNote}
+    <p>You'll get <strong>${data.scenarios.length} workplace scenarios</strong>. For each one you have ${data.read_seconds == null ? "as long as you need" : `about ${data.read_seconds} seconds`} to read it,
+      then ${data.answer_seconds.text == null ? "an untimed" : "a timed"} answer for each question, like CASPer or a multiple mini interview. There are no trick questions: explain what you'd do and why,
       who you'd involve, and how you'd treat the people involved.</p>
     <div class="card flat" style="background:var(--navy-tint)">
       <h4>How do you want to answer?</h4>
-      <label class="item small"><input type="radio" name="mode" value="text" checked> <div><strong>Type</strong> · ${Math.round(data.answer_seconds.text / 60 * 10) / 10} minutes per question</div></label>
-      <label class="item small" style="margin-top:6px"><input type="radio" name="mode" value="audio" ${canRecord ? "" : "disabled"}> <div><strong>Speak</strong> · ${data.answer_seconds.audio} seconds per question.
+      <label class="item small"><input type="radio" name="mode" value="text" checked> <div><strong>Type</strong> · ${mins(data.answer_seconds.text)}</div></label>
+      <label class="item small" style="margin-top:6px"><input type="radio" name="mode" value="audio" ${canRecord ? "" : "disabled"}> <div><strong>Speak</strong> · ${data.answer_seconds.audio == null ? "no time limit" : `${data.answer_seconds.audio} seconds per question`}.
         Your answer is recorded ${Recognition ? "and transcribed as you talk" : "(your browser can't transcribe, so you'll type a short summary too)"}. ${canRecord ? "" : "Not available in this browser."}</div></label>
     </div>
+    <p class="small muted">Need more time or prefer to have things read aloud? Open <strong>Accessibility</strong> (Alt + A) before you begin.</p>
     <div style="margin-top:12px"><button class="btn" id="iv-begin">Begin</button></div>`;
   $("#iv-begin", m.root).onclick = async () => {
     const mode = $("input[name=mode]:checked", m.root).value;
@@ -187,16 +242,16 @@ function header(sc, done, total) {
 function readStep(m, sc, seconds, done, total) {
   return new Promise((resolve) => {
     m.root.innerHTML = `${header(sc, done, total)}
-      <div class="card flat" style="background:var(--navy-tint);font-size:16px;line-height:1.6">${esc(sc.situation)}</div>
-      <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+      <div class="card flat" id="situation" style="background:var(--navy-tint);font-size:1rem;line-height:1.6">${esc(sc.situation)}</div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:12px;flex-wrap:wrap">
         <button class="btn" id="go">I'm ready</button>
-        ${synth ? `<button class="btn secondary" id="listen">🔊 Read it to me</button>` : ""}
-        <span class="small muted">Questions start in <strong id="t">${seconds}</strong>s</span></div>`;
+        ${synth ? `<button class="btn secondary speak" data-speak data-speak-target="#situation" aria-pressed="false">🔊 Read it to me</button>` : ""}
+        <span class="small muted" role="timer">${seconds == null ? "No time limit" : `Questions start in <strong id="t">${seconds}</strong>s`}</span></div>`;
     let left = seconds;
-    const tick = setInterval(() => { left--; const t = $("#t", m.root); if (t) t.textContent = left; if (left <= 0) end(); }, 1000);
+    const tick = seconds == null ? null : setInterval(() => { left--; const t = $("#t", m.root); if (t) t.textContent = left; if (left <= 0) end(); }, 1000);
     const end = () => { clearInterval(tick); synth?.cancel(); resolve(); };
     $("#go", m.root).onclick = end;
-    $("#listen", m.root)?.addEventListener("click", () => { synth.cancel(); synth.speak(new SpeechSynthesisUtterance(sc.situation)); });
+    if (settings().readAloud && settings().autoRead) speak(sc.situation);
   });
 }
 
@@ -204,14 +259,15 @@ function answerStep(m, sc, qi, mode, stream, seconds, done, total) {
   return new Promise((resolve) => {
     m.root.innerHTML = `${header(sc, done, total)}
       <details class="small" style="margin-bottom:8px"><summary>Scenario</summary><p>${esc(sc.situation)}</p></details>
-      <h3>${esc(sc.questions[qi])}</h3>
+      <h3 id="q-text">${esc(sc.questions[qi])} ${synth ? `<button type="button" class="btn ghost small speak" data-speak data-speak-target="#q-text" aria-pressed="false">🔊 Read question</button>` : ""}</h3>
       ${mode === "audio" ? `<div class="card flat"><div style="display:flex;align-items:center;gap:8px"><span class="rec-dot"></span><strong>Recording</strong>
           <span class="small muted">Speak your answer. ${Recognition ? "The transcript appears below; fix anything it misheard." : "Type a short summary below."}</span></div>
+          <label for="ans" class="sr-only">Your answer</label>
           <textarea id="ans" rows="6" style="width:100%;margin-top:8px" placeholder="${Recognition ? "Transcribing…" : "Summary of what you said"}"></textarea></div>`
-        : `<textarea id="ans" rows="9" style="width:100%" placeholder="What would you do, and why?"></textarea>`}
+        : `<label for="ans" class="sr-only">Your answer</label><textarea id="ans" rows="9" style="width:100%" placeholder="What would you do, and why?"></textarea>`}
       <div style="display:flex;gap:8px;align-items:center;margin-top:10px">
         <button class="btn" id="next">${done + 1 === total ? "Finish" : "Next question"}</button>
-        <span class="small muted">Time left <strong id="t">${fmtClock(seconds)}</strong></span>
+        <span class="small muted" role="timer">${seconds == null ? "No time limit" : `Time left <strong id="t">${fmtClock(seconds)}</strong>`}</span>
         <span class="small muted" id="wc"></span></div>`;
     const ta = $("#ans", m.root);
     ta.focus();
@@ -238,7 +294,13 @@ function answerStep(m, sc, qi, mode, stream, seconds, done, total) {
     }
     const started = Date.now();
     let left = seconds;
-    const tick = setInterval(() => { left--; const t = $("#t", m.root); if (t) t.textContent = fmtClock(left); if (left <= 0) end(); }, 1000);
+    const tick = seconds == null ? null : setInterval(() => {
+      left--;
+      const t = $("#t", m.root);
+      if (t) t.textContent = fmtClock(left);
+      if (left === 30) import("/shared/a11y.js?v=20261024f").then((a) => a.announce("30 seconds left"));
+      if (left <= 0) end();
+    }, 1000);
     let ended = false;
     const end = () => {
       if (ended) return;
@@ -268,7 +330,7 @@ export function readinessCard(rd, level, score, { compact = false } = {}) {
   return `<section class="card flat readiness ${cls}" style="border-left:6px solid var(--${cls === "ok" ? "ok" : cls === "warn" ? "warn" : "bad"});margin-bottom:12px">
     <div class="card-head" style="margin-bottom:6px"><div><div class="small muted" style="text-transform:uppercase;letter-spacing:.06em;font-weight:700">Readiness</div>
       <h2 style="margin:0">${esc(rd.label)}</h2></div>
-      <div style="text-align:right"><div class="num" style="font-family:Poppins,sans-serif;font-size:28px;font-weight:700;color:var(--navy-dark)">${Math.round(score)}</div>
+      <div style="text-align:right"><div class="num" style="font-family:Poppins,sans-serif;font-size:1.75rem;font-weight:700;color:var(--navy-dark)">${Math.round(score)}</div>
       <div class="small muted">out of 100</div></div></div>
     <p style="margin-bottom:8px">${esc(rd.summary)}</p>
     ${compact ? "" : `

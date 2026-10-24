@@ -25,7 +25,7 @@ function busyBanner(show) {
     el = document.createElement("div");
     el.id = "busy-banner";
     el.setAttribute("role", "status");
-    el.style.cssText = "position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:70;background:#a35a00;color:#fff;padding:6px 14px;border-radius:0 0 8px 8px;font-size:13px";
+    el.style.cssText = "position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:70;background:#a35a00;color:#fff;padding:6px 14px;border-radius:0 0 8px 8px;font-size:0.8125rem";
     el.textContent = "Lots of people are online right now. Retrying…";
     document.body.append(el);
   }
@@ -150,41 +150,87 @@ export function statusBadge(a) {
 export const CATEGORY_LABEL = { safety: "Safety", technical: "Technical", culture: "Company culture", compliance: "Compliance" };
 export const DELIVERY_LABEL = { online: "Online", in_person: "In person", hybrid: "Hybrid" };
 
-export function bar(pct, cls = "") {
+export function bar(pct, cls = "", label = "") {
   const v = Math.max(0, Math.min(100, Number(pct) || 0));
-  return `<div class="bar ${cls}"><span style="width:${v}%"></span></div>`;
+  return `<div class="bar ${cls}" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(v)}"
+    ${label ? `aria-label="${esc(label)}"` : ""}><span style="width:${v}%"></span></div>`;
 }
 
 export function toast(msg, isError = false) {
   let box = document.getElementById("toast");
   if (!box) { box = document.createElement("div"); box.id = "toast"; document.body.append(box); }
+  box.setAttribute("aria-live", "polite");
   const el = document.createElement("div");
-  if (isError) el.className = "error";
+  if (isError) { el.className = "error"; el.setAttribute("role", "alert"); } else el.setAttribute("role", "status");
   el.textContent = msg;
   box.append(el);
   setTimeout(() => el.remove(), 4000);
 }
 
-export function modal(html, { wide = false } = {}) {
+/** Accessible dialog: labelled, focus moves in and is trapped while open, Escape closes, focus returns after. */
+export function modal(html, { wide = false, label = "" } = {}) {
+  const opener = document.activeElement;
   const overlay = document.createElement("div");
   overlay.className = "overlay";
-  overlay.innerHTML = `<div class="modal ${wide ? "wide" : ""}" role="dialog" aria-modal="true">${html}</div>`;
-  const close = () => overlay.remove();
+  overlay.innerHTML = `<div class="modal ${wide ? "wide" : ""}" role="dialog" aria-modal="true" tabindex="-1">${html}</div>`;
+  const dialog = overlay.firstElementChild;
+  const focusables = () => [...dialog.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select, textarea, audio, [tabindex]:not([tabindex="-1"])')]
+    .filter((el) => el.offsetParent !== null);
+  const setLabel = () => {
+    const h = label ? dialog.querySelector(`#${label}`) : dialog.querySelector("h2, h3");
+    if (h) { h.id ||= `dlg-${Math.random().toString(36).slice(2, 8)}`; dialog.setAttribute("aria-labelledby", h.id); }
+  };
+  const onKey = (e) => {
+    if (!document.body.contains(overlay)) return document.removeEventListener("keydown", onKey, true);
+    if (e.key === "Escape") { e.preventDefault(); close(); }
+    if (e.key === "Tab") {
+      const f = focusables();
+      if (!f.length) { e.preventDefault(); dialog.focus(); return; }
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  };
+  const close = () => {
+    overlay.remove();
+    document.removeEventListener("keydown", onKey, true);
+    window.speechSynthesis?.cancel();
+    if (opener && document.body.contains(opener)) opener.focus();
+  };
   overlay.addEventListener("click", (e) => { if (e.target === overlay || e.target.closest("[data-close]")) close(); });
-  document.addEventListener("keydown", function onKey(e) { if (e.key === "Escape") { close(); document.removeEventListener("keydown", onKey); } });
+  document.addEventListener("keydown", onKey, true);
   document.body.append(overlay);
-  return { root: overlay.firstElementChild, close };
+  setLabel();
+  // Content is often swapped in later (loading -> result): relabel when it changes.
+  new MutationObserver(setLabel).observe(dialog, { childList: true });
+  (focusables().find((el) => !el.matches("[data-close]")) || dialog).focus();
+  return { root: dialog, close };
 }
 
 export function loading(el, text = "Loading…") { el.innerHTML = `<div class="empty"><span class="spinner"></span> ${esc(text)}</div>`; }
 
 /** Wire up a set of sidebar buttons [data-view] to render functions. Remembers the view in the URL hash. */
 export function router(views, fallback) {
-  const go = (name) => {
+  const base = document.title.split(" · ").pop();
+  let first = true;
+  const go = async (name) => {
     if (!views[name]) name = fallback;
-    $$(".sidenav button[data-view]").forEach((b) => b.classList.toggle("active", b.dataset.view === name));
+    let label = name;
+    $$(".sidenav button[data-view]").forEach((b) => {
+      const on = b.dataset.view === name;
+      b.classList.toggle("active", on);
+      on ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current");
+      if (on) label = b.textContent.trim();
+    });
     history.replaceState(null, "", `#${name}`);
-    views[name]();
+    document.title = `${label} · ${base}`;
+    await views[name]();
+    if (!first) {
+      // Move keyboard and screen reader focus to the new page's heading.
+      const h = document.querySelector("#view h1, #view h2");
+      if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: false }); }
+      import("/shared/a11y.js?v=20261024f").then((m) => m.announce(`${label} page`));
+    }
+    first = false;
   };
   $$(".sidenav button[data-view]").forEach((b) => b.addEventListener("click", () => go(b.dataset.view)));
   go(location.hash.slice(1) || fallback);
@@ -199,6 +245,15 @@ export function topbar(me, appName) {
     <div class="who"><strong>${esc(me.name)}</strong>${esc(me.job_title)} · ${esc(me.division_code)}</div>
     ${me.role !== "hire" && appName.includes("My") ? `<a class="btn secondary small" href="/manager/">Manager dashboard</a>` : ""}
     ${me.role !== "hire" && !appName.includes("My") ? `<a class="btn secondary small" href="/hire/">My trainings</a>` : ""}
+    <span id="ts-controls"></span>
+    <button class="btn ghost small" id="a11y-open" aria-label="Accessibility settings (Alt + A)">♿ Accessibility</button>
     <button class="btn ghost small" id="logout">Sign out</button>`;
   $("#logout").onclick = logout;
+  import("/shared/a11y.js?v=20261024f").then((a) => {
+    a.setupPage();
+    a.syncWithAccount();
+    $("#ts-controls").replaceWith(a.textSizeControls());
+    $("#a11y-open").onclick = a.openPanel;
+    document.querySelector(".a11y-fab")?.remove(); // the top bar has the button on signed-in pages
+  });
 }

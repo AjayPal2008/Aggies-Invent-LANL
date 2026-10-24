@@ -1,8 +1,9 @@
 import {
   api, requireRole, topbar, router, esc, $, $$, fmtDate, fmtTime, dueText, statusBadge, bar, toast, modal, loading,
   CATEGORY_LABEL, DELIVERY_LABEL,
-} from "/shared/api.js?v=20261024e";
+} from "/shared/api.js?v=20261024f";
 import { videoPlayer, interviewFlow, rolePlanCard, showResult } from "./learning.js";
+import { speakButton } from "/shared/a11y.js?v=20261024f";
 
 const me = await requireRole(["hire", "manager", "admin"]);
 topbar(me, "My Training");
@@ -229,7 +230,7 @@ async function assessment(assignmentId) {
       <p class="muted small">${a.questions.length} questions. You need 80% to pass. ${a.generated_by === "offline" ? "(Offline question bank)" : ""}</p>
       <form id="assess-form" class="list">
         ${a.questions.map((q, i) => `
-          <fieldset class="card flat"><legend><strong>${i + 1}. ${esc(q.question)}</strong></legend>
+          <fieldset class="card flat" data-speak-scope><legend><strong>${i + 1}. ${esc(q.question)}</strong> ${speakButton("Read question")}</legend>
             ${q.options.map((o, j) => `<label class="small" style="display:block;padding:4px 0"><input type="radio" name="q${i}" value="${j}" required> ${esc(o)}</label>`).join("")}
           </fieldset>`).join("")}
         <button class="btn" type="submit">Submit answers</button>
@@ -269,7 +270,8 @@ async function calendar() {
     const key = iso(d);
     cells += `<div class="day ${d.getMonth() !== calMonth.getMonth() ? "other" : ""} ${key === todayIso ? "today" : ""}">
       <div class="d">${d.getDate()}</div>
-      ${(byDay[key] || []).map((e) => `<button class="ev ${e.type} ${e.overdue ? "overdue" : ""}" data-ev='${esc(JSON.stringify(e))}' title="${esc(e.title)}">
+      ${(byDay[key] || []).map((e) => `<button class="ev ${e.type} ${e.overdue ? "overdue" : ""}" data-ev='${esc(JSON.stringify(e))}' title="${esc(e.title)}"
+        aria-label="${esc(`${{ due: e.overdue ? "Overdue" : "Due", registered: "Registered class", available: "Open class" }[e.type]}: ${e.title}, ${fmtDate(e.date)}${e.starts_at ? " at " + fmtTime(e.starts_at) : ""}`)}">
         ${e.starts_at ? fmtTime(e.starts_at) + " " : ""}${esc(e.type === "due" ? e.title : e.title)}</button>`).join("")}
     </div>`;
   }
@@ -277,9 +279,9 @@ async function calendar() {
   view.innerHTML = `
     <div class="card-head"><h1>Calendar</h1>
       <div style="display:flex;gap:6px;align-items:center">
-        <button class="btn secondary small" id="prev">‹</button>
+        <button class="btn secondary small" id="prev" aria-label="Previous month">‹</button>
         <strong style="min-width:140px;text-align:center">${calMonth.toLocaleDateString(undefined, { month: "long", year: "numeric" })}</strong>
-        <button class="btn secondary small" id="next">›</button>
+        <button class="btn secondary small" id="next" aria-label="Next month">›</button>
         <button class="btn ghost small" id="today">Today</button>
       </div></div>
     <div class="chips" style="margin-bottom:10px">
@@ -475,7 +477,8 @@ function sectionHtml(s, i) {
   } else {
     inner += understood;
   }
-  return `<div class="lesson-section"><div class="kind">${esc(MODALITY_LABEL[s.kind] || s.kind)} · ${esc(s.skill)}</div><h3>${esc(s.heading)}</h3>${inner}</div>`;
+  return `<div class="lesson-section" data-speak-scope><div class="kind">${esc(MODALITY_LABEL[s.kind] || s.kind)} · ${esc(s.skill)}</div>
+    <h3>${esc(s.heading)} ${speakButton("Read this section")}</h3>${inner}</div>`;
 }
 
 async function recordAnswer(t, skill, correct, modality, question = "") {
@@ -494,7 +497,8 @@ async function practice(t) {
   box.innerHTML = `<div class="card">
     <div class="card-head"><h2>Practice: ${esc(t.title)}</h2><span class="badge plain">Focus: ${r.focus_skills.map(esc).join(", ") || "all"}</span></div>
     <div class="list">${r.questions.map((q, i) => `
-      <div class="lesson-section" data-q="${i}"><div class="kind">Question ${i + 1} · ${esc(q.skill)}</div><strong>${esc(q.question)}</strong>
+      <div class="lesson-section" data-q="${i}" data-speak-scope role="group" aria-label="Question ${i + 1}"><div class="kind">Question ${i + 1} · ${esc(q.skill)}</div>
+        <strong>${esc(q.question)}</strong> ${speakButton("Read question")}
         <div>${q.options.map((o, k) => `<button class="choice" data-opt="${k}">${esc(o)}</button>`).join("")}</div><div class="feedback"></div></div>`).join("")}
     </div>
     <div style="margin-top:12px;display:flex;gap:8px"><button class="btn secondary" id="more">More questions</button><span id="tally" class="muted small"></span></div></div>`;
@@ -518,7 +522,7 @@ async function practice(t) {
 function renderChat() {
   const box = $("#msgs");
   if (!box) return;
-  box.innerHTML = studio.chat.length ? studio.chat.map((m) => `<div class="msg ${m.role}">${esc(m.content)}</div>`).join("")
+  box.innerHTML = studio.chat.length ? studio.chat.map((m) => `<div class="msg ${m.role}" ${m.role === "assistant" ? "data-speak-scope" : ""}>${esc(m.content)}${m.role === "assistant" ? `<div>${speakButton("Read reply")}</div>` : ""}</div>`).join("")
     : `<p class="muted small">Try: "Explain this like I'm new to the lab" or "Give me a real example from a facility."</p>`;
   box.scrollTop = box.scrollHeight;
 }

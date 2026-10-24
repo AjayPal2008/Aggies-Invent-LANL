@@ -1,7 +1,7 @@
 import {
   api, requireRole, topbar, router, esc, $, $$, fmtDate, dueText, statusBadge, bar, toast, modal, loading,
   CATEGORY_LABEL, DELIVERY_LABEL,
-} from "/shared/api.js?v=20261024e";
+} from "/shared/api.js?v=20261024f";
 import { rolesView, interviewsView } from "./roles.js";
 
 // Hires are sent back to /hire/ here, and the API refuses them too.
@@ -157,9 +157,9 @@ function renderTeam() {
       <span class="small muted">${total} ${total === 1 ? "person" : "people"} · showing ${teamPage * PAGE + 1}–${teamPage * PAGE + shown.length}</span>
       <div style="display:flex;gap:6px;align-items:center">
         <button class="btn ghost small" id="sel-all">${allSelected ? "Unselect" : "Select"} all ${total}</button>
-        ${pages > 1 ? `<button class="btn secondary small" id="prev" ${teamPage === 0 ? "disabled" : ""}>‹</button>
+        ${pages > 1 ? `<button class="btn secondary small" id="prev" aria-label="Previous page" ${teamPage === 0 ? "disabled" : ""}>‹</button>
           <span class="small">Page ${teamPage + 1} of ${pages}</span>
-          <button class="btn secondary small" id="next" ${teamPage >= pages - 1 ? "disabled" : ""}>›</button>` : ""}
+          <button class="btn secondary small" id="next" aria-label="Next page" ${teamPage >= pages - 1 ? "disabled" : ""}>›</button>` : ""}
       </div></div>
     <div class="card table-wrap" style="padding:0;max-height:70vh;overflow-y:auto"><table>
     <thead style="position:sticky;top:0;background:#fff;z-index:1"><tr><th><input type="checkbox" id="all" aria-label="Select this page"></th><th>#</th><th>Name</th><th>Sub-team</th><th>Level</th><th>Hired</th><th>Trainings</th>
@@ -266,9 +266,9 @@ async function hireView(id) {
       <div class="muted small">${esc(e.job_title)} · Level ${e.level} · ${esc(e.division_code)} · ${esc(e.email)}</div></div>
       <button class="btn ghost" data-close>Close</button></div>
     <div class="grid cols-4" style="margin-bottom:12px">
-      <div class="stat"><div class="label">Hired</div><div class="value" style="font-size:16px">${fmtDate(e.hire_date)}</div></div>
+      <div class="stat"><div class="label">Hired</div><div class="value" style="font-size:1rem">${fmtDate(e.hire_date)}</div></div>
       <div class="stat"><div class="label">Experience</div><div class="value">${e.years_experience}<span class="small muted"> yrs</span></div></div>
-      <div class="stat"><div class="label">HR rating / salary</div><div class="value" style="font-size:16px">${e.performance_rating ?? "—"} · ${e.salary ? "$" + Math.round(e.salary).toLocaleString() : "—"}</div></div>
+      <div class="stat"><div class="label">HR rating / salary</div><div class="value" style="font-size:1rem">${e.performance_rating ?? "—"} · ${e.salary ? "$" + Math.round(e.salary).toLocaleString() : "—"}</div></div>
       <div class="stat ${s.overdue ? "bad" : "ok"}"><div class="label">Completed</div><div class="value">${s.completed}/${s.total}</div></div>
     </div>
     <div class="grid side">
@@ -435,8 +435,19 @@ let heatGroup = "position";
 async function insightsView() {
   loading(view);
   const [heat, comp] = await Promise.all([api.get(`/api/manager/insights/heatmap?group_by=${heatGroup}`), api.get("/api/manager/insights/compliance")]);
+  const mode = document.documentElement.classList;
   const color = (v) => {
-    if (v == null) return "background:#f4f5f9;color:#b0b5c8";
+    if (v == null) return "background:var(--surface-muted);color:var(--faint-text)";
+    if (mode.contains("a11y-contrast-light") || mode.contains("a11y-contrast-dark")) {
+      // High contrast: grayscale with the number always shown; weak cells get a thick border.
+      const g = Math.round(255 - v * 200);
+      return `background:rgb(${g},${g},${g});color:${g < 128 ? "#fff" : "#000"};${v < 0.4 ? "outline:3px solid currentColor;outline-offset:-3px" : ""}`;
+    }
+    if (mode.contains("a11y-cvd")) {
+      // Color-blind safe: orange for weak, blue for strong.
+      if (v < 0.4) return `background:rgba(213,94,0,${0.25 + (0.4 - v)});color:${v < 0.2 ? "#fff" : "#6b3000"}`;
+      return `background:rgba(0,114,178,${0.15 + v * 0.75});color:${v > 0.55 ? "#fff" : "#003a5c"}`;
+    }
     // white -> navy as mastery rises; red tint under 40%
     if (v < 0.4) return `background:rgba(179,38,30,${0.18 + (0.4 - v)});color:${v < 0.2 ? "#fff" : "var(--bad)"}`;
     return `background:rgba(11,30,132,${0.12 + v * 0.8});color:${v > 0.55 ? "#fff" : "var(--navy-dark)"}`;
@@ -455,8 +466,8 @@ async function insightsView() {
       <div class="card-head"><h3>Knowledge-gap heatmap</h3>
         <div class="chips"><button class="chip ${heatGroup === "position" ? "active" : ""}" data-g="position">By role</button>
         <button class="chip ${heatGroup === "equipment" ? "active" : ""}" data-g="equipment">By equipment</button></div></div>
-      <p class="small muted">Average estimated mastery of each skill. Darker blue is stronger; red is where people are weakest and training should focus.</p>
-      ${heat.rows.length ? `<div class="table-wrap"><table style="font-size:12px"><thead><tr><th>${heatGroup === "position" ? "Role" : "Equipment"}</th><th>People</th>
+      <p class="small muted">Average estimated mastery of each skill (the number in each cell, out of 100). Darker blue is stronger; ${document.documentElement.classList.contains("a11y-cvd") ? "orange" : "red"} is where people are weakest and training should focus.</p>
+      ${heat.rows.length ? `<div class="table-wrap"><table style="font-size:0.75rem"><thead><tr><th>${heatGroup === "position" ? "Role" : "Equipment"}</th><th>People</th>
         ${heat.skills.map((s) => `<th style="writing-mode:vertical-rl;transform:rotate(180deg);height:160px;vertical-align:bottom;white-space:nowrap">${esc(s)}</th>`).join("")}</tr></thead>
         <tbody>${heat.rows.map((r) => `<tr><td><strong>${esc(r.group)}</strong></td><td class="num">${r.people}</td>
           ${heat.skills.map((s) => { const v = r.cells[s]; return `<td class="num" style="text-align:center;${color(v)}" title="${esc(s)}">${v == null ? "" : Math.round(v * 100)}</td>`; }).join("")}</tr>`).join("")}</tbody></table></div>`

@@ -7,7 +7,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/shared/assets/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="/shared/assets/lanl-icon-192.png">
   <link rel="apple-touch-icon" href="/shared/assets/apple-touch-icon.png">
-  <link rel="stylesheet" href="/shared/styles.css?v=20261024e">
+  <link rel="stylesheet" href="/shared/styles.css?v=20261024f">
+  <script src="/shared/a11y-boot.js?v=20261024f"></script>
 </head>
 <body>
   <div class="login-page">
@@ -35,7 +36,7 @@
           <input id="password" type="password" required autocomplete="current-password">
         </label>
         <button class="btn" type="submit" id="submit">Sign in</button>
-        <p id="error" class="small" style="color: var(--bad)"></p>
+        <p id="error" class="small" style="color: var(--bad)" role="alert"></p>
         <div class="card flat" style="background: var(--navy-tint)">
           <h4>Demo accounts</h4>
           <p class="small muted">Click one to sign in. Password <code>demo1234</code> unless your admin changed it.</p>
@@ -49,7 +50,9 @@
     </section>
   </div>
   <script type="module">
-    import { api, session } from "/shared/api.js?v=20261024e";
+    import { api, session } from "/shared/api.js?v=20261024f";
+    import { setupPage } from "/shared/a11y.js?v=20261024f";
+    setupPage();
     const $ = (s) => document.querySelector(s);
     const go = (home) => (location.href = home);
 
