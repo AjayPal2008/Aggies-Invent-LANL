@@ -44,6 +44,9 @@ def role_plan(user: models.Employee = Depends(current_user), db: Session = Depen
 @router.get("/trainings/{code}/modules")
 def modules(code: str, user: models.Employee = Depends(current_user), db: Session = Depends(get_db)):
     t = _training(db, code)
+    if t.lessons_status == "draft" and user.role != "admin":
+        return {"training": serialize.training(t, brief=True), "assessment_type": t.assessment_type, "from_document": False,
+                "modules": [], "note": "Lessons for this training are being reviewed and will appear here once published."}
     mods = list(db.scalars(select(models.CourseModule).where(models.CourseModule.training_id == t.id).order_by(models.CourseModule.position)))
     done = {e.payload.get("module_id") for e in db.scalars(select(models.LearningEvent).where(
         models.LearningEvent.employee_id == user.id, models.LearningEvent.kind == "module_done", models.LearningEvent.training_id == t.id))}
@@ -64,6 +67,8 @@ def module_lesson(module_id: int, body: ModuleLessonIn, user: models.Employee = 
     if m is None:
         raise HTTPException(404, "Module not found")
     t = db.get(models.Training, m.training_id)
+    if t.lessons_status == "draft" and user.role != "admin":
+        raise HTTPException(404, "Module not found")
     fake = models.Training(skills=m.skills or t.skills, equipment=t.equipment, facilities=t.facilities)
     profile = adaptive.learner_profile(db, user, fake)
     if body.modality in adaptive.MODALITIES:

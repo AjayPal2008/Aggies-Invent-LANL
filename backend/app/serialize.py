@@ -8,7 +8,8 @@ def training(t: models.Training, brief: bool = False) -> dict:
         "id": t.id, "code": t.code, "title": t.title, "category": t.category, "required": t.required,
         "delivery": t.delivery, "source_system": t.source_system, "source_url": t.source_url,
         "duration_minutes": t.duration_minutes, "validity_months": t.validity_months, "skills": t.skills,
-        "assessment_type": t.assessment_type or "quiz", "from_document": bool(t.document_id),
+        "assessment_type": t.assessment_type or "quiz",
+        "from_document": bool(t.document_id) and (t.lessons_status or "published") == "published",
     }
     if not brief:
         d.update({"description": t.description, "prerequisites": t.prerequisites, "job_roles": t.job_roles,

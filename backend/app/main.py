@@ -16,7 +16,7 @@ from sqlalchemy import func, select
 from . import models
 from .config import REPO_DIR, settings
 from .database import SessionLocal, init_db
-from .routers import admin, auth, catalog, content, diagnostic, hire, learn, manager
+from .routers import admin, auth, catalog, content, diagnostic, hire, learn, library, manager
 from . import safeguards
 from .services import ai
 
@@ -37,7 +37,7 @@ async def database_busy(request, exc):
                         headers={"Retry-After": "5"})
 
 for r in (auth.router, catalog.router, hire.router, learn.router, manager.router, content.router, content.files_router, admin.router,
-          diagnostic.router):
+          diagnostic.router, library.router):
     app.include_router(r)
 
 

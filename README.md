@@ -64,6 +64,10 @@ To turn on Claude for course building, lessons, videos, interview scoring, pract
 - Promotion readiness with the checks that pass or fail.
 - Data sources page (admin): connector health, sync, and CSV/JSON upload.
 
+## Training library (admin)
+
+The admin library holds every required training in UTrain's three layers: **institutional** (everyone: security, cyber, ethics, policy, safety, many annual), **division** (Weapons, Science, Technology & Engineering, Operations) and **role** (technical and soft skills, shared across divisions with division-specific additions). It is seeded from public LANL sources: the 21 web-based required courses on extrain.lanl.gov, the 38 White Rock Training Center live courses with their 40 public student manuals, and the Nuclear Fundamentals Orientation. A new hire gets all three layers; an internal promotion in the same division gets only the new role's training; a move from another division adds that division's. Admins attach PDFs and slide decks, and the AI builds lessons from them. Details: [docs/TRAINING_LIBRARY.md](docs/TRAINING_LIBRARY.md).
+
 ## Source-grounded diagnostic (AJ)
 
 A second, stricter assessment path built from public source documents in [`Resource_File/`](Resource_File/) (computer security, ionizing radiation, nuclear fission, nuclear reactors; see [`Resource_File/ATTRIBUTION.md`](Resource_File/ATTRIBUTION.md)). Each question asks for an answer **and** the reasoning behind it, adapts to foundation questions when someone struggles, and reports concept-by-concept review priorities. Answers are graded on the server from a **manually reviewed** question bank; the browser never sees the answer key, and no AI is used for grading.

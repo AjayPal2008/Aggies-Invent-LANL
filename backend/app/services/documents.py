@@ -41,13 +41,25 @@ def extract_pages(path: Path) -> list[str]:
         return [_clean(p.extract_text() or "") for p in reader.pages]
     if suffix in {".txt", ".md"}:
         return _paginate(path.read_text(errors="ignore").splitlines())
+    if suffix == ".pptx":
+        try:
+            from pptx import Presentation  # type: ignore
+        except ImportError as exc:
+            raise ValueError("Install python-pptx to read slide decks, or upload a PDF") from exc
+        pages = []
+        for slide in Presentation(str(path)).slides:  # one page per slide, speaker notes included
+            parts = [sh.text_frame.text for sh in slide.shapes if getattr(sh, "has_text_frame", False) and sh.text_frame.text.strip()]
+            if slide.has_notes_slide and slide.notes_slide.notes_text_frame.text.strip():
+                parts.append("Notes: " + slide.notes_slide.notes_text_frame.text)
+            pages.append(_clean("\n".join(parts)))
+        return pages or [""]
     if suffix == ".docx":
         try:
             import docx  # type: ignore
         except ImportError as exc:
             raise ValueError("Install python-docx to read .docx files, or upload a PDF") from exc
         return _paginate([p.text for p in docx.Document(str(path)).paragraphs])
-    raise ValueError("Upload a PDF, .docx, .txt or .md file")
+    raise ValueError("Upload a PDF, .pptx, .docx, .txt or .md file")
 
 
 def _paginate(lines: list[str], words_per_page: int = 450) -> list[str]:
@@ -193,6 +205,10 @@ def build_course(db: Session, doc_id: int) -> models.Training:
 
 
 def _save_course(db: Session, doc: models.Document, data: dict) -> models.Training:
+    if doc.training_code:  # a library material: the course becomes that training's lessons, keeping its identity
+        t = db.scalar(select(models.Training).where(models.Training.code == doc.training_code))
+        if t is not None:
+            return _attach_modules(db, t, doc, data)
     code = f"DOC-{doc.id}"
     t = db.scalar(select(models.Training).where(models.Training.code == code))
     if t is None:
@@ -214,6 +230,24 @@ def _save_course(db: Session, doc: models.Document, data: dict) -> models.Traini
     t.document_id = doc.id
     t.validity_months = None
     db.flush()
+    return _replace_modules(db, t, doc, data)
+
+
+def _attach_modules(db: Session, t: models.Training, doc: models.Document, data: dict) -> models.Training:
+    """Library training: add AI modules and scenarios from its material; title, layer, schedule and
+    assessment type stay as the admin set them."""
+    t.document_id = doc.id
+    t.lessons_status = "draft"  # learners see these only after an admin reviews and publishes them
+    t.outline = "\n".join(m["title"] for m in data["modules"])
+    t.skills = sorted(set(t.skills or []) | {s.lower().strip() for s in data.get("skills", []) if s.strip()})[:20]
+    if doc.generated_by not in ("", "offline") and (not t.description or t.description == t.title):
+        t.description = data["summary"]  # only an AI summary is better than the catalog's own description
+    t.duration_minutes = max(t.duration_minutes or 0, int(doc.words / 230 / 3))
+    db.flush()
+    return _replace_modules(db, t, doc, data)
+
+
+def _replace_modules(db: Session, t: models.Training, doc: models.Document, data: dict) -> models.Training:
     for old in db.scalars(select(models.CourseModule).where(models.CourseModule.training_id == t.id)):
         for c in db.scalars(select(models.LessonCache).where(models.LessonCache.module_id == old.id)):
             db.delete(c)
@@ -242,47 +276,131 @@ RULE = re.compile(r"\b(must|shall|required|is responsible|are responsible|ensure
 STOP = set("the a an and or of to in for on with by at from is are be this that these those as it its into your their".split())
 
 
-def _headings(doc: models.Document) -> list[tuple[int, str]]:
+DOTS = re.compile(r"\.{4,}|…{2,}|(?:\s\.){4,}")  # table-of-contents leaders
+NUMWORD = r"(?:\d{1,2}|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve)"
+UNIT = re.compile(rf"^(?:module|unit|lesson|chapter|section|part|topic)\s+({NUMWORD})\b\s*[:.\-–—]?\s*(.*)$", re.IGNORECASE)
+UNIT_WORD = re.compile(r"\b(?:module|unit|lesson|chapter)\s+" + NUMWORD + r"\b", re.IGNORECASE)
+QUESTION_START = re.compile(r"^(?:in what|is it|are|is|what|which|how|why|when|who|where|list|name|describe|identify|explain|"
+                            r"determine|verify|stop|select|choose|true or false|do|does|can|should)\b", re.IGNORECASE)
+
+
+def _noise(doc: models.Document) -> set[str]:
+    """Lines repeated on many pages: running headers, footers, course titles, revision stamps."""
+    from collections import Counter
+
+    counts = Counter()
+    for p in doc.page_texts:
+        counts.update({l.strip() for l in p.text.splitlines() if l.strip()})
+    floor = max(3, int(doc.pages * 0.25))
+    return {l for l, n in counts.items() if n >= floor}
+
+
+def _is_toc(lines: list[str]) -> bool:
+    return sum(1 for l in lines if DOTS.search(l)) >= 3 or any(l.strip().lower() in ("contents", "table of contents") for l in lines[:5])
+
+
+def _heading_text(line: str) -> str | None:
+    """A clean heading, or None if the line is a TOC entry, a question, a sentence or a page stamp."""
+    line = re.sub(r"\s+", " ", line).strip().rstrip(":").strip()
+    if not line or DOTS.search(line) or line.endswith(("?", ".", ",", ";")) or len(line.split()) > 12:
+        return None
+    if sum(c.isdigit() for c in line) > len(line) * 0.3:
+        return None
+    if re.search(r"[a-z][A-Z]", line) or len(UNIT_WORD.findall(line)) > 1:
+        return None  # words glued together from multi-column pages
+    m = UNIT.match(line)
+    if m:
+        return line
+    m = HEADING.match(line)
+    if not m:
+        return None
+    text = re.sub(r"\s+", " ", m.group(1)).strip()
+    if QUESTION_START.match(text):
+        return None  # a numbered quiz question or instruction step, not a section
+    words = [w for w in re.findall(r"[A-Za-z]+", text) if len(w) >= 4]
+    if words and sum(w[0].isupper() for w in words) < len(words) * 0.6:
+        return None  # sentence-case numbered lines are steps or list items; real headings are Title Case
+    return text
+
+
+def _headings(doc: models.Document, noise: set[str] | None = None) -> list[tuple[int, str]]:
+    noise = noise if noise is not None else _noise(doc)
     found = []
     for p in doc.page_texts:
-        for line in p.text.splitlines():
-            line = line.strip()
-            m = HEADING.match(line)
-            if m and len(line.split()) <= 12 and not line.endswith("."):
-                found.append((p.page, re.sub(r"\s+", " ", m.group(1)).strip()))
-    # drop table-of-contents duplicates (same heading early, then again later)
-    seen, out = {}, []
-    for page, h in found:
+        lines = [l for l in p.text.splitlines() if l.strip() and l.strip() not in noise]
+        if _is_toc(lines):
+            continue
+        for line in lines:
+            h = _heading_text(line)
+            if h:
+                found.append((p.page, h))
+    seen = {}
+    for page, h in found:  # keep the last occurrence (TOC entries come first)
         seen[h.lower()] = (page, h)
-    for page, h in sorted(seen.values()):
-        out.append((page, h))
-    return out
+    return sorted(seen.values())
 
 
-def _body_text(page_text: str) -> str:
-    """Page text without heading lines, so headings don't get glued into sentences."""
+def _body_text(page_text: str, noise: set[str] | None = None) -> str:
+    """Page text without headings, TOC lines and repeated headers/footers, so they don't get glued into sentences."""
     top = re.compile(r"^(?:chapter\s+)?\d{1,2}(?:\.\d+)*[\.:]?\s+[A-Z][^.]{2,80}$", re.IGNORECASE)
-    return " ".join(l for l in page_text.splitlines() if not (HEADING.match(l.strip()) or top.match(l.strip())))
+    keep = []
+    for l in page_text.splitlines():
+        t = l.strip()
+        if not t or (noise and t in noise) or DOTS.search(t) or HEADING.match(t) or top.match(t) or UNIT.match(t):
+            continue
+        keep.append(t)
+    return " ".join(keep)
 
 
 def _sentences(text: str) -> list[str]:
     flat = re.sub(r"\s+", " ", text)
-    return [s.strip() for s in re.split(r"(?<=[.!?])\s+(?=[A-Z])", flat) if 40 <= len(s.strip()) <= 260]
+    out = []
+    for s_ in re.split(r"(?<=[.!?])\s+(?=[A-Z])", flat):
+        s_ = s_.strip()
+        if not 40 <= len(s_) <= 260 or s_.endswith("?") or DOTS.search(s_) or re.search(r"\bcontents\b", s_, re.IGNORECASE):
+            continue
+        if sum(c.isupper() for c in s_) > len(s_) * 0.5:  # shouting headers
+            continue
+        out.append(s_)
+    return out
 
 
-def _top_level(doc: models.Document) -> list[tuple[int, str]]:
-    """Headings like "7 Risk and Opportunity Management" or "Chapter 7: ..." (not 7.1)."""
+def _top_level(doc: models.Document, noise: set[str] | None = None) -> list[tuple[int, str]]:
+    """Top-level sections: "Module 2: Forklift Inspections", "Unit One", "Chapter 3", or "7 Risk Management" (not 7.1).
+
+    Each section starts at its first page; its title prefers a real name over "Knowledge Check", "Review" or "Summary".
+    """
+    noise = noise if noise is not None else _noise(doc)
     pat = re.compile(r"^(?:chapter\s+)?(\d{1,2})[\.:]?\s+([A-Z][A-Za-z ,:&/\-]{3,80})$", re.IGNORECASE)
-    found = {}
+    filler = re.compile(r"\b(knowledge check|review|summary|quiz|test|exercise|answers?|objectives)\b", re.IGNORECASE)
+    occurrences: dict[tuple, list[tuple[int, str]]] = {}
     for p in doc.page_texts:
-        lines = p.text.splitlines()
-        if sum(1 for l in lines if pat.match(l.strip())) >= 3:
-            continue  # a table of contents, not a chapter start
-        for line in lines[:6]:  # chapter titles sit at the top of a page
-            m = pat.match(line.strip())
-            if m and m.group(1) not in found:
-                found[m.group(1)] = (p.page, m.group(2).strip())
-    return sorted(found.values())
+        lines = [l.strip() for l in p.text.splitlines() if l.strip() and l.strip() not in noise]
+        if _is_toc(lines) or sum(1 for l in lines if pat.match(l) or UNIT.match(l)) >= 3:
+            continue
+        for line in lines[:8]:  # section titles sit at the top of a page
+            title = _heading_text(line)
+            if not title:
+                continue
+            title = re.sub(r":(?=\S)", ": ", title)
+            u = UNIT.match(line)
+            if u:
+                occurrences.setdefault(("u", u.group(1).lower()), []).append((p.page, title))
+                continue
+            m = pat.match(line)
+            if m:
+                occurrences.setdefault(("n", m.group(1)), []).append((p.page, title))
+
+    def pick(key, occ):
+        first = min(pg for pg, _ in occ)
+        named = [t for _, t in occ if not filler.search(t)]
+        if named:
+            return first, named[0]
+        u = UNIT.match(occ[0][1])
+        return first, (re.sub(filler, "", occ[0][1]).strip(" :-") or occ[0][1])
+
+    units = sorted(pick(k, v) for k, v in occurrences.items() if k[0] == "u")
+    return units if len(units) >= 2 else sorted(pick(k, v) for k, v in occurrences.items())
 
 
 def _skills_for(title: str, vocabulary: list[str] | None) -> list[str]:
@@ -297,9 +415,9 @@ def _skill_from(title: str) -> str:
 
 
 def offline_course(doc: models.Document, role: str, vocabulary: list[str] | None = None) -> dict:
-    heads = _headings(doc)
-    top = [(p, h) for p, h in heads if not re.match(r"^\d+\.\d", h)]
-    chapters = _top_level(doc)
+    noise = _noise(doc)
+    heads = _headings(doc, noise)
+    chapters = _top_level(doc, noise)
     if len(chapters) >= 3:  # numbered chapters are the natural modules
         groups = [[c] for c in chapters]
     else:
@@ -308,13 +426,12 @@ def offline_course(doc: models.Document, role: str, vocabulary: list[str] | None
             heads = [(p, f"Part {i + 1} (pages {p}-{min(doc.pages, p + step - 1)})") for i, p in enumerate(range(1, doc.pages + 1, step))]
         target = max(1, -(-len(heads) // 12))
         groups = [heads[i:i + target] for i in range(0, len(heads), target)]
-    del top
     modules = []
     for gi, g in enumerate(groups):
-        start = g[0][0]
+        start = 1 if gi == 0 else g[0][0]  # the first module also covers any introduction before it
         end = (groups[gi + 1][0][0] - 1) if gi + 1 < len(groups) else doc.pages
         end = max(start, end)
-        text = " ".join(_body_text(p.text) for p in doc.page_texts if start <= p.page <= end)
+        text = " ".join(_body_text(p.text, noise) for p in doc.page_texts if start <= p.page <= end)
         sents = list(dict.fromkeys(_sentences(text)))  # documents repeat themselves; keep each sentence once
         sents = [x for x in sents if not re.match(r"^(this chapter|read it|see |figure|table)\b", x, re.IGNORECASE)]
         rules = [x for x in sents if RULE.search(x)][:7] or sents[:4]

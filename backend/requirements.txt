@@ -16,3 +16,5 @@ pytest>=8.0
 psycopg[binary]>=3.2
 pypdf==6.21.2  # matches scripts/requirements.txt and the verified environment
 reportlab>=4.0  # only for generating the sample handbook PDF
+python-pptx>=1.0  # read .pptx training decks
+cryptography>=3.1  # some LANL PDFs are AES-encrypted (open, but need this to read)
