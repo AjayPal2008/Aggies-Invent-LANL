@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Manager Dashboard · LANL</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/shared/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/shared/assets/lanl-icon-192.png">
+  <link rel="apple-touch-icon" href="/shared/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="/shared/styles.css?v=20261024e">
+</head>
+<body>
+  <header class="topbar" id="topbar"></header>
+  <div class="shell">
+    <nav class="sidenav" aria-label="Sections">
+      <div class="section">Team</div>
+      <button data-view="overview">Overview</button>
+      <button data-view="team">Team &amp; new hires</button>
+      <button data-view="assign">Assign trainings</button>
+      <button data-view="retraining">Expiring &amp; retakes</button>
+      <button data-view="insights">Compliance &amp; gaps</button>
+      <div class="section">Roles</div>
+      <button data-view="roleplans">Role plans</button>
+      <button data-view="interviews">Interview reviews</button>
+      <div class="section">Talent</div>
+      <button data-view="roles">Open roles</button>
+      <button data-view="promotions">Promotion readiness</button>
+      <div class="section admin-only hidden">Data</div>
+      <button data-view="data" class="admin-only hidden">Data sources</button>
+    <p class="small muted" style="padding:12px">Fictional/demo manager data and readiness estimates. The resource diagnostic is available from My trainings and does not certify readiness or complete required training.</p></nav>
+    <main id="view"></main>
+  </div>
+  <script type="module" src="./app.js?v=20261024e"></script>
+</body>
+</html>

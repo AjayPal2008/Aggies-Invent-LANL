@@ -1,0 +1,27 @@
+Project Lead (Level 3) - Computer, Computational & Statistical Sciences (CCS)
+SAMPLE JOB DESCRIPTION FOR THE PROTOTYPE
+
+Summary
+The Project Lead plans, delivers and reports on research and software projects of $1-10 million for national security sponsors. You lead a cross-functional team of 6-15 scientists and engineers, own scope, schedule, cost, risk and safety, and are the main point of contact for the sponsor.
+
+Responsibilities
+- Write and maintain the project charter, work breakdown structure and resource-loaded schedule
+- Manage budget, contingency and monthly earned value reporting; explain variances over 10 percent
+- Run the risk register and monthly risk reviews
+- Integrate safety, conduct of operations and quality assurance into project plans
+- Lead the team: set expectations, give feedback, resolve conflict, manage workload
+- Communicate with sponsors and stakeholders, including delivering bad news early
+- Manage procurements and subcontractors
+- Make sure export control and information security requirements are met
+- Run change control and closeout, and capture lessons learned
+
+Required qualifications
+- 5+ years of relevant experience, including at least 2 years leading projects or technical teams
+- BS in a technical field; MS preferred
+- Experience with project planning, risk management, budget management and stakeholder communication
+- Ability to obtain and maintain a Q clearance
+
+Preferred
+- PMP or equivalent certification
+- Experience with earned value management
+- Familiarity with quality assurance and export control

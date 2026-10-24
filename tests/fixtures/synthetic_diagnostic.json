@@ -1,0 +1,3035 @@
+{
+  "notice": "SYNTHETIC OFFLINE TEST FIXTURE ONLY. NOT REAL APPROVED TRAINING DATA.",
+  "source": {
+    "topic-0": {
+      "data": {
+        "id": "topic-0",
+        "title": "topic-0",
+        "required": true,
+        "source": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0"
+        },
+        "key_points": [
+          {
+            "id": "kp1",
+            "point": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+            "explanation": "This is conceptual training, not an operational procedure.",
+            "importance": 3
+          }
+        ]
+      },
+      "raw": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+      "fingerprint": "46902d860ceedcc4093b5e22d8c1f56373ee161aa36be16c19b93e3b41f0e155"
+    },
+    "topic-1": {
+      "data": {
+        "id": "topic-1",
+        "title": "topic-1",
+        "required": true,
+        "source": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0"
+        },
+        "key_points": [
+          {
+            "id": "kp1",
+            "point": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+            "explanation": "This is conceptual training, not an operational procedure.",
+            "importance": 3
+          }
+        ]
+      },
+      "raw": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+      "fingerprint": "4d56c5a5d64b3e8c044c3414c6a4ce1825bb64e1c2f497b11da8d7ed9605d3eb"
+    },
+    "topic-2": {
+      "data": {
+        "id": "topic-2",
+        "title": "topic-2",
+        "required": false,
+        "source": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0"
+        },
+        "key_points": [
+          {
+            "id": "kp1",
+            "point": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+            "explanation": "This is conceptual training, not an operational procedure.",
+            "importance": 3
+          }
+        ]
+      },
+      "raw": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+      "fingerprint": "b8956d6d354ea1edf6f32e8dcf1780a3c994219715c85b1e1ca2006d5af185b1"
+    },
+    "topic-3": {
+      "data": {
+        "id": "topic-3",
+        "title": "topic-3",
+        "required": false,
+        "source": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0"
+        },
+        "key_points": [
+          {
+            "id": "kp1",
+            "point": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+            "explanation": "This is conceptual training, not an operational procedure.",
+            "importance": 3
+          }
+        ]
+      },
+      "raw": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+      "fingerprint": "b59a2b598bd8f8a0ce05df3d8002a6b01a55fecb5a72e4230e9d572207fa5caf"
+    }
+  },
+  "bank": {
+    "version": 1,
+    "concepts": [
+      {
+        "id": "topic-0--concept-0",
+        "article_id": "topic-0",
+        "name": "Concept 0/0",
+        "objective": "Explain and apply protective principle 0/0.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-0--concept-1",
+        "article_id": "topic-0",
+        "name": "Concept 0/1",
+        "objective": "Explain and apply protective principle 0/1.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-0--concept-2",
+        "article_id": "topic-0",
+        "name": "Concept 0/2",
+        "objective": "Explain and apply protective principle 0/2.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-1--concept-0",
+        "article_id": "topic-1",
+        "name": "Concept 1/0",
+        "objective": "Explain and apply protective principle 1/0.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-1--concept-1",
+        "article_id": "topic-1",
+        "name": "Concept 1/1",
+        "objective": "Explain and apply protective principle 1/1.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-1--concept-2",
+        "article_id": "topic-1",
+        "name": "Concept 1/2",
+        "objective": "Explain and apply protective principle 1/2.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-2--concept-0",
+        "article_id": "topic-2",
+        "name": "Concept 2/0",
+        "objective": "Explain and apply protective principle 2/0.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-2--concept-1",
+        "article_id": "topic-2",
+        "name": "Concept 2/1",
+        "objective": "Explain and apply protective principle 2/1.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-2--concept-2",
+        "article_id": "topic-2",
+        "name": "Concept 2/2",
+        "objective": "Explain and apply protective principle 2/2.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-3--concept-0",
+        "article_id": "topic-3",
+        "name": "Concept 3/0",
+        "objective": "Explain and apply protective principle 3/0.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-3--concept-1",
+        "article_id": "topic-3",
+        "name": "Concept 3/1",
+        "objective": "Explain and apply protective principle 3/1.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      },
+      {
+        "id": "topic-3--concept-2",
+        "article_id": "topic-3",
+        "name": "Concept 3/2",
+        "objective": "Explain and apply protective principle 3/2.",
+        "importance": 3,
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "prerequisites": []
+      }
+    ],
+    "questions": [
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 0-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-0--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-0--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-0--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-0--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-0--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-0--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-0--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-0--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-0--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-0--diagnostic-v1--r3"
+        },
+        "id": "topic-0--concept-0--diagnostic-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-0",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.055945+00:00",
+          "digest": "11083dff574f9a5b163673442ada9170fab03cf265bd79cd5335c2ece525fa44"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 0-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-0--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-0--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-0--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-0--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-0--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-0--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-0--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-0--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-0--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-0--follow-up-v1--r3"
+        },
+        "id": "topic-0--concept-0--follow-up-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-0",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056035+00:00",
+          "digest": "1a47bf4a270f65a659649cbdd25a04f5faf4f5632da731ef1df00368040b93f3"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 0-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-0--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-0--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-0--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-0--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-0--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-0--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-0--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-0--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-0--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-0--post-training-v1--r3"
+        },
+        "id": "topic-0--concept-0--post-training-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-0",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056095+00:00",
+          "digest": "96c5bdab1bf5d5af4effa82d8df46941229644ba2cfd54a31b6cc2dc79e724d8"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 0-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-1--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-1--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-1--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-1--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-1--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-1--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-1--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-1--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-1--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-1--diagnostic-v1--r3"
+        },
+        "id": "topic-0--concept-1--diagnostic-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-1",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056148+00:00",
+          "digest": "620aea34d7744c62e2dfc67f3bc29f56341c57721ed0c76c247b1eda9eb1cf61"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 0-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-1--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-1--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-1--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-1--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-1--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-1--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-1--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-1--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-1--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-1--follow-up-v1--r3"
+        },
+        "id": "topic-0--concept-1--follow-up-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-1",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056198+00:00",
+          "digest": "88a2e1754487b587e1dcc440b1c220656e817ff39663f9b2138965fa99ef3901"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 0-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-1--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-1--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-1--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-1--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-1--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-1--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-1--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-1--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-1--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-1--post-training-v1--r3"
+        },
+        "id": "topic-0--concept-1--post-training-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-1",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056303+00:00",
+          "digest": "8e72701411ab97e943010a8f63138756d79003e4a891607a52249dd5a0d7990a"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 0-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-2--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-2--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-2--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-2--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-2--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-2--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-2--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-2--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-2--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-2--diagnostic-v1--r3"
+        },
+        "id": "topic-0--concept-2--diagnostic-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-2",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056409+00:00",
+          "digest": "4712299c48e09aca45b606b79e067dfffb1fcbd489119aae3f5903ba406e9493"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 0-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-2--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-2--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-2--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-2--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-2--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-2--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-2--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-2--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-2--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-2--follow-up-v1--r3"
+        },
+        "id": "topic-0--concept-2--follow-up-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-2",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056486+00:00",
+          "digest": "7bcf8eb94a5ce7aa88200a2b890ade20b4d49bbe94ae6b0ceb501c3027a6204d"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 0-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 0 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-0--concept-2--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-0--concept-2--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-0--concept-2--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-0--concept-2--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-0--concept-2--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-0--concept-2--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-0--concept-2--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-0--concept-2--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-0--concept-2--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-0--concept-2--post-training-v1--r3"
+        },
+        "id": "topic-0--concept-2--post-training-v1",
+        "article_id": "topic-0",
+        "objective_id": "topic-0--concept-2",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056558+00:00",
+          "digest": "3e8afc05f1a79c93193aa4250c74ea1db6b551483a5c69ffd5ff145c82105c6e"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_0",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 1-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-0--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-0--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-0--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-0--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-0--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-0--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-0--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-0--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-0--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-0--diagnostic-v1--r3"
+        },
+        "id": "topic-1--concept-0--diagnostic-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-0",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056625+00:00",
+          "digest": "320e4872d4a018466aa9b7a362c0256033c175298cb87aa86609303220252a56"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 1-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-0--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-0--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-0--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-0--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-0--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-0--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-0--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-0--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-0--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-0--follow-up-v1--r3"
+        },
+        "id": "topic-1--concept-0--follow-up-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-0",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056696+00:00",
+          "digest": "0f19c50a65ba62a13ccabb47240b5ef685700796e9107ce5c2ed0fde9b720a32"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 1-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-0--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-0--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-0--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-0--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-0--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-0--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-0--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-0--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-0--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-0--post-training-v1--r3"
+        },
+        "id": "topic-1--concept-0--post-training-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-0",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056760+00:00",
+          "digest": "a9149eaa7525da0642a248a0ff5244ad241151254bc6a0568ef8a3384b37b0ce"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 1-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-1--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-1--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-1--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-1--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-1--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-1--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-1--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-1--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-1--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-1--diagnostic-v1--r3"
+        },
+        "id": "topic-1--concept-1--diagnostic-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-1",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056824+00:00",
+          "digest": "150d5d12a7a7e440199c9303728daf4021cf38bffb1bd4c537175c8aece2bb34"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 1-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-1--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-1--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-1--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-1--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-1--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-1--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-1--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-1--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-1--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-1--follow-up-v1--r3"
+        },
+        "id": "topic-1--concept-1--follow-up-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-1",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056887+00:00",
+          "digest": "1fe8f9ac10e0fdd4095877713b893c7ff09f90223c72fa5462096cea09cf4cd0"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 1-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-1--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-1--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-1--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-1--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-1--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-1--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-1--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-1--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-1--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-1--post-training-v1--r3"
+        },
+        "id": "topic-1--concept-1--post-training-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-1",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.056950+00:00",
+          "digest": "be35d7fb825a0681fd25e1c668163af1be03903a9c8c4f404a06c81e568e0582"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 1-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-2--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-2--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-2--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-2--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-2--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-2--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-2--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-2--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-2--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-2--diagnostic-v1--r3"
+        },
+        "id": "topic-1--concept-2--diagnostic-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-2",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057013+00:00",
+          "digest": "163ce529452639bd3bdf7f719e1183a2f306b0a69887ee93840c14b9eb3c5db8"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 1-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-2--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-2--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-2--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-2--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-2--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-2--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-2--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-2--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-2--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-2--follow-up-v1--r3"
+        },
+        "id": "topic-1--concept-2--follow-up-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-2",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057076+00:00",
+          "digest": "3b238678d1410c22fe399cf7404e7970119975c35cbd4918ed82f92f59b756ce"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 1-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 1 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-1--concept-2--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-1--concept-2--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-1--concept-2--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-1--concept-2--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-1--concept-2--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-1--concept-2--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-1--concept-2--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-1--concept-2--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-1--concept-2--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-1--concept-2--post-training-v1--r3"
+        },
+        "id": "topic-1--concept-2--post-training-v1",
+        "article_id": "topic-1",
+        "objective_id": "topic-1--concept-2",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057139+00:00",
+          "digest": "165b63ba4edf1e5d0c78637878265e1cbf2e71fbf06631d778132806f0d7f46b"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_1",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 2-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-0--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-0--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-0--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-0--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-0--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-0--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-0--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-0--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-0--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-0--diagnostic-v1--r3"
+        },
+        "id": "topic-2--concept-0--diagnostic-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-0",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057201+00:00",
+          "digest": "14fa09a2378f813320f4a33789457a7d48340c012688f1da8b9dd948d4821939"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 2-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-0--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-0--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-0--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-0--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-0--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-0--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-0--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-0--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-0--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-0--follow-up-v1--r3"
+        },
+        "id": "topic-2--concept-0--follow-up-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-0",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057265+00:00",
+          "digest": "b22964d2f85fb4f9d83c5644162bc143b491ebc2ab3864553a5d98f633decc52"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 2-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-0--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-0--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-0--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-0--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-0--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-0--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-0--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-0--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-0--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-0--post-training-v1--r3"
+        },
+        "id": "topic-2--concept-0--post-training-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-0",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057328+00:00",
+          "digest": "ce9701e8accf8237b692fb61f391db6411046c72dcc513dcf26e1de7b074cd6f"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 2-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-1--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-1--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-1--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-1--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-1--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-1--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-1--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-1--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-1--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-1--diagnostic-v1--r3"
+        },
+        "id": "topic-2--concept-1--diagnostic-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-1",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057378+00:00",
+          "digest": "c1ae82d57f93d59f144ee097fec2e1b031c21b640b42d47e481d5586bcbf4b17"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 2-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-1--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-1--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-1--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-1--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-1--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-1--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-1--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-1--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-1--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-1--follow-up-v1--r3"
+        },
+        "id": "topic-2--concept-1--follow-up-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-1",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057426+00:00",
+          "digest": "b3c7a4d1409a76fa33f960e3d5a0382296d79d145cde5bd260a6c032beaefb87"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 2-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-1--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-1--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-1--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-1--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-1--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-1--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-1--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-1--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-1--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-1--post-training-v1--r3"
+        },
+        "id": "topic-2--concept-1--post-training-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-1",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057474+00:00",
+          "digest": "d4ad2dd33e2dd29f7d9e3f1ffb215fd7d05cddd5e9159e84df2824be890945e6"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 2-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-2--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-2--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-2--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-2--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-2--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-2--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-2--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-2--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-2--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-2--diagnostic-v1--r3"
+        },
+        "id": "topic-2--concept-2--diagnostic-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-2",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057523+00:00",
+          "digest": "84f0c0b21ae516048e37ab5f953d11478fc936e37926930bdf2545c169dbadf6"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 2-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-2--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-2--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-2--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-2--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-2--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-2--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-2--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-2--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-2--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-2--follow-up-v1--r3"
+        },
+        "id": "topic-2--concept-2--follow-up-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-2",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057572+00:00",
+          "digest": "2afefce1a7c7c386b6e3aea97cd3c5f725a460115db35662a116ff6fdb299f9e"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 2-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 2 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-2--concept-2--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-2--concept-2--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-2--concept-2--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-2--concept-2--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-2--concept-2--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-2--concept-2--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-2--concept-2--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-2--concept-2--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-2--concept-2--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-2--concept-2--post-training-v1--r3"
+        },
+        "id": "topic-2--concept-2--post-training-v1",
+        "article_id": "topic-2",
+        "objective_id": "topic-2--concept-2",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057624+00:00",
+          "digest": "668e79b11da24b838d3988265ff7452003f36f179c41516d34187edec91e1a87"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_2",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 3-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-0--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-0--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-0--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-0--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-0--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-0--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-0--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-0--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-0--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-0--diagnostic-v1--r3"
+        },
+        "id": "topic-3--concept-0--diagnostic-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-0",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057795+00:00",
+          "digest": "1f8ad7beb9376c327318a490a548c4affb5ec1dcca5a6d6a5c568e7d6578cf86"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 3-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-0--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-0--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-0--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-0--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-0--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-0--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-0--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-0--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-0--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-0--follow-up-v1--r3"
+        },
+        "id": "topic-3--concept-0--follow-up-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-0",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057898+00:00",
+          "digest": "8768a650f47eb884d9352d64b3e40514f20e10a3564a3560b1907c09225187e6"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 3-0: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-0--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-0--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-0--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-0--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-0--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-0--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-0--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-0--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-0--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-0--post-training-v1--r3"
+        },
+        "id": "topic-3--concept-0--post-training-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-0",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.057977+00:00",
+          "digest": "0156f5e92d349d96b4d7cb388b29337bcf41990237b1b8d47979a58becdfbdf8"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 3-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-1--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-1--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-1--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-1--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-1--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-1--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-1--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-1--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-1--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-1--diagnostic-v1--r3"
+        },
+        "id": "topic-3--concept-1--diagnostic-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-1",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.058045+00:00",
+          "digest": "ee11a88f33def3c490c3e5cd94f701bfc70898180ed4dd632cbf05fc8327b807"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 3-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-1--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-1--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-1--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-1--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-1--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-1--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-1--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-1--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-1--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-1--follow-up-v1--r3"
+        },
+        "id": "topic-3--concept-1--follow-up-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-1",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.058107+00:00",
+          "digest": "fd9b889169de3916151f741a50566c8499dc6c87d5fb456805ad09395bf3f251"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 3-1: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-1--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-1--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-1--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-1--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-1--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-1--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-1--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-1--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-1--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-1--post-training-v1--r3"
+        },
+        "id": "topic-3--concept-1--post-training-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-1",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.058172+00:00",
+          "digest": "dd29e4cbbf2e45257e6209aa7c1a8b61260267b57b85dffe6b3bea337f68a1c6"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "diagnostic",
+        "fictional": true,
+        "scenario": "Fictional diagnostic situation 3-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-2--diagnostic-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-2--diagnostic-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-2--diagnostic-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-2--diagnostic-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-2--diagnostic-v1--a1",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-2--diagnostic-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-2--diagnostic-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-2--diagnostic-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-2--diagnostic-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-2--diagnostic-v1--r3"
+        },
+        "id": "topic-3--concept-2--diagnostic-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-2",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.058241+00:00",
+          "digest": "dab56da5088c5dc0e94d564287bc12287cf848fe20c90bbceb33ae3f28761c81"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "follow-up",
+        "fictional": true,
+        "scenario": "Fictional follow-up situation 3-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-2--follow-up-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-2--follow-up-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-2--follow-up-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-2--follow-up-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-2--follow-up-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-2--follow-up-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-2--follow-up-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-2--follow-up-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-2--follow-up-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-2--follow-up-v1--r3"
+        },
+        "id": "topic-3--concept-2--follow-up-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-2",
+        "level": "foundation",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.058295+00:00",
+          "digest": "94b59e5f6a0a1b0d3de5792db50ee832e3c1fd9abb8758675091c132b14ee176"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      },
+      {
+        "role": "post-training",
+        "fictional": true,
+        "scenario": "Fictional post-training situation 3-2: a learner compares a barrier with no barrier.",
+        "question": "Which conclusion follows from the principle?",
+        "resource_point_ids": [
+          "kp1"
+        ],
+        "excerpt_source": "knowledge",
+        "source_excerpt": "Topic 3 principle explains how a protective barrier reduces the stated fictional hazard.",
+        "options": [
+          {
+            "id": "topic-3--concept-2--post-training-v1--a1",
+            "text": "Answer a",
+            "explanation": "Answer explanation a"
+          },
+          {
+            "id": "topic-3--concept-2--post-training-v1--a2",
+            "text": "Answer b",
+            "explanation": "Answer explanation b"
+          },
+          {
+            "id": "topic-3--concept-2--post-training-v1--a3",
+            "text": "Answer c",
+            "explanation": "Answer explanation c"
+          },
+          {
+            "id": "topic-3--concept-2--post-training-v1--a4",
+            "text": "Answer d",
+            "explanation": "Answer explanation d"
+          }
+        ],
+        "correct_option_id": "topic-3--concept-2--post-training-v1--a2",
+        "why": {
+          "question": "Why is it appropriate rather than the plausible alternative?",
+          "options": [
+            {
+              "id": "topic-3--concept-2--post-training-v1--r1",
+              "text": "Reason a",
+              "explanation": "Reason explanation a"
+            },
+            {
+              "id": "topic-3--concept-2--post-training-v1--r2",
+              "text": "Reason b",
+              "explanation": "Reason explanation b"
+            },
+            {
+              "id": "topic-3--concept-2--post-training-v1--r3",
+              "text": "Reason c",
+              "explanation": "Reason explanation c"
+            },
+            {
+              "id": "topic-3--concept-2--post-training-v1--r4",
+              "text": "Reason d",
+              "explanation": "Reason explanation d"
+            }
+          ],
+          "correct_option_id": "topic-3--concept-2--post-training-v1--r3"
+        },
+        "id": "topic-3--concept-2--post-training-v1",
+        "article_id": "topic-3",
+        "objective_id": "topic-3--concept-2",
+        "level": "application",
+        "review": {
+          "status": "approved",
+          "reviewer": "Offline human-review fixture",
+          "note": "",
+          "reviewed_at": "2026-10-24T18:17:24.058352+00:00",
+          "digest": "66f0672a4c4cf2a3cc77a582b5d7ec5ed46f9f9b30151116447b82fe65701b1b"
+        },
+        "attribution": {
+          "name": "Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Topic_3",
+          "license": "CC BY-SA 4.0",
+          "adaptation": "AI-assisted fictional training scenario; manually review before use."
+        }
+      }
+    ],
+    "resource_fingerprints": {
+      "topic-0": "46902d860ceedcc4093b5e22d8c1f56373ee161aa36be16c19b93e3b41f0e155",
+      "topic-1": "4d56c5a5d64b3e8c044c3414c6a4ce1825bb64e1c2f497b11da8d7ed9605d3eb",
+      "topic-2": "b8956d6d354ea1edf6f32e8dcf1780a3c994219715c85b1e1ca2006d5af185b1",
+      "topic-3": "b59a2b598bd8f8a0ce05df3d8002a6b01a55fecb5a72e4230e9d572207fa5caf"
+    },
+    "generation_errors": []
+  }
+}
