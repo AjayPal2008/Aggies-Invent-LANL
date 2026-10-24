@@ -60,3 +60,14 @@ def results(session_id: str, response: Response, user=Depends(current_user), sto
 @router.get("/latest-completed")
 def latest_completed(response: Response, user=Depends(current_user), store: SessionStore = Depends(get_store)):
     return run(response, store.latest_completed, user.id)
+
+
+@router.get("/review-courses")
+def review_courses(response: Response, user=Depends(current_user), store: SessionStore = Depends(get_store)):
+    return run(response, store.review_courses, user.id)
+
+
+@router.post("/sessions/{session_id}/review-courses/{objective_id}/complete")
+def complete_review(session_id: str, objective_id: str, response: Response,
+                    user=Depends(current_user), store: SessionStore = Depends(get_store)):
+    return run(response, store.complete_review, session_id, objective_id, user.id)

@@ -114,6 +114,9 @@ class _Connection:
 
 
 SCHEMA = (
+    """CREATE TABLE IF NOT EXISTS diagnostic_course_reviews (
+        session_id TEXT NOT NULL, objective_id TEXT NOT NULL, reviewed_at TEXT NOT NULL,
+        PRIMARY KEY(session_id, objective_id))""",
     """CREATE TABLE IF NOT EXISTS diagnostic_sessions (
         id TEXT PRIMARY KEY, owner INTEGER NOT NULL, snapshot TEXT NOT NULL,
         responses TEXT NOT NULL, report TEXT NOT NULL)""",
@@ -225,6 +228,43 @@ class SessionStore:
             db.execute("INSERT INTO diagnostic_submissions VALUES(?,?,?,?)",
                        (session_id, payload["question_id"], fingerprint, json.dumps(result)))
             return result
+
+    def review_courses(self, owner):
+        latest = self.latest_completed(owner)
+        if not latest["available"]:
+            return {"session_id": None, "courses": []}
+        report = latest["report"]
+        with self.connection() as db:
+            row = self.owned(db, report["session_id"], owner)
+            source = json.loads(row["snapshot"])["source"]
+            reviewed = {r["objective_id"] for r in db.execute(
+                "SELECT objective_id FROM diagnostic_course_reviews WHERE session_id=?", (report["session_id"],)).fetchall()}
+        objectives = {o["objective_id"]: o for o in report["objectives"]}
+        courses = []
+        for cid in report["review_priority"]:
+            objective = objectives[cid]
+            resource = source[objective["article_id"]]["data"]
+            refs = objective["review_resources"]["resource_point_ids"]
+            courses.append({"id": cid, "title": objective["name"], "article_id": objective["article_id"],
+                "importance": objective["importance"], "objective": objective["objective"],
+                "observed_gap": objective["observed_gap"], "recommended_review": objective["recommended_review"],
+                "status": "reviewed" if cid in reviewed else "not_started",
+                "source_excerpt": objective["review_resources"]["excerpt"], "attribution": resource["source"],
+                "key_points": [{"id": point["id"], "point": point["point"], "explanation": point["explanation"]}
+                               for point in resource["key_points"] if point["id"] in refs]})
+        return {"session_id": report["session_id"], "courses": courses}
+
+    def complete_review(self, session_id, objective_id, owner):
+        from datetime import datetime, timezone
+        courses = self.review_courses(owner)
+        if courses["session_id"] != session_id or objective_id not in {c["id"] for c in courses["courses"]}:
+            raise DiagnosticError(404, "Review course not found in your current learning path")
+        with self.connection() as db:
+            self.owned(db, session_id, owner)
+            db.execute("INSERT INTO diagnostic_course_reviews VALUES(?,?,?) ON CONFLICT(session_id,objective_id) DO NOTHING",
+                       (session_id, objective_id, datetime.now(timezone.utc).isoformat()))
+        return {"status": "reviewed", "objective_id": objective_id,
+                "message": "Material reviewed. Understanding requires a separate assessment."}
 
     def latest_completed(self, owner):
         """Owner-scoped saved evidence; independent of the browser and current bank."""

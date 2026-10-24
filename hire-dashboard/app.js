@@ -21,9 +21,7 @@ const LEVEL_LABEL = { intro: "Introductory", intermediate: "Intermediate", advan
 
 async function overview() {
   loading(view);
-  let newEmployee = new URLSearchParams(location.search).get("new_employee") === "1";
-  try { newEmployee ||= sessionStorage.getItem("lanl_employee_path") === "new"; } catch { /* optional browser storage */ }
-  if (newEmployee && me.email?.toLowerCase() === "hire@lanl.gov") {
+  if (isNewEmployee()) {
     await diagnosticOverview();
     return;
   }
@@ -64,6 +62,46 @@ async function overview() {
   wirePathButtons();
 }
 
+function isNewEmployee() {
+  let selected = new URLSearchParams(location.search).get("new_employee") === "1";
+  try { selected ||= sessionStorage.getItem("lanl_employee_path") === "new"; } catch { /* optional storage */ }
+  return selected && me.email?.toLowerCase() === "hire@lanl.gov";
+}
+
+async function diagnosticTrainings() {
+  loading(view);
+  try {
+    const data = await api.get("/api/diagnostic/review-courses");
+    view.innerHTML = `<div class="card-head"><h1>My trainings</h1></div>
+      <p class="muted">Source-based review courses from Your learning path, ordered by diagnostic priority. Reviewing material does not establish mastery or complete required training.</p>
+      <div class="list">${data.courses.map(c => `<section class="card"><div class="card-head"><h2>${esc(c.title)}</h2><span class="badge ${c.status === "reviewed" ? "ok" : "warn"}">${c.status === "reviewed" ? "Material reviewed" : "Needs review"}</span></div>
+        <p class="small muted">${esc(c.article_id.replaceAll("-", " "))} ? Priority ${c.importance}</p><p>${esc(c.observed_gap)}</p>
+        <button class="btn" data-review-course="${esc(c.id)}">${c.status === "reviewed" ? "Review again" : "Start review course"}</button></section>`).join("") || `<section class="card"><p>${data.session_id ? "No review courses were indicated by your latest diagnostic. Untested concepts remain unassessed." : "Complete a diagnostic to build your courses. No learning gaps have been assessed yet."}</p><button class="btn" id="courses-diagnostic">Take diagnostic</button></section>`}</div>`;
+    $("#courses-diagnostic")?.addEventListener("click", () => go("diagnostic"));
+    $$("[data-review-course]", view).forEach(button => button.onclick = () => {
+      const c = data.courses.find(course => course.id === button.dataset.reviewCourse);
+      const url = /^https:\/\//i.test(c.attribution.url || "") ? esc(c.attribution.url) : "#";
+      const dialog = modal(`<div class="modal-head"><h2>${esc(c.title)}</h2><button class="btn ghost" data-close>Close</button></div>
+        <h3>Learning objective</h3><p>${esc(c.objective)}</p>
+        <div class="list">${c.key_points.map(point => `<section class="card flat"><h3>${esc(point.point)}</h3><p>${esc(point.explanation)}</p></section>`).join("")}</div>
+        <h3>Source material</h3><blockquote>${esc(c.source_excerpt)}</blockquote>
+        <p>${esc(c.recommended_review)}</p><p class="small"><a href="${url}" target="_blank" rel="noopener">${esc(c.attribution.name)}</a> ? ${esc(c.attribution.license)}</p>
+        <p class="small muted">Marking this material reviewed records your activity; it does not change diagnostic scores.</p>
+        <button class="btn" id="complete-review">Mark material reviewed</button><p id="review-error" role="alert"></p>`, { wide: true });
+      $("#complete-review", dialog.root).onclick = async event => {
+        event.target.disabled = true;
+        try {
+          await api.post(`/api/diagnostic/sessions/${encodeURIComponent(data.session_id)}/review-courses/${encodeURIComponent(c.id)}/complete`, {}, { retry: false });
+          dialog.close(); await diagnosticTrainings();
+        } catch (error) { $("#review-error", dialog.root).textContent = error.message; event.target.disabled = false; }
+      };
+    });
+  } catch (error) {
+    view.innerHTML = `<section class="card"><h1>My trainings</h1><p role="alert">${esc(error.message)}</p><button class="btn" id="courses-retry">Try again</button></section>`;
+    $("#courses-retry").onclick = diagnosticTrainings;
+  }
+}
+
 async function diagnosticOverview() {
   try {
     const latest = await api.get("/api/diagnostic/latest-completed");
@@ -88,7 +126,9 @@ async function diagnosticOverview() {
       <div class="grid" style="align-content:start"><section class="card"><div class="card-head"><h3>Knowledge gaps</h3><span class="badge">${review.length}</span></div>
       <div class="list">${review.map(o => `<div><strong>${esc(o.name)}</strong><p class="small">${esc(o.observed_gap)}</p><span class="badge warn">${esc(o.status)}</span></div>`).join("") || '<p>No observed gaps. Untested concepts remain uncertain.</p>'}</div></section>
       <section class="card"><h3>Assessment coverage</h3><p>${positive.length} concepts with evidence of understanding.</p><p>${uncertain.length} concepts not assessed.</p><p>Reasoning incorrect: ${r.questions_answered - r.reasons_correct}. Confidence adds no points.</p></section></div></div>
+      <button class="btn" id="overview-trainings" style="margin-top:16px">Open my review courses</button>
       <button class="btn secondary" id="overview-results" style="margin-top:16px">View diagnostic responses and results</button>`;
+    $("#overview-trainings").onclick = () => go("trainings");
     $("#overview-results").onclick = () => {
       localStorage.setItem(`lanl_diagnostic_${me.id}_new_employee`, r.session_id);
       localStorage.setItem(`lanl_diagnostic_${me.id}`, r.session_id);
@@ -151,6 +191,7 @@ function profileSummary(p) {
 const trainingsFilter = { category: "", required: "", status: "", flag: "", sort: "due_date" };
 
 async function trainings() {
+  if (isNewEmployee()) { await diagnosticTrainings(); return; }
   const f = trainingsFilter;
   view.innerHTML = `
     <div class="card-head"><h1>My trainings</h1></div>

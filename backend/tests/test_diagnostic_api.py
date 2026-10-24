@@ -220,3 +220,34 @@ def test_overview_latest_completed_owner_scoped_and_persistent(client, hire, man
     assert report["objectives"]
     assert_private_absent(result)
     assert client.get(url, headers=manager).json()["available"] is False
+
+
+def test_review_courses_match_path_and_persist_without_changing_scores(client, hire, manager, diagnostic):
+    store, bank, source, path, provider = diagnostic
+    url = "/api/diagnostic/review-courses"
+    assert client.get(url, headers=hire).json()["courses"] == []
+    issued = client.post("/api/diagnostic/sessions", headers=hire, json={"initial_limit": 1, "budget": 2}).json()
+    sid = issued["session_id"]
+    follow = client.post(f"/api/diagnostic/sessions/{sid}/answers", headers=hire,
+                         json=payload(bank, issued["question"], correct=False)).json()
+    assert client.get(url, headers=hire).json()["courses"] == []
+    client.post(f"/api/diagnostic/sessions/{sid}/answers", headers=hire,
+                json=payload(bank, follow["question"]))
+    before = client.get(f"/api/diagnostic/sessions/{sid}/results", headers=hire).json()
+    courses = client.get(url, headers=hire).json()
+    assert [c["id"] for c in courses["courses"]] == before["review_priority"]
+    course = courses["courses"][0]
+    assert course["key_points"] and course["source_excerpt"] and course["attribution"]
+    assert course["status"] == "not_started"
+    assert_private_absent(courses)
+    complete = f"/api/diagnostic/sessions/{sid}/review-courses/{course['id']}/complete"
+    assert client.post(complete, headers=manager).status_code == 404
+    assert client.get(url, headers=manager).json()["courses"] == []
+    assert client.post(complete, headers=hire).status_code == 200
+    assert client.post(complete, headers=hire).status_code == 200
+    app.dependency_overrides[get_store] = lambda: SessionStore(path, provider)
+    assert client.get(url, headers=hire).json()["courses"][0]["status"] == "reviewed"
+    after = client.get(f"/api/diagnostic/sessions/{sid}/results", headers=hire).json()
+    assert after["answers_correct"] == before["answers_correct"]
+    assert after["review_priority"] == before["review_priority"]
+    assert client.post(f"/api/diagnostic/sessions/{sid}/review-courses/unknown/complete", headers=hire).status_code == 404

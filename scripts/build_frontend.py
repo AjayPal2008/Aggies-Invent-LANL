@@ -84,7 +84,7 @@ def main():
                 page.feed(text)
                 scripts.extend(page.inline)
             for script in scripts:
-                for url in re.findall(r'''(?:from\s*|import\s*)["']([^"']+)["']''', script):
+                for url in re.findall(r'''(?m)^\s*(?:import|export)\s+(?:(?:\{[^}]*\}|\*\s+as\s+\w+|[\w$]+(?:\s*,\s*\{[^}]*\})?)\s+from\s*)?["']([^"'\r\n]+)["']''', script):
                     target = resolve(url, path)
                     if target is not None and not target.exists():
                         raise ValueError(f"Missing module: {path.name} -> {url}")

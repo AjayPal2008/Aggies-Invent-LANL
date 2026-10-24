@@ -121,23 +121,12 @@ export async function diagnosticResults(root, user, go) {
   loading(root);
   try {
     const report = await api.get(endpoint(id, "results"));
-    const articles = Object.keys(report.article_coverage);
     root.innerHTML = `<div class="hero"><h1>Your diagnostic evidence</h1><p>${esc(report.interpretation)}</p></div>
       <div class="grid cols-4"><div class="stat"><div class="label">Scenarios answered</div><div class="value">${report.questions_answered}</div></div>
       <div class="stat"><div class="label">Answers correct</div><div class="value">${report.answers_correct}</div></div>
       <div class="stat"><div class="label">Reasons correct</div><div class="value">${report.reasons_correct}</div></div>
       <div class="stat"><div class="label">Answers incorrect</div><div class="value">${report.questions_answered - report.answers_correct}</div></div></div>
       <section class="card" style="margin-top:16px"><h2>Recorded responses</h2><p>Reasons incorrect: ${report.questions_answered - report.reasons_correct}. Confidence adds no points.</p>${(report.answer_history || []).map((r, i) => `<p>${i + 1}. ${esc(r.question)}: answer ${esc(r.answer_text)} ? ${r.answer_correct ? "correct" : "incorrect"}; reasoning ${esc(r.reason_text)} ? ${r.reason_correct ? "correct" : "incorrect"}; confidence: ${esc(r.confidence)}</p>`).join("")}</section>
-      ${articles.map((article) => `<section class="card" style="margin-top:16px"><h2>${esc(article.replaceAll("-", " "))}</h2>
-        <p class="muted">${report.article_coverage[article].tested} / ${report.article_coverage[article].mapped} mapped concepts tested${report.article_coverage[article].mapped ? "" : "; not assessed — this topic has no mapped questions in the current bank"}</p>
-        <div class="list">${report.objectives.filter((o) => o.article_id === article).map((o) => `<details class="card flat"><summary><strong>${esc(o.name)}</strong> · ${esc(o.status)}</summary>
-          <p>${esc(o.objective)}</p><p>Foundation: ${esc(o.evidence.foundation)} · Application: ${esc(o.evidence.application)} · Reasoning: ${esc(o.evidence.reasoning)}</p>
-          <p>Foundation reasoning: ${esc(o.evidence.foundation_reasoning)}</p><p><strong>Observed gap:</strong> ${esc(o.observed_gap)}</p>
-          <p><strong>Recommended review:</strong> ${esc(o.recommended_review)}</p><p><strong>Untested:</strong> ${esc(o.untested.join(", ") || "none of these diagnostic components")}; post-training transfer remains untested.</p>
-          ${o.followup_unavailable ? `<p>${esc(o.followup_unavailable)}</p>` : ""}
-          <blockquote>${esc(o.review_resources.excerpt)}</blockquote><p class="small">Resource points: ${o.review_resources.resource_point_ids.map(esc).join(", ")} ·
-          <a href="${link(o.review_resources.source.url)}" target="_blank" rel="noopener">${esc(o.review_resources.source.name)}</a> · ${esc(o.review_resources.source.license)}</p>
-        </details>`).join("")}</div></section>`).join("")}
       <section class="card" style="margin-top:16px"><h2>Required training — separate obligations</h2>${report.required_training.map((o) => `<p>${esc(o.article_id)}: ${o.required ? "required" : "optional"} · ${esc(o.completion)}</p>`).join("")}</section>
       <button class="btn" id="diagnostic-overview" style="margin-top:16px">Go to Overview</button>
       <button class="btn secondary" id="diagnostic-new" style="margin-top:16px">Start a new diagnostic</button>`;
