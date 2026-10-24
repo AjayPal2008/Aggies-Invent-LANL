@@ -103,7 +103,8 @@ def sync_library(db: Session) -> dict:
                 stats["division_requirements"] += 1
     if not db.scalar(select(models.LibraryRole.key)):
         for r in m["roles"]:
-            db.add(models.LibraryRole(key=r["key"], title=r["title"], family=r["family"], description=r["description"], programs=r["in"]))
+            db.add(models.LibraryRole(key=r["key"], title=r["title"], family=r["family"], description=r["description"], programs=r["in"],
+                                      skills=r.get("skills", [])))
             stats["roles"] += 1
             for it in r["requirements"]:
                 db.add(models.RoleRequirement(role_key=r["key"], program=None, training_code=it["code"], kind=it["kind"],
@@ -114,6 +115,10 @@ def sync_library(db: Session) -> dict:
                     db.add(models.RoleRequirement(role_key=r["key"], program=program, training_code=it["code"], kind=it["kind"],
                                                   phase=it["phase"], reason=it.get("reason", "")))
                     stats["role_requirements"] += 1
+    for r in m["roles"]:  # roles created before skills were tracked get the catalog's starting list
+        row = db.get(models.LibraryRole, r["key"])
+        if row is not None and not row.skills and r.get("skills"):
+            row.skills = r["skills"]
     # Sample-catalog courses that roles use are role trainings.
     used_by_roles = set(db.scalars(select(models.RoleRequirement.training_code)))
     db.flush()
@@ -202,7 +207,8 @@ def import_material(db: Session, mat: models.TrainingMaterial) -> models.Trainin
 
 
 def import_all(db: Session, training_code: str | None = None) -> dict:
-    q = select(models.TrainingMaterial).where(models.TrainingMaterial.document_id.is_(None), models.TrainingMaterial.kind == "pdf")
+    q = select(models.TrainingMaterial).where(models.TrainingMaterial.document_id.is_(None), models.TrainingMaterial.kind == "pdf",
+                                              models.TrainingMaterial.status != "removed")
     if training_code:
         q = q.where(models.TrainingMaterial.training_code == training_code)
     results = {"imported": 0, "failed": 0, "errors": []}
@@ -231,10 +237,27 @@ def add_uploaded(db: Session, training_code: str, path: Path, title: str, filena
     return mat
 
 
+def replace_file(db: Session, mat: models.TrainingMaterial, path: Path, filename: str, uploader_id: int | None) -> models.TrainingMaterial:
+    """Swap in a newer file for a material. A catalog link keeps its URL (so the library doesn't re-add it) but uses the new file."""
+    kind = {".pdf": "pdf", ".pptx": "pptx", ".docx": "docx"}.get(path.suffix.lower(), "text")
+    doc = documents.save_document(db, path, mat.title, "manual", None, uploader_id)
+    doc.filename, doc.training_code = filename, mat.training_code
+    doc.analysis = {"stored_as": path.name, "replaces_material": mat.id}
+    linked = not mat.url.startswith("upload:")
+    mat.kind, mat.document_id, mat.error = kind, doc.id, doc.error
+    mat.status = "failed" if doc.status == "failed" else ("replaced" if linked else "uploaded")
+    if not linked:
+        mat.url = f"upload:{path.name}"
+    mat.sha256, mat.bytes, mat.retrieved_at = hashlib.sha256(path.read_bytes()).hexdigest(), path.stat().st_size, datetime.utcnow()
+    db.commit()
+    return mat
+
+
 def primary_document(db: Session, training_code: str) -> models.Document | None:
     """The richest material for a training (most words) is what the AI builds the course from."""
     docs = [db.get(models.Document, m.document_id) for m in db.scalars(select(models.TrainingMaterial).where(
-        models.TrainingMaterial.training_code == training_code, models.TrainingMaterial.document_id.is_not(None)))]
+        models.TrainingMaterial.training_code == training_code, models.TrainingMaterial.document_id.is_not(None),
+        models.TrainingMaterial.status != "removed"))]
     docs = [d for d in docs if d and d.status != "failed" and d.words >= 30]
     return max(docs, key=lambda d: d.words) if docs else None
 

@@ -37,7 +37,8 @@ def _training(db: Session, code: str) -> models.Training:
 
 def _materials(db: Session) -> dict[str, list[models.TrainingMaterial]]:
     out: dict[str, list] = {}
-    for m in db.scalars(select(models.TrainingMaterial).order_by(models.TrainingMaterial.id)):
+    for m in db.scalars(select(models.TrainingMaterial).where(models.TrainingMaterial.status != "removed")
+                        .order_by(models.TrainingMaterial.id)):
         out.setdefault(m.training_code, []).append(m)
     return out
 
@@ -184,6 +185,16 @@ async def upload_material(code: str, file: UploadFile = File(...), title: str = 
                           admin: models.Employee = Depends(require_admin), db: Session = Depends(get_db)):
     """Attach a PDF, slide deck (.pptx), Word file or text to a training."""
     _training(db, code)
+    dest = _save_upload(file)
+    try:
+        m = library.add_uploaded(db, code, dest, title or Path(file.filename).stem, file.filename or dest.name, admin.id)
+    except ValueError as exc:
+        dest.unlink(missing_ok=True)
+        raise HTTPException(400, str(exc))
+    return _material_json(m)
+
+
+def _save_upload(file: UploadFile) -> Path:
     suffix = Path(file.filename or "").suffix.lower()
     if suffix not in {".pdf", ".pptx", ".docx", ".txt", ".md"}:
         raise HTTPException(400, "Upload a PDF, .pptx, .docx, .txt or .md file")
@@ -195,23 +206,73 @@ async def upload_material(code: str, file: UploadFile = File(...), title: str = 
     if dest.stat().st_size > settings.max_upload_mb * 1024 * 1024:
         dest.unlink()
         raise HTTPException(413, f"Files over {settings.max_upload_mb} MB aren't accepted")
+    return dest
+
+
+def _material(db: Session, material_id: int) -> models.TrainingMaterial:
+    m = db.get(models.TrainingMaterial, material_id)
+    if m is None or m.status == "removed":
+        raise HTTPException(404, "Material not found")
+    return m
+
+
+class MaterialIn(BaseModel):
+    title: str
+
+
+@router.patch("/materials/{material_id}")
+def rename_material(material_id: int, body: MaterialIn, admin: models.Employee = Depends(require_admin), db: Session = Depends(get_db)):
+    m = _material(db, material_id)
+    if not body.title.strip():
+        raise HTTPException(400, "Give the material a title")
+    m.title = body.title.strip()[:300]
+    db.commit()
+    return _material_json(m)
+
+
+@router.post("/materials/{material_id}/file")
+async def replace_material(material_id: int, file: UploadFile = File(...), admin: models.Employee = Depends(require_admin),
+                           db: Session = Depends(get_db)):
+    """Upload a newer version of a material (for example this year's manual). Rebuild lessons afterwards."""
+    m = _material(db, material_id)
+    dest = _save_upload(file)
     try:
-        m = library.add_uploaded(db, code, dest, title or Path(file.filename).stem, file.filename or dest.name, admin.id)
+        library.replace_file(db, m, dest, file.filename or dest.name, admin.id)
     except ValueError as exc:
         dest.unlink(missing_ok=True)
         raise HTTPException(400, str(exc))
     return _material_json(m)
 
 
+@router.post("/materials/{material_id}/refresh")
+def refresh_material(material_id: int, background: BackgroundTasks, admin: models.Employee = Depends(require_admin),
+                     db: Session = Depends(get_db)):
+    """Download the official PDF again from its public link (when LANL publishes a new revision)."""
+    m = _material(db, material_id)
+    if m.url.startswith("upload:") or not library.allowed_url(m.url):
+        raise HTTPException(400, "Only materials linked to an official LANL PDF can be downloaded again")
+    m.document_id, m.status, m.error = None, "linked", ""
+    db.commit()
+    background.add_task(_refresh_job, m.id)
+    return {"id": m.id, "status": "downloading"}
+
+
+def _refresh_job(material_id: int):
+    from ..database import SessionLocal
+
+    with SessionLocal() as db:
+        if (m := db.get(models.TrainingMaterial, material_id)) is not None:
+            library.import_material(db, m)
+
+
 @router.delete("/materials/{material_id}")
 def delete_material(material_id: int, admin: models.Employee = Depends(require_admin), db: Session = Depends(get_db)):
-    m = db.get(models.TrainingMaterial, material_id)
-    if m is None:
-        raise HTTPException(404, "Material not found")
+    """Remove a material from its training. Catalog links are hidden (not re-added on the next sync); uploads are deleted."""
+    m = _material(db, material_id)
     if m.url.startswith("upload:"):
         db.delete(m)  # the admin's own upload
     else:
-        m.document_id, m.status, m.sha256, m.bytes = None, "linked", "", 0  # keep the public link, drop the local copy
+        m.document_id, m.status, m.sha256, m.bytes = None, "removed", "", 0
     db.commit()
     return {"deleted": material_id}
 
@@ -307,6 +368,7 @@ def list_roles(mgr: models.Employee = Depends(require_manager), db: Session = De
         if p.library_role:
             positions.setdefault(p.library_role, []).append({"code": p.code, "title": p.title, "division_code": p.division_code})
     return [{"key": r.key, "title": r.title, "family": r.family, "description": r.description, "programs": r.programs,
+             "skills": r.skills or [], "has_job_description": bool(r.job_description),
              "requirements": reqs.get(r.key, []), "positions": positions.get(r.key, [])}
             for r in db.scalars(select(models.LibraryRole).order_by(models.LibraryRole.family, models.LibraryRole.title))]
 
@@ -317,6 +379,8 @@ class RoleIn(BaseModel):
     family: str = ""
     description: str = ""
     programs: list[str] = []
+    skills: list[str] | None = None
+    job_description: str | None = None
 
 
 @router.post("/roles")
@@ -340,8 +404,12 @@ def update_role(key: str, body: RoleIn, admin: models.Employee = Depends(require
         raise HTTPException(404, "Role not found")
     r.title, r.family, r.description = body.title, body.family, body.description
     r.programs = [p for p in body.programs if p in library.PROGRAMS]
+    if body.skills is not None:
+        r.skills = sorted({x.strip().lower() for x in body.skills if x.strip()})
+    if body.job_description is not None:
+        r.job_description = body.job_description
     db.commit()
-    return {"key": r.key, "title": r.title, "programs": r.programs}
+    return {"key": r.key, "title": r.title, "programs": r.programs, "skills": r.skills}
 
 
 @router.post("/roles/{key}/requirements")
@@ -400,22 +468,132 @@ class PathIn(BaseModel):
     from_program: str | None = None  # for internal moves: the division they're coming from
 
 
-@router.post("/path")
-def training_path(body: PathIn, mgr: models.Employee = Depends(require_manager), db: Session = Depends(get_db)):
-    """Preview the trainings for a division + role, for a new hire vs an internal move."""
-    same = body.entry_path == "new_hire" or not body.from_program or body.from_program == body.program
+def _path(db: Session, program: str | None, role_key: str | None, entry_path: str, from_program: str | None) -> dict:
+    same = entry_path == "new_hire" or not from_program or from_program == program
     by_code = {t.code: t for t in db.scalars(select(models.Training))}
     rows = []
-    for it in library.layer_items(db, body.program, body.role_key):
+    for it in library.layer_items(db, program, role_key):
         t = by_code[it["training_code"]]
-        include = roles.audience_matches(it["audience"], body.entry_path, same)
+        include = roles.audience_matches(it["audience"], entry_path, same)
         why = it["reason"] if include else ("Institutional training continues on its annual cycle" if it["layer"] == "institutional"
                                             else "Already in this division" if it["layer"] == "division" else "Not for this path")
         rows.append({**it, "title": t.title, "category": t.category, "frequency": t.frequency, "course_number": t.course_number,
-                     "include": include, "why": why, "phase_label": roles.PHASE_LABEL.get(it["phase"], "")})
+                     "delivery": t.delivery, "duration_minutes": t.duration_minutes, "assessment_type": t.assessment_type,
+                     "skills": t.skills or [], "include": include, "why": why, "phase_label": roles.PHASE_LABEL.get(it["phase"], "")})
     layers = {k: sum(1 for r in rows if r["layer"] == k and r["include"]) for k in library.LAYERS}
-    return {"program": body.program, "role_key": body.role_key, "entry_path": body.entry_path, "same_division": same,
+    return {"program": program, "role_key": role_key, "entry_path": entry_path, "same_division": same,
             "included": sum(1 for r in rows if r["include"]), "by_layer": layers, "items": rows}
+
+
+@router.post("/path")
+def training_path(body: PathIn, mgr: models.Employee = Depends(require_manager), db: Session = Depends(get_db)):
+    """Preview the trainings for a division + role, for a new hire vs an internal move."""
+    return _path(db, body.program, body.role_key, body.entry_path, body.from_program)
+
+
+# ---- role directory: one page per role for managers -----------------------------------------
+
+def _role(db: Session, key: str) -> models.LibraryRole:
+    r = db.get(models.LibraryRole, key)
+    if r is None:
+        raise HTTPException(404, "Role not found")
+    return r
+
+
+@router.get("/roles/{key}/detail")
+def role_detail(key: str, program: str | None = None, mgr: models.Employee = Depends(require_manager), db: Session = Depends(get_db)):
+    """Everything a manager needs for one role in one division: job description, skills, and the exact
+    trainings to assign for a new hire, a promotion within the division, or a move from another division."""
+    r = _role(db, key)
+    if program and program not in library.PROGRAMS:
+        raise HTTPException(400, "program must be weapons, ste or operations")
+    program = program or (r.programs[0] if r.programs else None)
+    positions = [p for p in db.scalars(select(models.Position).where(models.Position.library_role == key))
+                 if not program or library.program_of(db, p.division_code) == program]
+    jds = [{"id": d.id, "title": d.title, "position_code": d.position_code, "pages": d.pages}
+           for d in db.scalars(select(models.Document).where(models.Document.position_code.in_([p.code for p in positions] or [""]),
+                                                             models.Document.kind == "job_description"))]
+    paths = {"new_hire": _path(db, program, key, "new_hire", None),
+             "promotion": _path(db, program, key, "promotion", program),
+             "transfer": _path(db, program, key, "transfer", next((x for x in library.PROGRAMS if x != program), None))}
+    skills: dict[str, set] = {}
+    for s_ in r.skills or []:
+        skills.setdefault(s_.lower(), set()).add("Role")
+    for p in positions:
+        for s_ in p.required_skills or []:
+            skills.setdefault(s_.lower(), set()).add(p.title)
+    for it in paths["new_hire"]["items"]:
+        if it["layer"] == "role":
+            for s_ in it["skills"]:
+                skills.setdefault(s_.lower(), set()).add(it["training_code"])
+    return {"key": r.key, "title": r.title, "family": r.family, "description": r.description, "job_description": r.job_description,
+            "programs": r.programs, "program": program, "program_names": library.program_names(),
+            "skills": [{"skill": k, "from": sorted(v)} for k, v in sorted(skills.items())],
+            "positions": [{"code": p.code, "title": p.title, "division_code": p.division_code, "level": p.level,
+                           "min_years": p.min_years, "prerequisites": p.prerequisites, "is_open": p.is_open} for p in positions],
+            "job_descriptions": jds, "paths": paths, "can_edit": mgr.role == "admin"}
+
+
+class RoleAssignIn(BaseModel):
+    program: str | None = None
+    entry_path: str = "new_hire"
+    from_program: str | None = None
+    employee_ids: list[int]
+    start_date: date | None = None
+    exclude: list[str] = []
+    position_code: str | None = None  # also move them into this position
+
+
+@router.post("/roles/{key}/assign")
+def assign_role(key: str, body: RoleAssignIn, mgr: models.Employee = Depends(require_manager), db: Session = Depends(get_db)):
+    """Assign the role's training list to the people a manager hired or is promoting into it."""
+    from datetime import timedelta
+
+    from ..auth import team_ids
+    from .content import _people
+
+    _role(db, key)
+    if body.entry_path not in ("new_hire", "promotion", "transfer"):
+        raise HTTPException(400, "entry_path must be new_hire, promotion or transfer")
+    if not body.employee_ids:
+        raise HTTPException(400, "Pick at least one person")
+    start = body.start_date or date.today()
+    path = _path(db, body.program, key, body.entry_path, body.from_program if body.entry_path != "new_hire" else None)
+    wanted = [i for i in path["items"] if i["include"] and i["training_code"] not in body.exclude]
+    by_code = {t.code: t for t in db.scalars(select(models.Training).where(models.Training.code.in_([i["training_code"] for i in wanted] or [""])))}
+    pos = None
+    if body.position_code:
+        pos = db.scalar(select(models.Position).where(models.Position.code == body.position_code))
+        if pos is None or pos.library_role != key:
+            raise HTTPException(400, "That position doesn't use this role")
+    team = team_ids(db, mgr)
+    out = []
+    for e in _people(db, mgr, body.employee_ids, allow_lab=True):
+        if e.id not in team and mgr.role != "admin":
+            e.manager_id = mgr.id  # they join this manager's team
+        if pos is not None:
+            if e.position_code != pos.code:
+                e.previous_position_code = e.position_code
+            e.position_code, e.job_title, e.division_code = pos.code, pos.title, pos.division_code or e.division_code
+        e.entry_path, e.role_start_date = body.entry_path, start
+        have = {a.training.code: a for a in e.assignments}
+        created, already = [], []
+        for it in wanted:
+            t = by_code[it["training_code"]]
+            due = start + timedelta(days=roles.PHASE_DAYS.get(it["phase"], 30))
+            a = have.get(t.code)
+            if a and a.status != "completed":
+                already.append(t.code)
+                continue
+            if a:
+                a.status, a.progress, a.due_date, a.assigned_by_id = "not_started", 0, due, mgr.id
+            else:
+                e.assignments.append(models.Assignment(training=t, assigned_by_id=mgr.id, due_date=due))
+            created.append(t.code)
+        out.append({"employee_id": e.id, "name": e.name, "assigned": created, "already_assigned": already})
+    db.commit()
+    db.info.clear()
+    return {"role_key": key, "entry_path": body.entry_path, "trainings": len(wanted), "people": out}
 
 
 class AnnualIn(BaseModel):

@@ -1554,7 +1554,17 @@
       "reason": "Coordinate material handling on facility projects"
      }
     ]
-   }
+   },
+   "skills": [
+    "project planning",
+    "scheduling",
+    "cost and risk management",
+    "earned value management",
+    "stakeholder communication",
+    "team leadership",
+    "quality assurance",
+    "safety leadership"
+   ]
   },
   {
    "key": "supervisor",
@@ -1587,6 +1597,15 @@
      "kind": "soft",
      "phase": 3
     }
+   ],
+   "skills": [
+    "people leadership",
+    "coaching and feedback",
+    "performance management",
+    "conduct of operations",
+    "work planning and control",
+    "safety leadership",
+    "conflict resolution"
    ]
   },
   {
@@ -1641,7 +1660,16 @@
       "reason": "Radiological awareness for nuclear facility work"
      }
     ]
-   }
+   },
+   "skills": [
+    "engineering design",
+    "requirements and verification",
+    "systems engineering",
+    "technical documentation",
+    "design reviews",
+    "hazard analysis",
+    "quality assurance"
+   ]
   },
   {
    "key": "scientist",
@@ -1701,7 +1729,15 @@
       "reason": "Radiological awareness for weapons science"
      }
     ]
-   }
+   },
+   "skills": [
+    "experimental design",
+    "laboratory safety",
+    "data analysis",
+    "scientific writing",
+    "chemical and hazard handling",
+    "peer review"
+   ]
   },
   {
    "key": "computational-scientist",
@@ -1738,6 +1774,14 @@
      "kind": "soft",
      "phase": 3
     }
+   ],
+   "skills": [
+    "scientific computing",
+    "simulation and modeling",
+    "data analysis",
+    "software engineering",
+    "high performance computing",
+    "cybersecurity awareness"
    ]
   },
   {
@@ -1780,6 +1824,14 @@
      "kind": "soft",
      "phase": 3
     }
+   ],
+   "skills": [
+    "conduct of operations",
+    "radiological protection",
+    "procedure adherence",
+    "nuclear criticality safety",
+    "lockout/tagout",
+    "emergency response"
    ]
   },
   {
@@ -1831,6 +1883,14 @@
      "kind": "soft",
      "phase": 3
     }
+   ],
+   "skills": [
+    "lockout/tagout",
+    "electrical safety",
+    "fall protection",
+    "hand and power tools",
+    "work planning and control",
+    "hazard recognition"
    ]
   },
   {
@@ -1882,6 +1942,14 @@
      "kind": "technical",
      "phase": 3
     }
+   ],
+   "skills": [
+    "hazardous materials shipping",
+    "DOT regulations",
+    "packaging and labeling",
+    "radioactive material transport",
+    "forklift operation",
+    "documentation"
    ]
   },
   {
@@ -1933,6 +2001,14 @@
      "kind": "soft",
      "phase": 3
     }
+   ],
+   "skills": [
+    "industrial hygiene",
+    "exposure monitoring",
+    "environmental compliance",
+    "hazard analysis",
+    "incident investigation",
+    "safety training delivery"
    ]
   }
  ],

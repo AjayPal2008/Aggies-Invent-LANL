@@ -29,6 +29,8 @@ services:
       DATABASE_URL: postgresql+psycopg://lanl:lanl@db:5432/lanl_training
       AUTO_SEED: "false"
       DATA_DIR: ${DATA_DIR:-/app/backend/data/sample}
+      # Uploads live in the "uploads" volume; Resource_File is mounted read-only below
+      UPLOAD_DIR: /app/backend/uploads
     volumes: &appvolumes
       - uploads:/app/backend/uploads
       - ./backend/data:/app/backend/data:ro

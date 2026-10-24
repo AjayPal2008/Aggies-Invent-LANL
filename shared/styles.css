@@ -346,3 +346,13 @@ tr.clickable { cursor: pointer; } tr.clickable:hover td { background: var(--navy
 /* Caption styles */
 .a11y-cap-contrast .vp-cap { background: #000; color: #ffd400; border: 2px solid #fff; font-weight: 600; }
 .a11y-cap-off .vp-cap { display: none; }
+
+/* Training library material buttons and the role directory */
+.mat-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.mat-actions label.btn { cursor: pointer; }
+.card.clickable:hover { border-color: var(--navy); background: var(--navy-tint); }
+@media print {
+  .topbar, .sidenav, .no-print, .a11y-fab { display: none !important; }
+  .shell { display: block; }
+  .card { box-shadow: none; break-inside: avoid; }
+}

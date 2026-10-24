@@ -248,8 +248,14 @@ async function trainingDetail(view, code) {
         <span class="badge ${x.status === "failed" ? "bad" : x.document_id ? "ok" : "plain"}">${x.status === "linked" ? "not imported yet" : esc(x.status)}</span>
         <div class="muted">${esc(x.kind.toUpperCase())}${x.bytes ? ` · ${(x.bytes / 1e6).toFixed(1)} MB` : ""}${x.retrieved_at ? ` · retrieved ${fmtDate(x.retrieved_at)}` : ""}
           ${x.url ? ` · <a href="${esc(x.url)}" target="_blank" rel="noopener">original</a>` : ""}</div>${x.error ? `<div style="color:var(--bad)">${esc(x.error)}</div>` : ""}</div>
-        ${x.document_id ? `<button class="btn ghost small" data-open-doc="${x.document_id}">Open</button>` : ""}
-        ${data.can_edit && x.document_id ? `<button class="btn ghost small" data-del-mat="${x.id}">${x.url ? "Remove copy" : "Delete"}</button>` : ""}</div>`).join("")}</div>`
+        <div class="mat-actions">
+          ${x.document_id ? `<button class="btn ghost small" data-open-doc="${x.document_id}" aria-label="Open ${esc(x.title)}">Open</button>` : ""}
+          ${data.can_edit ? `<button class="btn ghost small" data-rename-mat="${x.id}" data-title="${esc(x.title)}" aria-label="Rename ${esc(x.title)}">Rename</button>
+            <label class="btn ghost small" aria-label="Replace the file for ${esc(x.title)}">Replace file
+              <input type="file" data-replace-mat="${x.id}" accept=".pdf,.pptx,.docx,.txt,.md" hidden></label>
+            ${x.url ? `<button class="btn ghost small" data-refresh-mat="${x.id}" aria-label="Download ${esc(x.title)} again from LANL">${x.document_id ? "Re-download" : "Download"}</button>` : ""}
+            <button class="btn ghost small danger" data-del-mat="${x.id}" data-title="${esc(x.title)}" aria-label="Delete ${esc(x.title)}">Delete</button>` : ""}
+        </div></div>`).join("")}</div>`
       : `<p class="muted small">No materials yet.</p>`}
     ${data.can_edit ? `<div class="toolbar" style="margin-top:10px">
       ${t.materials.some((x) => !x.document_id && x.kind === "pdf") ? `<button class="btn secondary small" id="td-import">Import linked PDFs</button>` : ""}
@@ -286,8 +292,24 @@ async function trainingDetail(view, code) {
     try { window.open(await api.blobUrl(`/api/documents/${b.dataset.openDoc}/file`), "_blank"); } catch (err) { toast(err.message, true); }
   }));
   $$("[data-del-mat]", m.root).forEach((b) => b.addEventListener("click", async () => {
-    if (!confirm("Remove this material from the library?")) return;
-    await api.del(`/api/library/materials/${b.dataset.delMat}`); toast("Removed"); refresh();
+    if (!confirm(`Delete "${b.dataset.title}" from this training? Lessons already built from it stay until you rebuild.`)) return;
+    try { await api.del(`/api/library/materials/${b.dataset.delMat}`); toast("Deleted"); refresh(); } catch (err) { toast(err.message, true); }
+  }));
+  $$("[data-rename-mat]", m.root).forEach((b) => b.addEventListener("click", async () => {
+    const title = prompt("Material title", b.dataset.title);
+    if (!title || title === b.dataset.title) return;
+    try { await api.patch(`/api/library/materials/${b.dataset.renameMat}`, { title }); toast("Renamed"); refresh(); } catch (err) { toast(err.message, true); }
+  }));
+  $$("[data-replace-mat]", m.root).forEach((inp) => inp.addEventListener("change", async () => {
+    if (!inp.files.length) return;
+    const f = new FormData(); f.append("file", inp.files[0]);
+    try { await api.upload(`/api/library/materials/${inp.dataset.replaceMat}/file`, f); toast("File replaced. Rebuild lessons to use it."); refresh(); }
+    catch (err) { toast(err.message, true); }
+  }));
+  $$("[data-refresh-mat]", m.root).forEach((b) => b.addEventListener("click", async () => {
+    b.disabled = true; b.textContent = "Downloading…";
+    try { await api.post(`/api/library/materials/${b.dataset.refreshMat}/refresh`); toast("Downloading the latest copy…"); setTimeout(refresh, 3000); }
+    catch (err) { toast(err.message, true); b.disabled = false; }
   }));
 }
 

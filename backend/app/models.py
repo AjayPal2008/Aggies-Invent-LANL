@@ -364,7 +364,7 @@ class TrainingMaterial(Base):
     kind: Mapped[str] = mapped_column(String(16), default="pdf")  # pdf | pptx | docx | video | link
     title: Mapped[str] = mapped_column(String(300))
     url: Mapped[str] = mapped_column(String(600), default="")  # original public source, if any
-    status: Mapped[str] = mapped_column(String(16), default="linked")  # linked | imported | failed | uploaded
+    status: Mapped[str] = mapped_column(String(16), default="linked")  # linked | imported | failed | uploaded | replaced | removed
     document_id: Mapped[int | None] = mapped_column(ForeignKey("documents.id"), nullable=True)  # local copy, text extracted
     sha256: Mapped[str] = mapped_column(String(64), default="")
     bytes: Mapped[int] = mapped_column(Integer, default=0)
@@ -393,6 +393,8 @@ class LibraryRole(Base):
     family: Mapped[str] = mapped_column(String(48), default="")
     description: Mapped[str] = mapped_column(Text, default="")
     programs: Mapped[list] = mapped_column(JSON, default=list)  # divisions that have this role
+    skills: Mapped[list] = mapped_column(JSON, default=list)  # skills the role needs, set by the admin
+    job_description: Mapped[str] = mapped_column(Text, default="")  # full job description text
 
 
 class RoleRequirement(Base):
