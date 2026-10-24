@@ -1,9 +1,10 @@
 import {
   api, requireRole, topbar, router, esc, $, $$, fmtDate, fmtTime, dueText, statusBadge, bar, toast, modal, loading,
   CATEGORY_LABEL, DELIVERY_LABEL,
-} from "/shared/api.js?v=20261024f";
+} from "/shared/api.js?v=20261025a";
 import { videoPlayer, interviewFlow, rolePlanCard, showResult } from "./learning.js";
-import { speakButton } from "/shared/a11y.js?v=20261024f";
+import { speakButton } from "/shared/a11y.js?v=20261025a";
+import { diagnosticView, diagnosticResults } from "./diagnostic.js";
 
 const me = await requireRole(["hire", "manager", "admin"]);
 topbar(me, "My Training");
@@ -612,4 +613,9 @@ async function profile() {
   $("#save-style").onclick = async () => { await api.patch("/api/me/profile", { learning_style: $("#style").value }); toast("Saved"); dash = null; profile(); };
 }
 
-const go = router({ overview, trainings, calendar, studio: studioView, catalog, profile }, "overview");
+const go = router({ overview, trainings, calendar, studio: studioView, catalog, profile,
+  // AJ's source-grounded diagnostic: reviewed questions from the Resource_File documents.
+  // queueMicrotask: these need `go`, which isn't assigned yet if the page opens directly on #diagnostic.
+  diagnostic: () => queueMicrotask(() => diagnosticView(view, me, go)),
+  "diagnostic-results": () => queueMicrotask(() => diagnosticResults(view, me, go)),
+}, "overview");

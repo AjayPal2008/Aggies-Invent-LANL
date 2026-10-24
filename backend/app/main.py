@@ -3,9 +3,9 @@
 Run:  uvicorn app.main:app --reload   (from the backend/ folder)
 """
 import logging
+from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import exc as sa_exc, text
@@ -16,14 +16,14 @@ from sqlalchemy import func, select
 from . import models
 from .config import REPO_DIR, settings
 from .database import SessionLocal, init_db
-from .routers import admin, auth, catalog, content, hire, learn, manager
+from .routers import admin, auth, catalog, content, diagnostic, hire, learn, manager
 from . import safeguards
 from .services import ai
 
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI(title=settings.app_name, version="0.1.0")
-app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+# The API and the dashboards share one origin, so no cross-origin access is enabled.
 app.add_middleware(GZipMiddleware, minimum_size=1000)  # JSON and JS shrink 70-85%; matters when thousands load at once
 app.middleware("http")(safeguards.traffic_middleware)
 
@@ -36,7 +36,8 @@ async def database_busy(request, exc):
     return JSONResponse({"detail": "The system is busy. Please try again in a few seconds."}, status_code=503,
                         headers={"Retry-After": "5"})
 
-for r in (auth.router, catalog.router, hire.router, learn.router, manager.router, content.router, content.files_router, admin.router):
+for r in (auth.router, catalog.router, hire.router, learn.router, manager.router, content.router, content.files_router, admin.router,
+          diagnostic.router):
     app.include_router(r)
 
 
@@ -93,7 +94,8 @@ def root():
     return RedirectResponse("/login/")
 
 
-app.mount("/shared", StaticFiles(directory=REPO_DIR / "shared"), name="shared")
-app.mount("/login", StaticFiles(directory=REPO_DIR / "shared" / "login", html=True), name="login")
-app.mount("/manager", StaticFiles(directory=REPO_DIR / "manager-dashboard", html=True), name="manager")
-app.mount("/hire", StaticFiles(directory=REPO_DIR / "hire-dashboard", html=True), name="hire")
+frontend = Path(settings.frontend_dir)
+app.mount("/shared", StaticFiles(directory=frontend / "shared"), name="shared")
+app.mount("/login", StaticFiles(directory=frontend / "shared" / "login", html=True), name="login")
+app.mount("/manager", StaticFiles(directory=frontend / "manager-dashboard", html=True), name="manager")
+app.mount("/hire", StaticFiles(directory=frontend / "hire-dashboard", html=True), name="hire")

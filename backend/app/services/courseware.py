@@ -514,7 +514,8 @@ def score_readiness(db: Session, session: models.InterviewSession) -> dict:
                     review.append({"module_id": mod.id, "title": mod.title, "pages": f"{mod.page_start}-{mod.page_end}",
                                    "because": f"scenario \"{sc.title}\" scored {r.score}/9"})
     role = emp.job_title or "this role"
-    retake_by = (date.today() + timedelta(days=settings.retake_window_days)).strftime("%b %-d, %Y")
+    retake_date = date.today() + timedelta(days=settings.retake_window_days)
+    retake_by = f"{retake_date:%b} {retake_date.day}, {retake_date:%Y}"  # portable (no %-d on Windows)
     summary = {
         "ready": f"Ready to handle these situations on their own as {role}.",
         "ready_with_support": f"Can take this on as {role} with coaching on {', '.join(focus) or 'a few areas'}.",

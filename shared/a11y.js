@@ -2,7 +2,7 @@
 //
 // Settings are saved in the browser right away and, once signed in, to the person's account
 // (/api/me/accessibility) so they follow them to any device. Managers never see them.
-import { api, esc, session, toast } from "/shared/api.js?v=20261024f";
+import { api, esc, session, toast } from "/shared/api.js?v=20261025a";
 
 export const DEFAULTS = {
   textScale: 1, contrast: "standard", colorVision: "standard", font: "standard",
@@ -128,7 +128,7 @@ function check(name, label, help, on) {
 }
 
 export async function openPanel() {
-  const { modal } = await import("/shared/api.js?v=20261024f");
+  const { modal } = await import("/shared/api.js?v=20261025a");
   const s = state;
   const reduce = s.reduceMotion === undefined ? matchMedia("(prefers-reduced-motion: reduce)").matches : s.reduceMotion;
   const m = modal(`

@@ -2,7 +2,7 @@
 //   Role plans: upload a role's job description, requirements and internal documents, let the AI build
 //   courses from them, curate the role's training plan, and start people in the role.
 //   Interview reviews: read or listen to interview-style assessment answers and confirm or override the AI score.
-import { api, esc, $, $$, fmtDate, toast, modal, loading, CATEGORY_LABEL } from "/shared/api.js?v=20261024f";
+import { api, esc, $, $$, fmtDate, toast, modal, loading, CATEGORY_LABEL } from "/shared/api.js?v=20261025a";
 import { readinessCard } from "/hire/learning.js";
 
 const PHASES = { 1: "First 2 weeks", 2: "First 30 days", 3: "First 90 days" };

@@ -1,7 +1,7 @@
 import {
   api, requireRole, topbar, router, esc, $, $$, fmtDate, dueText, statusBadge, bar, toast, modal, loading,
   CATEGORY_LABEL, DELIVERY_LABEL,
-} from "/shared/api.js?v=20261024f";
+} from "/shared/api.js?v=20261025a";
 import { rolesView, interviewsView } from "./roles.js";
 
 // Hires are sent back to /hire/ here, and the API refuses them too.

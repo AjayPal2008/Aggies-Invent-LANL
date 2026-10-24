@@ -64,6 +64,16 @@ To turn on Claude for course building, lessons, videos, interview scoring, pract
 - Promotion readiness with the checks that pass or fail.
 - Data sources page (admin): connector health, sync, and CSV/JSON upload.
 
+## Source-grounded diagnostic (AJ)
+
+A second, stricter assessment path built from public source documents in [`Resource_File/`](Resource_File/) (computer security, ionizing radiation, nuclear fission, nuclear reactors; see [`Resource_File/ATTRIBUTION.md`](Resource_File/ATTRIBUTION.md)). Each question asks for an answer **and** the reasoning behind it, adapts to foundation questions when someone struggles, and reports concept-by-concept review priorities. Answers are graded on the server from a **manually reviewed** question bank; the browser never sees the answer key, and no AI is used for grading.
+
+- Hire dashboard: **Diagnostic assessment** and **Diagnostic results**.
+- API: `/api/diagnostic/*` (`status`, `sessions`, `current`, `answers`, `results`).
+- Sessions are stored in the platform database, so they work across all app workers and Docker replicas. Set `DIAGNOSTIC_DB_PATH` to use a separate SQLite file instead.
+- Setup: the reviewed bank lives in `Resource_File/cache/assessment/bank.json`, outside git. Generate it with `python scripts/generate_question_bank.py`, then review and approve each question with `python scripts/review_question_bank.py --interactive`. Until then the page explains the setup step. Full walkthrough: [ASSESSMENT_DEMO.md](ASSESSMENT_DEMO.md).
+- Pipeline scripts in [`scripts/`](scripts/) cover PDF to text, knowledge extraction and validation, and bank generation and review; `python -m pytest scripts` runs their tests.
+
 ## How the adaptation works
 
 See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). In short: per-skill knowledge tracing (Bayesian Knowledge Tracing) sets difficulty; recent accuracy sets pacing; a running success rate per delivery method, seeded by the learner's stated style, picks the format; gaps are required skills below 70% mastery; retraining dates come from assessment scores.

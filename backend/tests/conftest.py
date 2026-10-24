@@ -16,6 +16,10 @@ os.environ["DATABASE_URL"] = f"sqlite:///{_tmp / 'test.db'}"
 os.environ["DATA_DIR"] = str(_tmp / "data")
 os.environ["ANTHROPIC_API_KEY"] = ""  # tests never call the real AI
 os.environ["EMAIL_MODE"] = "preview"
+os.environ["DIRECTORY_MODE"] = "file"
+os.environ["UTRAIN_MODE"] = "file"
+os.environ["ORACLE_MODE"] = "file"
+os.environ["DIAGNOSTIC_DB_PATH"] = str(_tmp / "diagnostic.sqlite3")
 os.environ["UPLOAD_DIR"] = str(_tmp / "uploads")
 # Generous limits so the suite never trips them by accident; test_safeguards tightens them on purpose.
 os.environ["RATE_LIMIT_PER_MINUTE"] = "100000"

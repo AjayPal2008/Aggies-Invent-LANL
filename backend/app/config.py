@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=(REPO_DIR / ".env", BACKEND_DIR / ".env"), extra="ignore")
 
     app_name: str = "LANL Adaptive Training Platform"
+    frontend_dir: str = str(REPO_DIR)  # Set FRONTEND_DIR to dist for the built bundle (scripts/build_frontend.py).
     database_url: str = f"sqlite:///{BACKEND_DIR / 'lanl_training.db'}"
     # Connection pool per worker process (PostgreSQL). Total connections = workers x replicas x (pool + overflow).
     db_pool_size: int = 10
@@ -29,6 +30,10 @@ class Settings(BaseSettings):
 
     # AI
     anthropic_api_key: str = ""
+    # Source-grounded diagnostic (AJ's engine). The reviewed bank stays out of git.
+    diagnostic_bank_path: str = str(REPO_DIR / "Resource_File" / "cache" / "assessment" / "bank.json")
+    # Empty = store diagnostic sessions in the platform database (DATABASE_URL). A path keeps a separate SQLite file.
+    diagnostic_db_path: str = ""
     ai_model: str = "claude-opus-5-5"
     ai_effort: str = "medium"
 

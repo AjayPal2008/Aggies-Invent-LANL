@@ -7,6 +7,8 @@ COPY backend backend
 COPY shared shared
 COPY manager-dashboard manager-dashboard
 COPY hire-dashboard hire-dashboard
+# Source documents and extracted knowledge for the diagnostic (the reviewed bank is mounted or generated, not baked in)
+COPY Resource_File Resource_File
 WORKDIR /app/backend
 ENV PORT=8000 WEB_CONCURRENCY=2 AUTO_SEED=false
 EXPOSE 8000

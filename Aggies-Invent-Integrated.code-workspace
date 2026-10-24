@@ -1,0 +1,9 @@
+{
+  "folders": [
+    { "name": "Backend and resources", "path": "." },
+    { "name": "Employee UI", "path": "hire-dashboard" },
+    { "name": "Team lead UI", "path": "manager-dashboard" },
+    { "name": "Shared UI", "path": "shared" }
+  ],
+  "settings": {}
+}

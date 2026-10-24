@@ -32,6 +32,8 @@ services:
     volumes: &appvolumes
       - uploads:/app/backend/uploads
       - ./backend/data:/app/backend/data:ro
+      # Diagnostic resources and the locally reviewed question bank (Resource_File/cache stays out of git)
+      - ./Resource_File:/app/Resource_File:ro
     command: ["python", "-m", "scripts.prestart"]
     depends_on:
       db: { condition: service_healthy }

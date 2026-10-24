@@ -5,3 +5,5 @@
 .git
 backend/uploads
 backend/data/scale*
+Resource_File/cache
+Resource_File/debug

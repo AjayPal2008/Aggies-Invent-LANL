@@ -1,6 +1,6 @@
 // Video lessons, interview-style assessments and the role plan card for the hire dashboard.
-import { api, esc, $, $$, fmtDate, toast, modal, bar } from "/shared/api.js?v=20261024f";
-import { settings, speakButton, speak } from "/shared/a11y.js?v=20261024f";
+import { api, esc, $, $$, fmtDate, toast, modal, bar } from "/shared/api.js?v=20261025a";
+import { settings, speakButton, speak } from "/shared/a11y.js?v=20261025a";
 
 // ---- video player -------------------------------------------------------------------
 // Plays AI-written scenes as a narrated video: the browser's speech engine reads the narration,
@@ -298,7 +298,7 @@ function answerStep(m, sc, qi, mode, stream, seconds, done, total) {
       left--;
       const t = $("#t", m.root);
       if (t) t.textContent = fmtClock(left);
-      if (left === 30) import("/shared/a11y.js?v=20261024f").then((a) => a.announce("30 seconds left"));
+      if (left === 30) import("/shared/a11y.js?v=20261025a").then((a) => a.announce("30 seconds left"));
       if (left <= 0) end();
     }, 1000);
     let ended = false;

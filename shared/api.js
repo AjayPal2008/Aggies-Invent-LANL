@@ -228,11 +228,16 @@ export function router(views, fallback) {
       // Move keyboard and screen reader focus to the new page's heading.
       const h = document.querySelector("#view h1, #view h2");
       if (h) { h.setAttribute("tabindex", "-1"); h.focus({ preventScroll: false }); }
-      import("/shared/a11y.js?v=20261024f").then((m) => m.announce(`${label} page`));
+      import("/shared/a11y.js?v=20261025a").then((m) => m.announce(`${label} page`));
     }
     first = false;
   };
-  $$(".sidenav button[data-view]").forEach((b) => b.addEventListener("click", () => go(b.dataset.view)));
+  $$(".sidenav button[data-view]").forEach((b) => b.addEventListener("click", () => {
+    if (location.hash.slice(1) !== b.dataset.view) history.pushState(null, "", `#${b.dataset.view}`); // back/forward work
+    go(b.dataset.view);
+  }));
+  // Links, typed addresses and the back/forward buttons change the hash (each fires popstate): follow them.
+  window.addEventListener("popstate", () => go(location.hash.slice(1) || fallback));
   go(location.hash.slice(1) || fallback);
   return go;
 }
@@ -249,7 +254,7 @@ export function topbar(me, appName) {
     <button class="btn ghost small" id="a11y-open" aria-label="Accessibility settings (Alt + A)">♿ Accessibility</button>
     <button class="btn ghost small" id="logout">Sign out</button>`;
   $("#logout").onclick = logout;
-  import("/shared/a11y.js?v=20261024f").then((a) => {
+  import("/shared/a11y.js?v=20261025a").then((a) => {
     a.setupPage();
     a.syncWithAccount();
     $("#ts-controls").replaceWith(a.textSizeControls());

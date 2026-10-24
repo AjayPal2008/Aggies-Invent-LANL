@@ -1,0 +1,153 @@
+{
+  "id": "nuclear-fission",
+  "title": "Nuclear fission",
+  "category": "technical",
+  "required": false,
+  "source": {
+    "name": "Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Nuclear_fission",
+    "license": "CC BY-SA 4.0"
+  },
+  "summary": "Nuclear fission is the splitting of a heavy nucleus into smaller nuclei, releasing neutrons, gamma rays, and about 200 MeV of energy per event. The extra neutrons can sustain a chain reaction, whose behavior depends on the multiplication factor k. Discovered in 1938, fission led within a few years to the first self-sustaining reactor, Chicago Pile-1, and to the Manhattan Project.",
+  "difficulty": "intermediate",
+  "key_points": [
+    {
+      "id": "kp1",
+      "point": "Fission splits a heavy nucleus and releases about 200 MeV of energy, most of it as kinetic energy of the fragments.",
+      "explanation": "Splitting a heavy nucleus also produces neutrons and gamma rays. Roughly 85% of the energy is carried by fast-moving fragments, which become heat when they hit surrounding matter. The energy comes from binding energy, and fission releases energy for nuclei heavier than about mass number 60.",
+      "importance": 3
+    },
+    {
+      "id": "kp2",
+      "point": "Fission releases extra neutrons, so a self-sustaining chain reaction is possible.",
+      "explanation": "Neutrons from one fission can cause further fissions. Szilárd had imagined such a chain reaction since 1933, and 1939 measurements found about two neutrons per fission. This is the basis of both nuclear power plants and nuclear weapons.",
+      "importance": 3
+    },
+    {
+      "id": "kp3",
+      "point": "The neutron multiplication factor k determines how a chain reaction behaves.",
+      "explanation": "k is the number of neutrons in one generation divided by the number in the previous generation. Below 1 (subcritical) the reaction dies out. At 1 (critical) it runs steadily. Above 1 (supercritical) it grows, explosively in a bomb.",
+      "importance": 3
+    },
+    {
+      "id": "kp4",
+      "point": "Whether a nucleus fissions depends on neutron energy, which separates fissile from fissionable isotopes.",
+      "explanation": "Fissile isotopes such as U-235 and Pu-239 split with slow thermal neutrons. Fissionable isotopes such as U-238 need fast neutrons of about 1 MeV or more and otherwise just absorb slow neutrons. Most neutrons from U-238 fission are too slow to induce another fission, so U-238 can never achieve criticality.",
+      "importance": 3
+    },
+    {
+      "id": "kp5",
+      "point": "Delayed neutrons make reactors controllable, and fission product decay keeps producing heat after shutdown.",
+      "explanation": "Delayed neutrons come from the decay of fission daughters, with half-lives up to several minutes. Without them the reaction would be prompt critical and grow faster than humans could control. Beta decay of neutron-rich fragments keeps producing significant heat after shutdown, so reactors must stay cooled and waste handled carefully.",
+      "importance": 3
+    },
+    {
+      "id": "kp6",
+      "point": "Reactors need a moderator to slow fission neutrons, because slow neutrons are captured far more effectively.",
+      "explanation": "Fast fission neutrons must be slowed down. Graphite was chosen for the first piles because the hydrogen in water absorbed slow neutrons. Fermi's piles improved k from 0.87 in 1941 to 0.995 in 1942 with purer materials.",
+      "importance": 2
+    },
+    {
+      "id": "kp7",
+      "point": "Chicago Pile-1 went critical on 2 December 1942, the first self-sustaining reactor.",
+      "explanation": "It was built in layers of graphite and uranium with cadmium control rods. Fermi gradually removed the last control rod while neutron counts were monitored. It reached a k of 1.006, so neutron intensity doubled every two minutes, and it also bred plutonium.",
+      "importance": 2
+    },
+    {
+      "id": "kp8",
+      "point": "Fission was discovered in 1938 and quickly led to reactors and the Manhattan Project, with bombs needing a fast chain reaction and huge industrial support.",
+      "explanation": "Hahn and Strassmann found barium after bombarding uranium with neutrons, and Meitner and Frisch interpreted it as the nucleus splitting. Fear of German use drove the Manhattan Project, with Hanford making plutonium, Oak Ridge enriching uranium, and Los Alamos designing the bombs. A bomb operates prompt supercritical, releasing energy in about a microsecond, and needs a tamper and an initiator.",
+      "importance": 2
+    }
+  ],
+  "terms": [
+    {
+      "term": "Nuclear fission",
+      "definition": "A reaction in which a heavy nucleus splits into two or more smaller nuclei, releasing neutrons, gamma rays, and energy."
+    },
+    {
+      "term": "Chain reaction",
+      "definition": "A self-sustaining series of fissions in which neutrons from one fission induce further fissions."
+    },
+    {
+      "term": "Neutron multiplication factor (k)",
+      "definition": "The ratio of neutrons in one generation to the number in the preceding generation; 1.0 means a sustained reaction."
+    },
+    {
+      "term": "Fissile",
+      "definition": "Describes nuclides like U-235 that fission easily after absorbing a slow (thermal) neutron."
+    },
+    {
+      "term": "Fissionable",
+      "definition": "Describes nuclides like U-238 that mainly split only with fast neutrons."
+    },
+    {
+      "term": "Delayed neutrons",
+      "definition": "Neutrons emitted by fission daughters as decay products, with half-lives up to several minutes, important for reactor control."
+    },
+    {
+      "term": "Prompt critical",
+      "definition": "A condition in which the chain reaction grows faster than humans can control it."
+    },
+    {
+      "term": "Moderator",
+      "definition": "A material such as graphite, light water, or heavy water that slows neutrons so they are more easily captured."
+    },
+    {
+      "term": "Breeder reactor",
+      "definition": "A reactor that produces more fissile material than it consumes."
+    },
+    {
+      "term": "Pile",
+      "definition": "An early name for a nuclear reactor, such as the uranium-graphite assemblies built by Fermi's team."
+    }
+  ],
+  "relationships": [
+    {
+      "from": "kp1",
+      "to": "kp2",
+      "label": "also releases neutrons enabling"
+    },
+    {
+      "from": "kp2",
+      "to": "kp3",
+      "label": "is governed by"
+    },
+    {
+      "from": "kp4",
+      "to": "kp2",
+      "label": "determines whether sustained"
+    },
+    {
+      "from": "kp5",
+      "to": "kp3",
+      "label": "keeps k controllable in"
+    },
+    {
+      "from": "kp6",
+      "to": "kp7",
+      "label": "is required for"
+    },
+    {
+      "from": "kp2",
+      "to": "kp7",
+      "label": "is demonstrated by"
+    },
+    {
+      "from": "kp8",
+      "to": "kp2",
+      "label": "led to prediction of"
+    }
+  ],
+  "common_misconceptions": [
+    "Uranium-238 can sustain a chain reaction like uranium-235; the source says most neutrons from U-238 fission are too slow to induce another fission, so it can never achieve criticality.",
+    "Fast neutrons are best for causing uranium fission in a reactor; the source says slow, low-energy neutrons are captured far more effectively, which is why a moderator is used.",
+    "A reactor stops producing heat once it is shut down; the source says decay of fission products continues to produce significant heat, so reactors must keep being cooled."
+  ],
+  "extraction_status": {
+    "partial": false,
+    "failed_sections": [],
+    "total_sections": 5,
+    "merge_fallback": false
+  }
+}

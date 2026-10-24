@@ -1,0 +1,143 @@
+{
+  "id": "nuclear-reactor",
+  "title": "Nuclear reactor",
+  "category": "technical",
+  "required": false,
+  "source": {
+    "name": "Wikipedia",
+    "url": "https://en.wikipedia.org/wiki/Nuclear_reactor",
+    "license": "CC BY-SA 4.0"
+  },
+  "summary": "A nuclear reactor sustains a controlled fission chain reaction. A coolant carries off the heat, which is usually turned into steam to make electricity. Operators control the reaction by managing neutrons. Designs are classified in several ways, and pressurized water reactors dominate today's fleet. Fuel handling, spent fuel storage, safety and accidents, and small routine releases such as tritium are also important parts of running reactors.",
+  "difficulty": "beginner",
+  "key_points": [
+    {
+      "id": "kp1",
+      "point": "A reactor sustains a controlled fission chain reaction that produces heat.",
+      "explanation": "A fissile nucleus such as uranium-235 absorbs a neutron and splits, releasing energy and more neutrons that cause further fissions. A reactor keeps this chain reaction controlled, and it runs much more slowly than in a bomb.",
+      "importance": 3
+    },
+    {
+      "id": "kp2",
+      "point": "The reaction is controlled by managing neutrons, with scram systems as a backup.",
+      "explanation": "Control rods made of neutron poisons such as boron absorb neutrons. Inserting them lowers fission and power, and withdrawing them raises it. Automatic and manual scram systems shut the reaction down if unsafe conditions are detected or anticipated. About 0.65% of fission neutrons are delayed, which gives people and machines time to react.",
+      "importance": 3
+    },
+    {
+      "id": "kp3",
+      "point": "A coolant carries heat away, and the heat is usually used to make steam for electricity.",
+      "explanation": "The coolant is usually water but can be a gas, liquid metal or molten salt. The steam drives a turbine and generator. In a pressurized water reactor the cooling water is separate from the turbine water, while in a boiling water reactor the core boils the turbine water directly. Decay heat continues for some time after shutdown.",
+      "importance": 3
+    },
+    {
+      "id": "kp4",
+      "point": "Pressurized water reactors dominate today's fleet of power reactors.",
+      "explanation": "Pressurized water reactors were developed for US Navy submarines and make up about 70% or more of commercial reactors (308 PWRs, 74% of operating power reactors as of 2024). Almost 90% of nuclear electricity comes from pressurized and boiling water reactors. Water-cooled designs are stabilized by negative feedback: hotter water is less dense, so fewer neutrons are slowed.",
+      "importance": 3
+    },
+    {
+      "id": "kp5",
+      "point": "The fuel cycle runs from mining and enrichment through use, possible reprocessing, and disposal, and spent fuel storage is one of the hardest parts of operating a plant.",
+      "explanation": "Natural uranium has under 1% U-235, so most reactors need enriched fuel made into pellets in fuel rods. Spent fuel is highly radioactive and goes first to an on-site pool for cooling and shielding. After about five years it can move to dry casks. The waste stays dangerous for thousands of years. Reprocessing can recover fuel but produces plutonium that could be used in weapons.",
+      "importance": 3
+    },
+    {
+      "id": "kp6",
+      "point": "Serious accidents have occurred, so safe design, construction and operation are not guaranteed.",
+      "explanation": "Accidents include Windscale, SL-1, Three Mile Island (INES Level 5), Chernobyl and Fukushima (both Level 7). Failure to follow procedure was a key step in Chernobyl. At Fukushima, designers did not anticipate a tsunami disabling backup systems. The RBMK is still considered one of the most dangerous reactors in use.",
+      "importance": 3
+    },
+    {
+      "id": "kp7",
+      "point": "Thermal reactors use a moderator, while fast reactors do not and need more enriched fuel.",
+      "explanation": "Moderators slow neutrons so they are much more likely to cause fission, which allows low-enriched or natural uranium. Almost all current reactors are thermal. Fast reactors have no moderator, need fuel about 20% or more enriched, and use liquid-metal coolants because water would moderate.",
+      "importance": 2
+    },
+    {
+      "id": "kp8",
+      "point": "Normal operation releases only trace radioactive material such as tritium, and strontium-90 is undetectable above background.",
+      "explanation": "Tritium is a hydrogen isotope that forms water-like T2O and decays by beta decay with a 12.3-year half-life. The US NRC estimates a year of drinking from a well contaminated by a significant tritiated water spill would give about 0.3 millirem, versus about 4 millirem for a flight from Washington, D.C. to Los Angeles. Detectable strontium-90 in the environment comes from weapons testing (99%) and Chernobyl (1%).",
+      "importance": 2
+    }
+  ],
+  "terms": [
+    {
+      "term": "Chain reaction",
+      "definition": "A process in which neutrons released by fission cause further fissions."
+    },
+    {
+      "term": "Control rod",
+      "definition": "A rod made of a neutron poison, usually boron, moved in or out to adjust the fission rate."
+    },
+    {
+      "term": "Scram",
+      "definition": "An emergency shutdown of the reactor."
+    },
+    {
+      "term": "Moderator",
+      "definition": "A material such as graphite, heavy water or light water that slows neutrons so they are more likely to cause fission."
+    },
+    {
+      "term": "Coolant",
+      "definition": "A fluid, usually water, that carries away the heat generated by fission."
+    },
+    {
+      "term": "Delayed neutrons",
+      "definition": "Neutrons emitted some time after fission, about 0.65% of the total, which make real-time control possible."
+    },
+    {
+      "term": "Pressurized water reactor (PWR)",
+      "definition": "A water-cooled design that keeps high-pressure water in a pressure vessel and heats a separate loop to make steam."
+    },
+    {
+      "term": "Enrichment",
+      "definition": "Increasing the percentage of U-235 in uranium."
+    },
+    {
+      "term": "Tritium",
+      "definition": "A radioactive hydrogen isotope that reactors produce during normal operation and that can form water-like T2O."
+    },
+    {
+      "term": "INES",
+      "definition": "The scale used to rate nuclear accidents, such as Level 5 for Three Mile Island and Level 7 for Chernobyl and Fukushima."
+    }
+  ],
+  "relationships": [
+    {
+      "from": "kp1",
+      "to": "kp3",
+      "label": "produces heat for"
+    },
+    {
+      "from": "kp2",
+      "to": "kp1",
+      "label": "controls"
+    },
+    {
+      "from": "kp7",
+      "to": "kp4",
+      "label": "includes"
+    },
+    {
+      "from": "kp5",
+      "to": "kp6",
+      "label": "carries risks shown by"
+    },
+    {
+      "from": "kp8",
+      "to": "kp1",
+      "label": "is a byproduct of"
+    }
+  ],
+  "common_misconceptions": [
+    "A reactor is not without heat once shut down, because decay heat remains for some time after shutdown.",
+    "Water can cool any reactor; in fact, water is a moderator, so it cannot be used as a coolant in a fast reactor.",
+    "Detectable strontium-90 in the environment comes from nuclear power plants; the source says normal plant releases are undetectable above background and that weapons testing and Chernobyl account for it."
+  ],
+  "extraction_status": {
+    "partial": false,
+    "failed_sections": [],
+    "total_sections": 8,
+    "merge_fallback": false
+  }
+}
