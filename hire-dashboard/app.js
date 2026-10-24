@@ -9,6 +9,7 @@ import { reviewStudio, mindMap, readProgress, progressPanel, inProgressPanel } f
 
 const me = await requireRole(["hire", "manager", "admin"]);
 topbar(me, "My Training");
+if (isNewEmployee()) $(".who").innerHTML = "<strong>Demo new Hire</strong>";
 const view = $("#view");
 let dash = null; // cached /api/me/dashboard
 const studio = { code: null, lesson: null, chat: [], module: null };
@@ -92,7 +93,7 @@ async function diagnosticOverview() {
       <details><summary>Review source material</summary><blockquote>${esc(o.review_resources.excerpt)}</blockquote><p class="small">Resource points: ${o.review_resources.resource_point_ids.map(esc).join(", ")}</p></details></div></div>`).join("") || '<p>No review gap was observed in tested concepts.</p>'}</div></section>
       <div class="grid" style="align-content:start"><section class="card"><div class="card-head"><h3>Knowledge gaps</h3><span class="badge">${review.length}</span></div>
       <div class="list">${review.map(o => `<div><strong>${esc(o.name)}</strong><p class="small">${esc(o.observed_gap)}</p><span class="badge warn">${esc(o.status)}</span></div>`).join("") || '<p>No observed gaps. Untested concepts remain uncertain.</p>'}</div></section>
-      <section class="card"><h3>Assessment coverage</h3><p>${positive.length} concepts with evidence of understanding.</p><p>${uncertain.length} concepts not assessed.</p><p>Reasoning incorrect: ${r.questions_answered - r.reasons_correct}. Confidence adds no points.</p></section></div></div>
+      <section class="card"><h3>Assessment coverage</h3><p>${positive.length} concepts with evidence of understanding.</p><p>${uncertain.length} concepts not assessed.</p><p>Reasoning incorrect: ${r.questions_answered - r.reasons_correct}.</p></section></div></div>
       <button class="btn" id="overview-trainings" style="margin-top:16px">Open my review courses</button>
       <button class="btn secondary" id="overview-results" style="margin-top:16px">View diagnostic responses and results</button>`;
     $("#overview-trainings").onclick = () => go("studio");
@@ -663,7 +664,7 @@ async function profile() {
   loading(view);
   const d = await refresh();
   const state = readProgress(me);
-  const skills = Object.entries(d.employee.skills).map(([name,value])=>[name,Math.max(0,Number(value)||0)]).sort((a,b)=>b[1]-a[1]);
+  const skills = Object.entries(isNewEmployee() ? {} : d.employee.skills).map(([name,value])=>[name,Math.max(0,Number(value)||0)]).sort((a,b)=>b[1]-a[1]);
   const colors = ["#153c87", "#2874ae", "#329c99", "#75af96", "#94a7c9", "#6e659c", "#b0bccc"];
   const total = skills.reduce((sum,[,v])=>sum+v,0);
   let angle = 0;

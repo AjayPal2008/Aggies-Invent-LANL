@@ -36,10 +36,6 @@ function showQuestion(root, envelope, user, go, notice = "") {
     <form id="diagnostic-form" class="list">
       <section class="card"><p>${esc(q.scenario)}</p><h2>${esc(q.question)}</h2>${choices(q.options, "answer")}</section>
       <section class="card"><h3>${esc(q.why.question)}</h3>${choices(q.why.options, "reason")}</section>
-      <section class="card"><label class="field">How confident are you?
-        <select name="confidence" required><option value="">Choose confidence</option>
-        ${q.confidence_choices.map((c) => `<option value="${esc(c)}">${esc(c)}</option>`).join("")}</select></label>
-        <p class="small muted">Confidence adds no points. Answer and reasoning are graded separately.</p></section>
       <p id="diagnostic-error" role="alert"></p><div class="toolbar"><button class="btn" type="submit">Submit response</button>
       <button class="btn secondary" type="button" id="diagnostic-refresh">Refresh current question</button></div>
     </form><p class="muted small">Adapted from ${esc(q.attribution.name)} · ${esc(q.attribution.license)} ·
@@ -56,25 +52,16 @@ function showQuestion(root, envelope, user, go, notice = "") {
     const form = new FormData(event.target);
     // Retrying a network-interrupted POST reuses the identical payload. The API
     // also serializes and deduplicates by session + question ID.
-    pending ||= { question_id: q.id, answer_id: form.get("answer"), reason_id: form.get("reason"), confidence: form.get("confidence") };
+    pending ||= { question_id: q.id, answer_id: form.get("answer"), reason_id: form.get("reason") };
     try {
       const next = await api.post(endpoint(envelope.session_id, "answers"), pending, { retry: false });
       if (!root.isConnected || !$("#diagnostic-form", root)) return;
-      if (!next.branch_complete) {
-        showQuestion(root, next, user, go, "Continue with the foundational principle. Explanations are held until this branch finishes.");
-      } else {
-        showFeedback(root, next, user, go);
-      }
+      showQuestion(root, next, user, go);
     } catch (error) {
       const target = $("#diagnostic-error", root);
       if (target) target.textContent = `${error.message} Retry the same response, or refresh the current question.`;
     } finally { button.disabled = false; }
   };
-}
-
-function showFeedback(root, envelope, user, go) {
-  root.innerHTML = `<button class="btn" id="diagnostic-continue">${envelope.complete ? "View results" : "Next question"}</button>`;
-  $("#diagnostic-continue", root).onclick = () => envelope.complete ? go("diagnostic-results") : diagnosticView(root, user, go);
 }
 
 export async function diagnosticView(root, user, go) {
@@ -121,7 +108,7 @@ export async function diagnosticResults(root, user, go) {
       <div class="stat"><div class="label">Answers correct</div><div class="value">${report.answers_correct}</div></div>
       <div class="stat"><div class="label">Reasons correct</div><div class="value">${report.reasons_correct}</div></div>
       <div class="stat"><div class="label">Answers incorrect</div><div class="value">${report.questions_answered - report.answers_correct}</div></div></div>
-      <section class="card" style="margin-top:16px"><h2>Recorded responses</h2><p>Reasons incorrect: ${report.questions_answered - report.reasons_correct}. Confidence adds no points.</p>${(report.answer_history || []).map((r, i) => `<p>${i + 1}. ${esc(r.question)}: answer ${esc(r.answer_text)} ? ${r.answer_correct ? "correct" : "incorrect"}; reasoning ${esc(r.reason_text)} ? ${r.reason_correct ? "correct" : "incorrect"}; confidence: ${esc(r.confidence)}</p>`).join("")}</section>
+      <section class="card" style="margin-top:16px"><h2>Recorded responses</h2><p>Reasons incorrect: ${report.questions_answered - report.reasons_correct}.</p>${(report.answer_history || []).map((r, i) => `<p>${i + 1}. ${esc(r.question)}: answer ${esc(r.answer_text)} ? ${r.answer_correct ? "correct" : "incorrect"}; reasoning ${esc(r.reason_text)} ? ${r.reason_correct ? "correct" : "incorrect"}</p>`).join("")}</section>
       <section class="card" style="margin-top:16px"><h2>Required training — separate obligations</h2>${report.required_training.map((o) => `<p>${esc(o.article_id)}: ${o.required ? "required" : "optional"} · ${esc(o.completion)}</p>`).join("")}</section>
       <button class="btn" id="diagnostic-overview" style="margin-top:16px">Go to Overview</button>
       <button class="btn secondary" id="diagnostic-new" style="margin-top:16px">Start a new diagnostic</button>`;

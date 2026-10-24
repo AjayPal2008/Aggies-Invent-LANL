@@ -21,7 +21,7 @@ class AnswerIn(BaseModel):
     question_id: str = Field(min_length=1, max_length=300)
     answer_id: str = Field(min_length=1, max_length=320)
     reason_id: str = Field(min_length=1, max_length=320)
-    confidence: Literal["guessing", "somewhat sure", "very sure"]
+    confidence: Literal["guessing", "somewhat sure", "very sure"] = "somewhat sure"
 
 
 def run(response, function, *args):
@@ -71,3 +71,10 @@ def review_courses(response: Response, user=Depends(current_user), store: Sessio
 def complete_review(session_id: str, objective_id: str, response: Response,
                     user=Depends(current_user), store: SessionStore = Depends(get_store)):
     return run(response, store.complete_review, session_id, objective_id, user.id)
+
+
+@router.post("/demo-new-hire", status_code=201)
+def demo_new_hire(response: Response, user=Depends(current_user), store: SessionStore = Depends(get_store)):
+    if user.email.lower() != "hire@lanl.gov":
+        raise HTTPException(403, "Only the new hire demo account can be reset")
+    return run(response, store.restart_demo, user.id)

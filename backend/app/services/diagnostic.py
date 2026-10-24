@@ -148,6 +148,16 @@ class SessionStore:
         with self.engine.begin() as conn:  # commits on success, rolls back on any error
             yield _Connection(conn)
 
+    def restart_demo(self, owner):
+        # Validate and create the replacement before deleting previous demo evidence.
+        fresh = self.start(owner, 10, 10, randomize=True)
+        with self.connection() as db:
+            params = (owner, fresh["session_id"])
+            for table in ("diagnostic_submissions", "diagnostic_course_reviews"):
+                db.execute(f"DELETE FROM {table} WHERE session_id IN (SELECT id FROM diagnostic_sessions WHERE owner=? AND id<>?)", params)
+            db.execute("DELETE FROM diagnostic_sessions WHERE owner=? AND id<>?", params)
+        return fresh
+
     def availability(self):
         try:
             bank, source = self.bank_provider()

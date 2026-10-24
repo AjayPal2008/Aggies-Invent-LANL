@@ -41,7 +41,8 @@
           <h4>Demo accounts</h4>
           <p class="small muted">Click one to sign in. Password <code>demo1234</code> unless your admin changed it.</p>
           <div class="chips">
-            <button type="button" class="chip" data-demo="hire@lanl.gov">New hire</button>
+            <button type="button" class="chip" data-demo="hire@lanl.gov" data-demo-path="new">New hire</button>
+            <button type="button" class="chip" data-demo="hire@lanl.gov" data-demo-path="employee">Employee</button>
             <button type="button" class="chip" data-demo="manager@lanl.gov">Manager</button>
             <button type="button" class="chip" data-demo="admin@lanl.gov">Admin</button>
           </div>
@@ -52,6 +53,7 @@
         <p class="muted">Choose the option that best describes you.</p>
         <div class="grid">
           <button type="button" class="btn" data-employee-path="new">I'm a new employee</button>
+          <button type="button" class="btn secondary" data-employee-path="employee">Employee</button>
           <button type="button" class="btn secondary" data-employee-path="career">I'm a current employee exploring transfers or promotions</button>
         </div>
       </section>
@@ -64,7 +66,21 @@
     const $ = (s) => document.querySelector(s);
     const go = (home) => (location.href = home);
     let employeeHome = "/hire/";
-    function continueAfterLogin(user, home) {
+    let demoPath = null;
+    async function startNewHire() {
+      const fresh = await api.post("/api/diagnostic/demo-new-hire", {}, { retry: false });
+      const user = session.user;
+      for (const key of [`lanl_diagnostic_${user.id}`, `lanl_diagnostic_${user.id}_new_employee`, `lanl_studio_progress_v1_${user.id}`]) localStorage.removeItem(key);
+      localStorage.setItem(`lanl_diagnostic_${user.id}_new_employee`, fresh.session_id);
+      sessionStorage.setItem("lanl_employee_path", "new");
+      go("/hire/?new_employee=1#diagnostic");
+    }
+    async function continueAfterLogin(user, home) {
+      if (demoPath === "new") return startNewHire();
+      if (demoPath === "employee") {
+        sessionStorage.setItem("lanl_employee_path", "employee");
+        return go("/hire/#overview");
+      }
       if (user.email?.toLowerCase() !== "hire@lanl.gov") return go(home);
       employeeHome = home;
       $("#form").classList.add("hidden");
@@ -72,9 +88,15 @@
       $("#employee-path-title").focus();
     }
     document.querySelectorAll("[data-employee-path]").forEach((button) => {
-      button.addEventListener("click", () => {
-        try { sessionStorage.setItem("lanl_employee_path", button.dataset.employeePath); } catch { /* storage may be unavailable */ }
-        go(button.dataset.employeePath === "new" ? "/hire/?new_employee=1#diagnostic" : employeeHome);
+      button.addEventListener("click", async () => {
+        button.disabled = true;
+        try {
+          if (button.dataset.employeePath === "new") await startNewHire();
+          else { sessionStorage.setItem("lanl_employee_path", button.dataset.employeePath); go(employeeHome); }
+        } catch (error) {
+          $("#employee-path-title").textContent = error.message;
+          button.disabled = false;
+        }
       });
     });
 
@@ -87,6 +109,7 @@
 
     // Demo buttons fill in the account and sign straight in.
     document.querySelectorAll("[data-demo]").forEach((b) => b.addEventListener("click", () => {
+      demoPath = b.dataset.demoPath || null;
       $("#email").value = b.dataset.demo; $("#password").value = "demo1234";
       $("#form").requestSubmit();
     }));
@@ -100,7 +123,7 @@
         // No silent retries here: if sign-in is refused, say so right away.
         const res = await api.post("/api/auth/login", { email: $("#email").value.trim(), password: $("#password").value }, { retry: false });
         session.save(res.token, res.user);
-        continueAfterLogin(res.user, res.home);
+        await continueAfterLogin(res.user, res.home);
       } catch (err) {
         $("#error").textContent = err.message;
       } finally {
@@ -123,7 +146,7 @@
             try {
               const res = await api.post("/api/auth/google", { id_token: credential });
               session.save(res.token, res.user);
-              continueAfterLogin(res.user, res.home);
+              await continueAfterLogin(res.user, res.home);
             } catch (err) { $("#error").textContent = err.message; }
           },
         });

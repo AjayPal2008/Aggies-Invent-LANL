@@ -251,3 +251,33 @@ def test_review_courses_match_path_and_persist_without_changing_scores(client, h
     assert after["answers_correct"] == before["answers_correct"]
     assert after["review_priority"] == before["review_priority"]
     assert client.post(f"/api/diagnostic/sessions/{sid}/review-courses/unknown/complete", headers=hire).status_code == 404
+
+
+def test_answers_without_confidence_advance(client, hire, diagnostic):
+    _, bank, *_ = diagnostic
+    issued = client.post("/api/diagnostic/sessions", headers=hire, json={"initial_limit": 2, "budget": 4}).json()
+    body = payload(bank, issued["question"])
+    body.pop("confidence")
+    answer = client.post(f"/api/diagnostic/sessions/{issued['session_id']}/answers", headers=hire, json=body)
+    assert answer.status_code == 200
+    next_step = answer.json()
+    assert next_step["complete"] or next_step["question"] is not None
+
+
+def test_demo_restart_clears_only_demo_history(client, hire, manager, diagnostic):
+    store, bank, *_ = diagnostic
+    old = client.post("/api/diagnostic/sessions", headers=hire, json={"initial_limit": 1, "budget": 2}).json()
+    client.post(f"/api/diagnostic/sessions/{old['session_id']}/answers", headers=hire, json=payload(bank, old["question"]))
+    other = client.post("/api/diagnostic/sessions", headers=manager, json={}).json()
+    assert client.post("/api/diagnostic/demo-new-hire", headers=manager, json={}).status_code == 403
+    fresh_response = client.post("/api/diagnostic/demo-new-hire", headers=hire, json={})
+    assert fresh_response.status_code == 201
+    fresh = fresh_response.json()
+    assert fresh["session_id"] != old["session_id"] and fresh["answered"] == 0
+    assert fresh["question"] is not None
+    assert client.get(f"/api/diagnostic/sessions/{old['session_id']}/current", headers=hire).status_code == 404
+    assert client.get(f"/api/diagnostic/sessions/{other['session_id']}/current", headers=manager).status_code == 200
+    assert not client.get("/api/diagnostic/latest-completed", headers=hire).json()["available"]
+    with store.connection() as db:
+        assert not db.execute("SELECT * FROM diagnostic_submissions WHERE session_id=?", (old["session_id"],)).fetchall()
+        assert not db.execute("SELECT * FROM diagnostic_course_reviews WHERE session_id=?", (old["session_id"],)).fetchall()
