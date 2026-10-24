@@ -68,7 +68,7 @@ class Settings(BaseSettings):
     smtp_password: str = ""
 
     # Uploaded documents and interview recordings
-    upload_dir: str = str(BACKEND_DIR / "uploads")
+    upload_dir: str = str(REPO_DIR / "Resource_File" / "Survey & Materials")
     max_upload_mb: int = 60
 
     # Traffic safeguards

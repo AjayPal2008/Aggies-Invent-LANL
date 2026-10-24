@@ -15,8 +15,8 @@ import re
 from backend.ai_client import generate, redact_secrets
 
 ROOT = Path(__file__).resolve().parents[1]
-RESOURCE_DIR = ROOT / "Resource_File" / "extracted_knowledge"
-RAW_DIR = ROOT / "Resource_File" / "raw_text"
+RESOURCE_DIR = ROOT / "Resource_File" / "sample, gk info" / "extracted_knowledge"
+RAW_DIR = ROOT / "Resource_File" / "sample, gk info" / "raw_text"
 STORE = ROOT / "Resource_File" / "cache" / "assessment"
 BANK_PATH = STORE / "bank.json"
 ROLES = {"diagnostic": "application", "follow-up": "foundation", "post-training": "application"}

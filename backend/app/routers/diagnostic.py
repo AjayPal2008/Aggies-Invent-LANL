@@ -11,6 +11,7 @@ router = APIRouter(prefix="/api/diagnostic", tags=["source-grounded diagnostic"]
 
 class StartIn(BaseModel):
     model_config = ConfigDict(extra="forbid")
+    randomize: bool = False
     initial_limit: int = Field(default=8, ge=1, le=12, strict=True)
     budget: int = Field(default=12, ge=1, le=24, strict=True)
 
@@ -38,7 +39,7 @@ def status(response: Response, user=Depends(current_user), store: SessionStore =
 
 @router.post("/sessions", status_code=201)
 def start(body: StartIn, response: Response, user=Depends(current_user), store: SessionStore = Depends(get_store)):
-    return run(response, store.start, user.id, body.initial_limit, body.budget)
+    return run(response, store.start, user.id, body.initial_limit, body.budget, body.randomize)
 
 
 @router.get("/sessions/{session_id}/current")
@@ -54,3 +55,8 @@ def answer(session_id: str, body: AnswerIn, response: Response, user=Depends(cur
 @router.get("/sessions/{session_id}/results")
 def results(session_id: str, response: Response, user=Depends(current_user), store: SessionStore = Depends(get_store)):
     return run(response, store.results, session_id, user.id)
+
+
+@router.get("/latest-completed")
+def latest_completed(response: Response, user=Depends(current_user), store: SessionStore = Depends(get_store)):
+    return run(response, store.latest_completed, user.id)

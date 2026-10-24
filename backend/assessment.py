@@ -5,6 +5,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from pathlib import Path
 import uuid
+import random
 
 from backend.question_bank import BankError, STORE, approved, atomic_json, bank_errors, digest
 
@@ -33,7 +34,7 @@ def grade(question, answer_id, reason_id, confidence):
             "reason_correct": reason_id == question["why"]["correct_option_id"], "confidence": confidence}
 
 
-def choose_initial(bank, initial_limit):
+def choose_initial(bank, initial_limit, random_seed=None):
     """Round-robin articles; priority descending and IDs break ties deterministically."""
     concepts = {c["id"]: c for c in bank["concepts"]}
     pools = {}
@@ -42,6 +43,10 @@ def choose_initial(bank, initial_limit):
             pools.setdefault(q["article_id"], []).append(q)
     for pool in pools.values():
         pool.sort(key=lambda q: (-concepts[q["objective_id"]]["importance"], q["objective_id"]))
+    if random_seed is not None:
+        rng = random.Random(random_seed)
+        for pool in pools.values():
+            rng.shuffle(pool)
     selected = []
     while len(selected) < initial_limit:
         added = False
@@ -63,7 +68,7 @@ class Diagnostic:
     Feedback is released only after the active diagnostic branch has ended.
     """
 
-    def __init__(self, bank, source, *, initial_limit=8, budget=12):
+    def __init__(self, bank, source, *, initial_limit=8, budget=12, random_seed=None):
         if type(initial_limit) is not int or not 1 <= initial_limit <= 12:
             raise ValueError("initial_limit must be from 1 to 12")
         if type(budget) is not int or not 1 <= budget <= 24:
@@ -73,7 +78,8 @@ class Diagnostic:
             raise BankError("Bank failed structural checks: " + "; ".join(errors))
         self.bank, self.source = deepcopy(bank), source
         self.concepts = {c["id"]: c for c in self.bank["concepts"]}
-        self.plan = choose_initial(self.bank, min(initial_limit, budget))
+        self.random_seed = random_seed
+        self.plan = choose_initial(self.bank, min(initial_limit, budget), random_seed)
         if not self.plan:
             raise BankError("No manually approved diagnostic questions are available")
         self.initial_limit, self.budget = initial_limit, budget
@@ -142,6 +148,8 @@ class Diagnostic:
         if q["role"] == "diagnostic" and not (grading["answer_correct"] and grading["reason_correct"]):
             self._add_prerequisites(cid)
             foundation = self._foundation(cid)
+            if self.random_seed is not None and foundation and self.position < len(self.plan) and len(self.records) + len(self.plan) - self.position >= self.budget:
+                self.plan.pop()  # Reserve a remaining slot for adaptive foundation evidence.
             remaining_initial = len(self.plan) - self.position
             if foundation and len(self.records) + remaining_initial < self.budget:
                 self.pending = foundation

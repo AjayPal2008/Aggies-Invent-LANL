@@ -21,6 +21,12 @@ const LEVEL_LABEL = { intro: "Introductory", intermediate: "Intermediate", advan
 
 async function overview() {
   loading(view);
+  let newEmployee = new URLSearchParams(location.search).get("new_employee") === "1";
+  try { newEmployee ||= sessionStorage.getItem("lanl_employee_path") === "new"; } catch { /* optional browser storage */ }
+  if (newEmployee && me.email?.toLowerCase() === "hire@lanl.gov") {
+    await diagnosticOverview();
+    return;
+  }
   const [d, plan] = await Promise.all([refresh(), api.get("/api/me/role-plan").catch(() => null)]);
   const s = d.summary;
   const b = d.buckets;
@@ -56,6 +62,42 @@ async function overview() {
     </div>`;
   $$(".stat[data-flag]").forEach((el) => el.addEventListener("click", () => { trainingsFilter.flag = el.dataset.flag; go("trainings"); }));
   wirePathButtons();
+}
+
+async function diagnosticOverview() {
+  try {
+    const latest = await api.get("/api/diagnostic/latest-completed");
+    if (!latest.available) {
+      view.innerHTML = `<section class="hero"><h1>Welcome, ${esc(me.name.split(" ")[0])}</h1><p>Complete your diagnostic to build your learning path.</p></section>
+        <section class="card"><h2>Your learning path</h2><p>No diagnostic completed yet. Knowledge gaps and progress have not been assessed.</p>
+        <button class="btn" id="overview-start">Take diagnostic</button></section>`;
+      $("#overview-start").onclick = () => go("diagnostic");
+      return;
+    }
+    const r = latest.report;
+    const objectives = new Map(r.objectives.map(o => [o.objective_id, o]));
+    const review = r.review_priority.map(id => objectives.get(id)).filter(Boolean);
+    const uncertain = r.objectives.filter(o => o.status === "not assessed");
+    const positive = r.objectives.filter(o => o.status === "evidence of understanding");
+    const metric = (label, value) => `<div class="stat"><div class="label">${label}</div><div class="value">${value}</div></div>`;
+    view.innerHTML = `<section class="hero"><h1>Your diagnostic progress</h1><p>Based on your latest completed diagnostic. Required training completion is tracked separately.</p></section>
+      <div class="grid cols-4" style="margin-bottom:16px">${metric("Questions answered", r.questions_answered)}${metric("Answers correct", r.answers_correct)}${metric("Answers incorrect", r.questions_answered - r.answers_correct)}${metric("Reasons correct", r.reasons_correct)}</div>
+      <div class="grid side"><section class="card"><div class="card-head"><h2>Your learning path</h2><span class="muted small">Important concepts needing review first</span></div>
+      <div class="list">${review.map((o, i) => `<div class="item"><span class="badge">${i + 1}</span><div class="grow"><div class="title">${esc(o.name)}</div><p class="small muted">${esc(o.article_id.replaceAll("-", " "))} ? Priority ${o.importance}</p>
+      <details><summary>Review source material</summary><blockquote>${esc(o.review_resources.excerpt)}</blockquote><p class="small">Resource points: ${o.review_resources.resource_point_ids.map(esc).join(", ")}</p></details></div></div>`).join("") || '<p>No review gap was observed in tested concepts.</p>'}</div></section>
+      <div class="grid" style="align-content:start"><section class="card"><div class="card-head"><h3>Knowledge gaps</h3><span class="badge">${review.length}</span></div>
+      <div class="list">${review.map(o => `<div><strong>${esc(o.name)}</strong><p class="small">${esc(o.observed_gap)}</p><span class="badge warn">${esc(o.status)}</span></div>`).join("") || '<p>No observed gaps. Untested concepts remain uncertain.</p>'}</div></section>
+      <section class="card"><h3>Assessment coverage</h3><p>${positive.length} concepts with evidence of understanding.</p><p>${uncertain.length} concepts not assessed.</p><p>Reasoning incorrect: ${r.questions_answered - r.reasons_correct}. Confidence adds no points.</p></section></div></div>
+      <button class="btn secondary" id="overview-results" style="margin-top:16px">View diagnostic responses and results</button>`;
+    $("#overview-results").onclick = () => {
+      localStorage.setItem(`lanl_diagnostic_${me.id}_new_employee`, r.session_id);
+      localStorage.setItem(`lanl_diagnostic_${me.id}`, r.session_id);
+      go("diagnostic-results");
+    };
+  } catch (error) {
+    view.innerHTML = `<section class="card"><h2>Diagnostic progress unavailable</h2><p role="alert">${esc(error.message)}</p><button class="btn" id="overview-retry">Try again</button></section>`;
+    $("#overview-retry").onclick = diagnosticOverview;
+  }
 }
 
 function stat(label, value, cls, flag) {

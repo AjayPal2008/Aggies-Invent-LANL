@@ -32,6 +32,8 @@ Desktop.ini
 *.sqlite3
 *.sqlite3-*
 /backend/uploads/
+/Resource_File/uploads/
+/Resource_File/Survey & Materials/
 
 # Preserve the original machine-specific two-folder workspace as local user work.
 /Aggies-Invent.code-workspace

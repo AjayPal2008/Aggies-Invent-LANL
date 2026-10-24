@@ -47,6 +47,14 @@
           </div>
         </div>
       </form>
+      <section id="employee-path" class="hidden" aria-labelledby="employee-path-title" style="width:min(440px,100%)">
+        <h2 id="employee-path-title" tabindex="-1">What brings you here?</h2>
+        <p class="muted">Choose the option that best describes you.</p>
+        <div class="grid">
+          <button type="button" class="btn" data-employee-path="new">I'm a new employee</button>
+          <button type="button" class="btn secondary" data-employee-path="career">I'm a current employee exploring transfers or promotions</button>
+        </div>
+      </section>
     </section>
   </div>
   <script type="module">
@@ -55,12 +63,26 @@
     setupPage();
     const $ = (s) => document.querySelector(s);
     const go = (home) => (location.href = home);
+    let employeeHome = "/hire/";
+    function continueAfterLogin(user, home) {
+      if (user.email?.toLowerCase() !== "hire@lanl.gov") return go(home);
+      employeeHome = home;
+      $("#form").classList.add("hidden");
+      $("#employee-path").classList.remove("hidden");
+      $("#employee-path-title").focus();
+    }
+    document.querySelectorAll("[data-employee-path]").forEach((button) => {
+      button.addEventListener("click", () => {
+        try { sessionStorage.setItem("lanl_employee_path", button.dataset.employeePath); } catch { /* storage may be unavailable */ }
+        go(button.dataset.employeePath === "new" ? "/hire/?new_employee=1#diagnostic" : employeeHome);
+      });
+    });
 
     if (new URLSearchParams(location.search).has("expired")) {
       $("#notice").textContent = "Your session ended. Sign in again.";
       $("#notice").classList.remove("hidden");
     } else if (session.token) {
-      api.get("/api/auth/me").then((me) => go(me.role === "hire" ? "/hire/" : "/manager/")).catch(() => session.clear());
+      api.get("/api/auth/me").then((me) => continueAfterLogin(me, me.role === "hire" ? "/hire/" : "/manager/")).catch(() => session.clear());
     }
 
     // Demo buttons fill in the account and sign straight in.
@@ -78,7 +100,7 @@
         // No silent retries here: if sign-in is refused, say so right away.
         const res = await api.post("/api/auth/login", { email: $("#email").value.trim(), password: $("#password").value }, { retry: false });
         session.save(res.token, res.user);
-        go(res.home);
+        continueAfterLogin(res.user, res.home);
       } catch (err) {
         $("#error").textContent = err.message;
       } finally {
@@ -101,7 +123,7 @@
             try {
               const res = await api.post("/api/auth/google", { id_token: credential });
               session.save(res.token, res.user);
-              go(res.home);
+              continueAfterLogin(res.user, res.home);
             } catch (err) { $("#error").textContent = err.message; }
           },
         });

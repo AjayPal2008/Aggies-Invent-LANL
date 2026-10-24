@@ -13,6 +13,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import secrets
 
 from sqlalchemy import create_engine, text
 
@@ -59,10 +60,18 @@ def learner_feedback(outcome):
 def learner_report(engine):
     report = engine.report()
     # Reports are served only at completion; no in-progress source/reason leaks.
-    return {key: deepcopy(report[key]) for key in (
+    result = {key: deepcopy(report[key]) for key in (
         "session_id", "created_at", "finished", "budget", "initial_limit", "questions_answered",
         "planned_initial", "answers_correct", "reasons_correct", "confidence_adds_points", "interpretation",
         "objectives", "review_priority", "required_training", "article_coverage")}
+    result["answer_history"] = [{k: r[k] for k in ("question_id", "answer_id", "reason_id", "answer_correct", "reason_correct", "confidence")} for r in engine.records]
+    questions = {q["id"]: q for q in engine.bank["questions"]}
+    for row in result["answer_history"]:
+        question = questions[row["question_id"]]
+        row["question"] = question["question"]
+        row["answer_text"] = next(o["text"] for o in question["options"] if o["id"] == row["answer_id"])
+        row["reason_text"] = next(o["text"] for o in question["why"]["options"] if o["id"] == row["reason_id"])
+    return result
 
 
 class _Row:
@@ -78,6 +87,9 @@ class _Row:
 class _Result:
     def __init__(self, result):
         self._result = result
+
+    def fetchall(self):
+        return [_Row(row) for row in self._result.fetchall()]
 
     def fetchone(self):
         row = self._result.fetchone() if self._result.returns_rows else None
@@ -141,14 +153,15 @@ class SessionStore:
         except (DiagnosticError, BankError, ValueError):
             return {"available": False, "message": SETUP_MESSAGE}
 
-    def start(self, owner, initial_limit, budget):
+    def start(self, owner, initial_limit, budget, randomize=False):
         bank, source = self.bank_provider()
+        random_seed = secrets.randbits(64) if randomize else None
         try:
-            engine = Diagnostic(bank, source, initial_limit=initial_limit, budget=budget)
+            engine = Diagnostic(bank, source, initial_limit=initial_limit, budget=budget, random_seed=random_seed)
         except (BankError, ValueError):
             raise DiagnosticError(409, SETUP_MESSAGE) from None
         engine.next_question()
-        snapshot = {"bank": bank, "source": source, "initial_limit": initial_limit, "budget": budget,
+        snapshot = {"random_seed": random_seed, "bank": bank, "source": source, "initial_limit": initial_limit, "budget": budget,
                     "session_id": engine.session_id, "created_at": engine.created_at}
         with self.connection() as db:
             db.execute("INSERT INTO diagnostic_sessions VALUES(?,?,?,?,?)", (
@@ -161,7 +174,7 @@ class SessionStore:
         if digest(bank) != digest(snapshot["bank"]) or bank_errors(bank, source):
             raise DiagnosticError(409, "The question bank or approvals changed. Start a new diagnostic after review.")
         engine = Diagnostic(snapshot["bank"], snapshot["source"],
-                            initial_limit=snapshot["initial_limit"], budget=snapshot["budget"])
+                            initial_limit=snapshot["initial_limit"], budget=snapshot["budget"], random_seed=snapshot.get("random_seed"))
         engine.session_id, engine.created_at = snapshot["session_id"], snapshot["created_at"]
         for response in json.loads(row["responses"]):
             engine.next_question()
@@ -212,6 +225,19 @@ class SessionStore:
             db.execute("INSERT INTO diagnostic_submissions VALUES(?,?,?,?)",
                        (session_id, payload["question_id"], fingerprint, json.dumps(result)))
             return result
+
+    def latest_completed(self, owner):
+        """Owner-scoped saved evidence; independent of the browser and current bank."""
+        with self.connection() as db:
+            rows = db.execute("SELECT report FROM diagnostic_sessions WHERE owner=?", (owner,)).fetchall()
+        reports = [json.loads(row["report"]) for row in rows]
+        completed = [report for report in reports if report.get("finished")]
+        if not completed:
+            return {"available": False, "report": None}
+        report = max(completed, key=lambda r: (r["created_at"], r["session_id"]))
+        fields = ("session_id", "created_at", "questions_answered", "answers_correct", "reasons_correct",
+                  "budget", "objectives", "review_priority", "article_coverage")
+        return {"available": True, "report": {key: deepcopy(report[key]) for key in fields}}
 
     def results(self, session_id, owner):
         with self.connection() as db:

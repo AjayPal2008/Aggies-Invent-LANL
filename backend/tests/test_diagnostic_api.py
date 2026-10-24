@@ -162,3 +162,61 @@ def test_sessions_can_live_in_the_platform_database(client, hire):
             assert c.execute(text("SELECT COUNT(*) FROM diagnostic_sessions WHERE id=:i"), {"i": sid}).scalar() == 1
     finally:
         app.dependency_overrides.pop(get_store, None)
+
+
+def test_randomized_ten_budget_persists_history(client, hire, diagnostic):
+    store, bank, source, path, provider = diagnostic
+    issued = client.post("/api/diagnostic/sessions", headers=hire,
+                         json={"initial_limit": 10, "budget": 10, "randomize": True}).json()
+    sid = issued["session_id"]
+    with store.connection() as db:
+        snapshot = json.loads(db.execute("SELECT snapshot FROM diagnostic_sessions WHERE id=?", (sid,)).fetchone()["snapshot"])
+        assert snapshot["random_seed"] is not None
+    seen = []
+    while not issued["complete"]:
+        question = issued["question"]
+        assert question["id"] not in seen
+        seen.append(question["id"])
+        app.dependency_overrides[get_store] = lambda: SessionStore(path, provider)
+        restored = client.get(f"/api/diagnostic/sessions/{sid}/current", headers=hire).json()
+        assert restored["question"] == question
+        response = client.post(f"/api/diagnostic/sessions/{sid}/answers", headers=hire,
+                               json=payload(bank, question, correct=False))
+        assert response.status_code == 200
+        issued = response.json()
+    report = client.get(f"/api/diagnostic/sessions/{sid}/results", headers=hire).json()
+    assert len(seen) <= 10
+    assert len(report["answer_history"]) == len(seen)
+    assert report["answers_correct"] == 0
+    assert all(not row["answer_correct"] for row in report["answer_history"])
+    assert_private_absent(report)
+
+
+def test_overview_latest_completed_owner_scoped_and_persistent(client, hire, manager, diagnostic):
+    store, bank, source, path, provider = diagnostic
+    url = "/api/diagnostic/latest-completed"
+    assert client.get(url).status_code == 401
+    assert client.get(url, headers=hire).json() == {"available": False, "report": None}
+    issued = client.post("/api/diagnostic/sessions", headers=hire,
+                         json={"initial_limit": 1, "budget": 2}).json()
+    sid = issued["session_id"]
+    follow = client.post(f"/api/diagnostic/sessions/{sid}/answers", headers=hire,
+                         json=payload(bank, issued["question"], correct=False)).json()
+    assert client.get(url, headers=hire).json()["available"] is False
+    done = client.post(f"/api/diagnostic/sessions/{sid}/answers", headers=hire,
+                       json=payload(bank, follow["question"])).json()
+    assert done["complete"]
+    # An unfinished newer session must not displace completed evidence.
+    client.post("/api/diagnostic/sessions", headers=hire, json={"initial_limit": 1, "budget": 2})
+    # Historical dashboard evidence remains available even if the current bank changes.
+    app.dependency_overrides[get_store] = lambda: SessionStore(path, lambda: (_ for _ in ()).throw(ValueError("bank unavailable")))
+    result = client.get(url, headers=hire).json()
+    assert result["available"]
+    report = result["report"]
+    assert report["session_id"] == sid
+    assert report["questions_answered"] == 2
+    assert report["answers_correct"] == 1
+    assert report["review_priority"]
+    assert report["objectives"]
+    assert_private_absent(result)
+    assert client.get(url, headers=manager).json()["available"] is False

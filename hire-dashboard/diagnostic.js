@@ -1,7 +1,15 @@
 // Learner UI only. Keys, approval records and grading stay in the Python API.
 import { api, esc, $, loading } from "/shared/api.js?v=20261025a";
 
-const key = (user) => `lanl_diagnostic_${user.id}`;
+const onboarding = () => new URLSearchParams(location.search).get("new_employee") === "1";
+const key = (user) => `lanl_diagnostic_${user.id}${onboarding() ? "_new_employee" : ""}`;
+function skipButton(root) {
+  if (!onboarding()) return;
+  const button = document.createElement("button");
+  button.className = "btn secondary"; button.type = "button"; button.textContent = "Skip diagnostic (demo)";
+  button.onclick = () => { location.href = "/hire/#overview"; };
+  root.append(button);
+}
 const saved = (user) => localStorage.getItem(key(user));
 const remember = (user, id) => localStorage.setItem(key(user), id);
 const endpoint = (id, suffix) => `/api/diagnostic/sessions/${encodeURIComponent(id)}/${suffix}`;
@@ -12,6 +20,7 @@ function message(root, text, retry) {
     <p class="muted small">Only manually approved, source-grounded questions are used. This diagnostic does not complete required training.</p>
     <button class="btn" id="diagnostic-retry">Try again</button></section>`;
   $("#diagnostic-retry", root).onclick = retry;
+  skipButton(root);
 }
 
 function choices(options, name) {
@@ -35,6 +44,7 @@ function showQuestion(root, envelope, user, go, notice = "") {
       <button class="btn secondary" type="button" id="diagnostic-refresh">Refresh current question</button></div>
     </form><p class="muted small">Adapted from ${esc(q.attribution.name)} · ${esc(q.attribution.license)} ·
     <a href="${link(q.attribution.url)}" target="_blank" rel="noopener">Source article</a>. No training-completion credit.</p>`;
+  skipButton(root);
   $("#diagnostic-refresh", root).onclick = () => diagnosticView(root, user, go);
   let pending = null;
   $("#diagnostic-form", root).onsubmit = async (event) => {
@@ -86,13 +96,14 @@ export async function diagnosticView(root, user, go) {
       }
     }
     root.innerHTML = `<section class="hero"><h1>Find your next learning step</h1><p>Apply important concepts, explain your reasoning, and identify targeted review.</p></section>
-      <section class="card"><h2>A short diagnostic across four topics</h2><p>Up to eight initial scenarios, within a total budget of 12 including foundation and prerequisite probes.</p>
+      <section class="card"><h2>A short diagnostic across four topics</h2><p>${onboarding() ? "10 randomly selected questions, including adaptive foundation follow-ups after mistakes. Fewer are shown if the approved bank is too small." : "Up to eight initial scenarios, within a total budget of 12 including foundation and prerequisite probes."}</p>
       <p>Untested concepts remain not assessed. Correct responses provide evidence of understanding, not certified mastery. Required training is separate.</p>
       <button class="btn" id="diagnostic-start">Start diagnostic</button><p id="diagnostic-error" role="alert"></p></section>`;
+    skipButton(root);
     $("#diagnostic-start", root).onclick = async (event) => {
       event.target.disabled = true;
       try {
-        const envelope = await api.post("/api/diagnostic/sessions", { initial_limit: 8, budget: 12 }, { retry: false });
+        const envelope = await api.post("/api/diagnostic/sessions", onboarding() ? { initial_limit: 10, budget: 10, randomize: true } : { initial_limit: 8, budget: 12 }, { retry: false });
         remember(user, envelope.session_id);
         showQuestion(root, envelope, user, go);
       } catch (error) {
@@ -110,15 +121,13 @@ export async function diagnosticResults(root, user, go) {
   loading(root);
   try {
     const report = await api.get(endpoint(id, "results"));
-    const priority = report.review_priority.map((cid) => report.objectives.find((c) => c.objective_id === cid));
     const articles = Object.keys(report.article_coverage);
     root.innerHTML = `<div class="hero"><h1>Your diagnostic evidence</h1><p>${esc(report.interpretation)}</p></div>
       <div class="grid cols-4"><div class="stat"><div class="label">Scenarios answered</div><div class="value">${report.questions_answered}</div></div>
       <div class="stat"><div class="label">Answers correct</div><div class="value">${report.answers_correct}</div></div>
       <div class="stat"><div class="label">Reasons correct</div><div class="value">${report.reasons_correct}</div></div>
-      <div class="stat"><div class="label">Confidence points</div><div class="value">0</div></div></div>
-      <section class="card" style="margin-top:16px"><h2>Targeted review</h2><p>Importance 3 is highest priority.</p>
-      ${priority.length ? `<ol>${priority.map((o) => `<li><strong>${esc(o.name)}</strong> · priority ${o.importance}<br>${esc(o.recommended_review)}</li>`).join("")}</ol>` : "<p>No review gap was observed among tested concepts. Untested concepts remain uncertain.</p>"}</section>
+      <div class="stat"><div class="label">Answers incorrect</div><div class="value">${report.questions_answered - report.answers_correct}</div></div></div>
+      <section class="card" style="margin-top:16px"><h2>Recorded responses</h2><p>Reasons incorrect: ${report.questions_answered - report.reasons_correct}. Confidence adds no points.</p>${(report.answer_history || []).map((r, i) => `<p>${i + 1}. ${esc(r.question)}: answer ${esc(r.answer_text)} ? ${r.answer_correct ? "correct" : "incorrect"}; reasoning ${esc(r.reason_text)} ? ${r.reason_correct ? "correct" : "incorrect"}; confidence: ${esc(r.confidence)}</p>`).join("")}</section>
       ${articles.map((article) => `<section class="card" style="margin-top:16px"><h2>${esc(article.replaceAll("-", " "))}</h2>
         <p class="muted">${report.article_coverage[article].tested} / ${report.article_coverage[article].mapped} mapped concepts tested${report.article_coverage[article].mapped ? "" : "; not assessed — this topic has no mapped questions in the current bank"}</p>
         <div class="list">${report.objectives.filter((o) => o.article_id === article).map((o) => `<details class="card flat"><summary><strong>${esc(o.name)}</strong> · ${esc(o.status)}</summary>
@@ -130,7 +139,9 @@ export async function diagnosticResults(root, user, go) {
           <a href="${link(o.review_resources.source.url)}" target="_blank" rel="noopener">${esc(o.review_resources.source.name)}</a> · ${esc(o.review_resources.source.license)}</p>
         </details>`).join("")}</div></section>`).join("")}
       <section class="card" style="margin-top:16px"><h2>Required training — separate obligations</h2>${report.required_training.map((o) => `<p>${esc(o.article_id)}: ${o.required ? "required" : "optional"} · ${esc(o.completion)}</p>`).join("")}</section>
+      <button class="btn" id="diagnostic-overview" style="margin-top:16px">Go to Overview</button>
       <button class="btn secondary" id="diagnostic-new" style="margin-top:16px">Start a new diagnostic</button>`;
+    $("#diagnostic-overview", root).onclick = () => go("overview");
     $("#diagnostic-new", root).onclick = () => { localStorage.removeItem(key(user)); go("diagnostic"); };
   } catch (error) {
     message(root, `${error.message} You may need to finish or restart the diagnostic.`, () => go("diagnostic"));

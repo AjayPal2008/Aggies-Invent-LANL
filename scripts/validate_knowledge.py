@@ -8,7 +8,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from backend.ai_client import redact_secrets
-KNOWLEDGE_DIR = ROOT / "Resource_File" / "extracted_knowledge"
+KNOWLEDGE_DIR = ROOT / "Resource_File" / "sample, gk info" / "extracted_knowledge"
 AI_FIELDS = {"summary", "difficulty", "key_points", "terms", "relationships", "common_misconceptions"}
 
 

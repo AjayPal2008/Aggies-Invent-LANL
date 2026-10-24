@@ -19,7 +19,7 @@ from backend.ai_client import AIClientError, EXTRACTION_TIMEOUT_SECONDS, generat
 from backend.prompts import AI_SCHEMA, EXTRACTION_PROMPT, MERGE_INSTRUCTION
 from scripts.validate_knowledge import KNOWLEDGE_DIR, repair, validate
 
-RAW_DIR = ROOT / "Resource_File" / "raw_text"
+RAW_DIR = ROOT / "Resource_File" / "sample, gk info" / "raw_text"
 CHUNK_CHARS = 12000
 MERGE_CHARS = 24000
 DEBUG_DIR = ROOT / "Resource_File" / "debug"

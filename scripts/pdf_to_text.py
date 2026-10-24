@@ -73,10 +73,10 @@ def clean_pages(pages: list[str]) -> tuple[str, int, str]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--source', type=Path, default=ROOT / 'Resource_File')
-    parser.add_argument('--output', type=Path, default=ROOT / 'Resource_File' / 'raw_text')
+    parser.add_argument('--source', type=Path, default=ROOT / 'Resource_File' / 'sample, gk info')
+    parser.add_argument('--output', type=Path, default=ROOT / 'Resource_File' / 'sample, gk info' / 'raw_text')
     args = parser.parse_args()
-    folders = [args.output, ROOT / 'Resource_File' / 'extracted_knowledge',
+    folders = [args.output, ROOT / 'Resource_File' / 'sample, gk info' / 'extracted_knowledge',
                ROOT / 'Resource_File' / 'cache', ROOT / 'scripts', ROOT / 'backend', ROOT / 'frontend']
     for folder in folders:
         created = not folder.exists()

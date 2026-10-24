@@ -53,8 +53,8 @@ def main():
         "docker-compose.yml": "Excluded: original multi-replica deployment is outside the verified single-host SQLite diagnostic scope.",
         "render.yaml": "Excluded: cloud deployment is not configured/verified in this consolidation.",
         "deploy/nginx.conf.template": "Excluded with original Docker deployment; no alternate app root introduced.",
-        "Ionizing_radiation.json": "Excluded duplicate/empty upstream root artifact; canonical populated JSON is under Resource_File/extracted_knowledge/.",
-        "Ionizing_radiation.pdf": "Combined with the existing Resource_File/Ionizing_radiation.pdf; compare hashes below.",
+        "Ionizing_radiation.json": "Excluded duplicate/empty upstream root artifact; canonical populated JSON is under Resource_File/sample, gk info/extracted_knowledge/.",
+        "Ionizing_radiation.pdf": "Combined with the existing Resource_File/sample, gk info/Ionizing_radiation.pdf; compare hashes below.",
     }
     for name in upstream:
         if name in exclusions:
@@ -74,7 +74,7 @@ def main():
             raise SystemExit(f"Original backend asset missing: {name}")
         rows.append({"source": "backend-45803a8", "path": name, "target": name,
                      "disposition": "retained (root ignore rules combined)"})
-    pdf_equal = ((UI / "Ionizing_radiation.pdf").read_bytes() == (ROOT / "Resource_File/Ionizing_radiation.pdf").read_bytes())
+    pdf_equal = ((UI / "Ionizing_radiation.pdf").read_bytes() == (ROOT / "Resource_File/sample, gk info/Ionizing_radiation.pdf").read_bytes())
     if not pdf_equal:
         raise SystemExit("Upstream duplicate PDF differs; resolve explicitly before publishing")
     files = sorted(walk(ROOT))
