@@ -34,6 +34,27 @@ cd backend
 ../.venv/bin/python -m scripts.import_library --build  # and build offline lessons for each
 ```
 
+### Managing each material (admin)
+
+Every material in a training's detail window has its own buttons:
+
+- **Open** the stored copy.
+- **Rename** it.
+- **Replace file** to upload a newer version (PDF, .pptx, .docx, .txt, .md). A catalog PDF keeps its LANL link, so the next sync doesn't add the old one back. Rebuild lessons afterwards.
+- **Re-download** fetches the official PDF again from cdn.lanl.gov, for when LANL publishes a new revision.
+- **Delete** removes it. Uploads are deleted; catalog PDFs are hidden and not re-added or re-downloaded by later syncs. Lessons already built stay until you rebuild.
+
+## Role directory (managers)
+
+*Roles → Role directory* lists every library role, searchable by title or skill and filterable by division. Opening a role shows:
+
+- the job description (summary, full text the admin pastes in, and any job description files on its positions)
+- the positions that use the role in that division, with level, years and prerequisites
+- the skills it needs, combined from the role, its positions and its trainings
+- **Trainings to assign**, grouped as institutional, division and role, with when each is due, its type, assessment and length
+
+Pick *New hire*, *Promotion within the division* or *Moving from another division* and the list updates. Untick anything you want to leave out, then **Assign to people…** (optionally moving them into one of the role's positions), **Copy list** or **Print**. Trainings a person already has open are left as they are.
+
 ## Annual cycle
 
 **Run annual cycle** assigns this year's annual institutional courses to everyone who isn't current, spreading due dates over up to 8 weeks before the deadline so 20,000 people don't all log in the same night. Running it twice doesn't duplicate anything.
@@ -50,6 +71,12 @@ Course titles, numbers and material links come from public LANL pages. The **div
 | `POST /api/library/trainings`, `PATCH /api/library/trainings/{code}` | Create / edit a training (layer, audience, frequency, assessment type) |
 | `POST /api/library/materials/import` | Import linked public PDFs (all, or one training) |
 | `POST /api/library/trainings/{code}/materials` | Upload a PDF, `.pptx`, `.docx` or text |
+| `PATCH /api/library/materials/{id}` | Rename a material |
+| `POST /api/library/materials/{id}/file` | Replace a material's file |
+| `POST /api/library/materials/{id}/refresh` | Download a linked LANL PDF again |
+| `DELETE /api/library/materials/{id}` | Delete a material |
+| `GET /api/library/roles/{key}/detail?program=` | Role page: job description, skills, positions and the list for each entry path |
+| `POST /api/library/roles/{key}/assign` | Assign a role's list to people (`entry_path`, `exclude`, optional `position_code`) |
 | `POST /api/library/trainings/{code}/build` | Build lessons from the training's materials |
 | `GET /api/library/trainings/{code}/modules` | Review built modules (admin) |
 | `POST /api/library/trainings/{code}/publish` | `{reviewed: true, publish: true}` publishes; `{publish: false}` returns to draft |

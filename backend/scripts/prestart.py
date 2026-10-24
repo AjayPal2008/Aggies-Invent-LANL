@@ -32,7 +32,11 @@ def main():
     init_db()
     with SessionLocal() as db:
         if db.scalar(select(func.count(models.Employee.id))):
-            logging.info("Database already has data; nothing to load")
+            from app.services.library import sync_library
+
+            stats = sync_library(db)  # only adds library items that are missing, so updates reach existing databases
+            db.commit()
+            logging.info("Database already has data; library sync added %s", stats)
             return
         from app.services.demo import load_demo_documents
         from app.services.sync import sync_all

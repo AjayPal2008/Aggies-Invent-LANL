@@ -186,3 +186,90 @@ def test_built_lessons_are_drafts_until_published(client, admin, hire):
     assert client.post("/api/library/trainings/UT-9518/publish", json={"publish": True, "reviewed": True}, headers=hire).status_code == 403
     assert client.post("/api/library/trainings/UT-9518/publish", json={"publish": True, "reviewed": True}, headers=admin).json()["lessons_status"] == "published"
     assert client.get("/api/me/trainings/UT-9518/modules", headers=hire).json()["modules"]
+
+
+def _upload_text(client, admin, code, name, text):
+    r = client.post(f"/api/library/trainings/{code}/materials", headers=admin,
+                    files={"file": (name, text.encode(), "text/plain")}, data={"title": name})
+    assert r.status_code == 200, r.text
+    return r.json()
+
+
+def _mats(client, admin, code):
+    return next(t for t in client.get("/api/library", headers=admin).json()["trainings"] if t["code"] == code)["materials"]
+
+
+def test_admin_can_rename_replace_and_delete_an_upload(client, admin, manager):
+    m = _upload_text(client, admin, "UT-10922", "old.txt", "Badges must be worn above the waist at all times on LANL property. " * 5)
+    assert client.patch(f"/api/library/materials/{m['id']}", json={"title": "Badge rules"}, headers=manager).status_code == 403
+    assert client.patch(f"/api/library/materials/{m['id']}", json={"title": "Badge rules"}, headers=admin).json()["title"] == "Badge rules"
+    new = client.post(f"/api/library/materials/{m['id']}/file", headers=admin,
+                      files={"file": ("new.txt", b"Updated 2026 badge rules. Report lost badges within one hour. " * 5, "text/plain")}).json()
+    assert new["id"] == m["id"] and new["document_id"] != m["document_id"] and new["status"] == "uploaded"
+    bad = client.post(f"/api/library/materials/{m['id']}/file", headers=admin, files={"file": ("x.exe", b"MZ", "application/octet-stream")})
+    assert bad.status_code == 400
+    assert client.post(f"/api/library/materials/{m['id']}/refresh", headers=admin).status_code == 400  # uploads have no public link
+    assert client.delete(f"/api/library/materials/{m['id']}", headers=admin).status_code == 200
+    assert all(x["id"] != m["id"] for x in _mats(client, admin, "UT-10922"))
+
+
+def test_deleting_a_catalog_pdf_hides_it_and_sync_does_not_bring_it_back(client, admin, monkeypatch):
+    from app.database import SessionLocal
+
+    mat = _mats(client, admin, "UT-4464")[0]
+    assert client.delete(f"/api/library/materials/{mat['id']}", headers=admin).status_code == 200
+    assert all(x["id"] != mat["id"] for x in _mats(client, admin, "UT-4464"))
+    monkeypatch.setattr(library, "_download", lambda url, target: (_ for _ in ()).throw(AssertionError("no network in tests")))
+    from app import models
+
+    with SessionLocal() as db:
+        library.sync_library(db)
+        db.commit()
+        library.import_all(db, "UT-4464")
+        row = db.get(models.TrainingMaterial, mat["id"])
+        assert row.status == "removed" and row.document_id is None  # not re-added or re-downloaded
+    assert all(x["id"] != mat["id"] for x in _mats(client, admin, "UT-4464"))
+    assert client.delete(f"/api/library/materials/{mat['id']}", headers=admin).status_code == 404
+
+
+def test_redownload_a_linked_pdf(client, admin, monkeypatch):
+    def fake_download(url, target):
+        target.write_bytes(SAMPLE_PDF.read_bytes())
+        return target.stat().st_size
+
+    monkeypatch.setattr(library, "_download", fake_download)
+    mat = _mats(client, admin, "UT-8876")[0]
+    assert client.post(f"/api/library/materials/{mat['id']}/refresh", headers=admin).json()["status"] == "downloading"
+    after = next(x for x in _mats(client, admin, "UT-8876") if x["id"] == mat["id"])
+    assert after["status"] == "imported" and after["document_id"]
+
+
+def test_role_detail_gives_job_description_skills_and_lists_per_path(client, manager, admin):
+    d = client.get("/api/library/roles/project-lead/detail?program=weapons", headers=manager).json()
+    assert d["program"] == "weapons" and d["skills"] and set(d["paths"]) == {"new_hire", "promotion", "transfer"}
+    counts = {k: v["included"] for k, v in d["paths"].items()}
+    assert counts["new_hire"] > counts["transfer"] > counts["promotion"] > 0
+    assert d["paths"]["promotion"]["by_layer"]["institutional"] == 0 and d["paths"]["promotion"]["by_layer"]["division"] == 0
+    assert not d["can_edit"]
+    assert client.get("/api/library/roles/project-lead/detail?program=nope", headers=manager).status_code == 400
+    r = client.patch("/api/library/roles/project-lead", headers=admin, json={
+        "title": d["title"], "family": d["family"], "programs": d["programs"], "description": d["description"],
+        "job_description": "Leads weapons program projects end to end.", "skills": ["Earned Value Management", "risk management"]})
+    assert r.status_code == 200
+    d2 = client.get("/api/library/roles/project-lead/detail?program=weapons", headers=manager).json()
+    assert d2["job_description"].startswith("Leads") and "earned value management" in {s["skill"] for s in d2["skills"]}
+
+
+def test_manager_assigns_a_role_list(client, manager):
+    people = client.get("/api/manager/team?sort=name", headers=manager).json()
+    emp = [p for p in people if p["email"] != "hire@lanl.gov"][-1]  # away from the people other tests use
+    d = client.get("/api/library/roles/esh-professional/detail?program=operations", headers=manager).json()
+    items = [i for i in d["paths"]["promotion"]["items"] if i["include"]]
+    skip = items[0]["training_code"]
+    body = {"program": "operations", "entry_path": "promotion", "from_program": "operations", "employee_ids": [emp["id"]], "exclude": [skip]}
+    out = client.post("/api/library/roles/esh-professional/assign", json=body, headers=manager).json()
+    got = out["people"][0]
+    assert skip not in got["assigned"] and set(got["assigned"]) | set(got["already_assigned"]) == {i["training_code"] for i in items[1:]}
+    again = client.post("/api/library/roles/esh-professional/assign", json=body, headers=manager).json()["people"][0]
+    assert again["assigned"] == []
+    assert client.post("/api/library/roles/esh-professional/assign", json={**body, "employee_ids": []}, headers=manager).status_code == 400

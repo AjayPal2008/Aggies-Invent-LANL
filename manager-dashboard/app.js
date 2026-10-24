@@ -4,6 +4,7 @@ import {
 } from "/shared/api.js?v=20261025a";
 import { rolesView, interviewsView } from "./roles.js";
 import { libraryView } from "./library.js";
+import { roleDirectoryView } from "./roledirectory.js";
 
 // Hires are sent back to /hire/ here, and the API refuses them too.
 const me = await requireRole(["manager", "admin"]);
@@ -584,4 +585,4 @@ async function data() {
 }
 
 const go = router({ overview, team, assign, retraining, insights: insightsView, roleplans: () => rolesView(view),
-  interviews: () => interviewsView(view), library: () => libraryView(view), roles, promotions, data }, "overview");
+  interviews: () => interviewsView(view), library: () => libraryView(view), roledirectory: () => roleDirectoryView(view), roles, promotions, data }, "overview");
