@@ -3,8 +3,9 @@ import {
   CATEGORY_LABEL, DELIVERY_LABEL,
 } from "/shared/api.js?v=20261025a";
 import { videoPlayer, interviewFlow, rolePlanCard, showResult } from "./learning.js";
-import { speakButton } from "/shared/a11y.js?v=20261025a";
+import { speak, stopSpeaking, speakButton } from "/shared/a11y.js?v=20261025a";
 import { diagnosticView, diagnosticResults } from "./diagnostic.js";
+import { reviewStudio, mindMap, readProgress, progressPanel, inProgressPanel } from "./review-studio.js?v=20261025d";
 
 const me = await requireRole(["hire", "manager", "admin"]);
 topbar(me, "My Training");
@@ -58,7 +59,7 @@ async function overview() {
         </section>
       </div>
     </div>`;
-  $$(".stat[data-flag]").forEach((el) => el.addEventListener("click", () => { trainingsFilter.flag = el.dataset.flag; go("trainings"); }));
+  $$(".stat[data-flag]").forEach((el) => el.addEventListener("click", () => { trainingsFilter.flag = el.dataset.flag; go("studio"); }));
   wirePathButtons();
 }
 
@@ -66,40 +67,6 @@ function isNewEmployee() {
   let selected = new URLSearchParams(location.search).get("new_employee") === "1";
   try { selected ||= sessionStorage.getItem("lanl_employee_path") === "new"; } catch { /* optional storage */ }
   return selected && me.email?.toLowerCase() === "hire@lanl.gov";
-}
-
-async function diagnosticTrainings() {
-  loading(view);
-  try {
-    const data = await api.get("/api/diagnostic/review-courses");
-    view.innerHTML = `<div class="card-head"><h1>My trainings</h1></div>
-      <p class="muted">Source-based review courses from Your learning path, ordered by diagnostic priority. Reviewing material does not establish mastery or complete required training.</p>
-      <div class="list">${data.courses.map(c => `<section class="card"><div class="card-head"><h2>${esc(c.title)}</h2><span class="badge ${c.status === "reviewed" ? "ok" : "warn"}">${c.status === "reviewed" ? "Material reviewed" : "Needs review"}</span></div>
-        <p class="small muted">${esc(c.article_id.replaceAll("-", " "))} ? Priority ${c.importance}</p><p>${esc(c.observed_gap)}</p>
-        <button class="btn" data-review-course="${esc(c.id)}">${c.status === "reviewed" ? "Review again" : "Start review course"}</button></section>`).join("") || `<section class="card"><p>${data.session_id ? "No review courses were indicated by your latest diagnostic. Untested concepts remain unassessed." : "Complete a diagnostic to build your courses. No learning gaps have been assessed yet."}</p><button class="btn" id="courses-diagnostic">Take diagnostic</button></section>`}</div>`;
-    $("#courses-diagnostic")?.addEventListener("click", () => go("diagnostic"));
-    $$("[data-review-course]", view).forEach(button => button.onclick = () => {
-      const c = data.courses.find(course => course.id === button.dataset.reviewCourse);
-      const url = /^https:\/\//i.test(c.attribution.url || "") ? esc(c.attribution.url) : "#";
-      const dialog = modal(`<div class="modal-head"><h2>${esc(c.title)}</h2><button class="btn ghost" data-close>Close</button></div>
-        <h3>Learning objective</h3><p>${esc(c.objective)}</p>
-        <div class="list">${c.key_points.map(point => `<section class="card flat"><h3>${esc(point.point)}</h3><p>${esc(point.explanation)}</p></section>`).join("")}</div>
-        <h3>Source material</h3><blockquote>${esc(c.source_excerpt)}</blockquote>
-        <p>${esc(c.recommended_review)}</p><p class="small"><a href="${url}" target="_blank" rel="noopener">${esc(c.attribution.name)}</a> ? ${esc(c.attribution.license)}</p>
-        <p class="small muted">Marking this material reviewed records your activity; it does not change diagnostic scores.</p>
-        <button class="btn" id="complete-review">Mark material reviewed</button><p id="review-error" role="alert"></p>`, { wide: true });
-      $("#complete-review", dialog.root).onclick = async event => {
-        event.target.disabled = true;
-        try {
-          await api.post(`/api/diagnostic/sessions/${encodeURIComponent(data.session_id)}/review-courses/${encodeURIComponent(c.id)}/complete`, {}, { retry: false });
-          dialog.close(); await diagnosticTrainings();
-        } catch (error) { $("#review-error", dialog.root).textContent = error.message; event.target.disabled = false; }
-      };
-    });
-  } catch (error) {
-    view.innerHTML = `<section class="card"><h1>My trainings</h1><p role="alert">${esc(error.message)}</p><button class="btn" id="courses-retry">Try again</button></section>`;
-    $("#courses-retry").onclick = diagnosticTrainings;
-  }
 }
 
 async function diagnosticOverview() {
@@ -128,7 +95,7 @@ async function diagnosticOverview() {
       <section class="card"><h3>Assessment coverage</h3><p>${positive.length} concepts with evidence of understanding.</p><p>${uncertain.length} concepts not assessed.</p><p>Reasoning incorrect: ${r.questions_answered - r.reasons_correct}. Confidence adds no points.</p></section></div></div>
       <button class="btn" id="overview-trainings" style="margin-top:16px">Open my review courses</button>
       <button class="btn secondary" id="overview-results" style="margin-top:16px">View diagnostic responses and results</button>`;
-    $("#overview-trainings").onclick = () => go("trainings");
+    $("#overview-trainings").onclick = () => go("studio");
     $("#overview-results").onclick = () => {
       localStorage.setItem(`lanl_diagnostic_${me.id}_new_employee`, r.session_id);
       localStorage.setItem(`lanl_diagnostic_${me.id}`, r.session_id);
@@ -163,7 +130,7 @@ function pathItem(p, i) {
 }
 
 function wirePathButtons(root = view) {
-  $$("[data-learn]", root).forEach((b) => b.addEventListener("click", () => { studio.code = b.dataset.learn; studio.lesson = null; studio.chat = []; go("studio"); }));
+  $$("[data-learn]", root).forEach((b) => b.addEventListener("click", () => { studio.code = b.dataset.learn; studio.lesson = null; studio.chat = []; go("assigned-studio"); }));
 }
 
 function gapsHtml(gaps) {
@@ -190,11 +157,13 @@ function profileSummary(p) {
 
 const trainingsFilter = { category: "", required: "", status: "", flag: "", sort: "due_date" };
 
-async function trainings() {
-  if (isNewEmployee()) { await diagnosticTrainings(); return; }
+async function trainings() { return studioView(); }
+
+async function assignedTrainings() {
+
   const f = trainingsFilter;
   view.innerHTML = `
-    <div class="card-head"><h1>My trainings</h1></div>
+    <div class="card-head"><h1>Learning studio</h1></div>
     <div class="toolbar">
       <div class="chips" id="cat-chips">
         ${["", "safety", "technical", "culture", "compliance"].map((c) => `<button class="chip ${f.category === c ? "active" : ""}" data-cat="${c}">${c ? CATEGORY_LABEL[c] : "All categories"}</button>`).join("")}
@@ -256,7 +225,7 @@ function assignmentItem(a) {
 /** Jump to one module of a course in the learning studio (used by "Review these modules"). */
 function openModule(code, moduleId) {
   studio.code = code; studio.module = moduleId; studio.lesson = null; studio.chat = [];
-  go("studio");
+  go("assigned-studio");
 }
 
 function readinessBadge(a) {
@@ -407,6 +376,10 @@ function eventDetail(e) {
 // ---- Learning studio --------------------------------------------------------
 
 async function studioView() {
+  return reviewStudio(view, go, assignedStudioView, me);
+}
+
+async function assignedStudioView() {
   if (!dash) await refresh();
   const assigned = dash.assignments.map((a) => a.training);
   if (!studio.code) studio.code = dash.path[0]?.training_code || assigned[0]?.code;
@@ -426,7 +399,7 @@ async function studioView() {
             <label class="field" style="flex:1">Training
               <select id="s-training">${options.map((o) => `<option value="${esc(o.code)}" ${o.code === t.code ? "selected" : ""}>${esc(o.code)} · ${esc(o.title)}</option>`).join("")}</select></label>
             <label class="field">Delivery
-              <select id="s-modality"><option value="">Pick for me</option>${Object.entries(MODALITY_LABEL).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></label>
+              <select id="s-modality"><option value="text">Text</option><option value="mindmap">Mind map</option><option value="audio">Audio</option></select></label>
             <label class="field">Level
               <select id="s-level"><option value="">Adapt to me</option>${Object.entries(LEVEL_LABEL).map(([k, v]) => `<option value="${k}">${v}</option>`).join("")}</select></label>
           </div>
@@ -455,9 +428,9 @@ async function studioView() {
         <form id="chat-form"><input id="chat-input" placeholder="Ask a question…" autocomplete="off"><button class="btn">Send</button></form>
       </section>
     </div>`;
-  $("#s-training").onchange = (e) => { studio.code = e.target.value; studio.lesson = null; studio.chat = []; studioView(); };
+  $("#s-training").onchange = (e) => { studio.code = e.target.value; studio.lesson = null; studio.chat = []; assignedStudioView(); };
   $("#s-gen").onclick = () => genLesson(t);
-  $$("[data-module]").forEach((b) => b.addEventListener("click", () => { studio.module = Number(b.dataset.module); studio.lesson = null; studioView(); }));
+  $$("[data-module]").forEach((b) => b.addEventListener("click", () => { studio.module = Number(b.dataset.module); studio.lesson = null; assignedStudioView(); }));
   wireAssignmentButtons(view);
   $("#s-src")?.addEventListener("click", async (e) => { e.preventDefault(); try { window.open(await api.blobUrl(t.source_url), "_blank"); } catch (err) { toast(err.message, true); } });
   if (course && !studio.lesson) $("#s-gen").textContent = "Start this module";
@@ -473,11 +446,13 @@ async function genLesson(t) {
   loading(box, "Writing a lesson for you…");
   $("#s-gen").disabled = true;
   try {
-    const body = { request: $("#s-request").value, modality: $("#s-modality").value || null, difficulty: $("#s-level").value || null };
+    const delivery = $("#s-modality").value;
+    const body = { request: $("#s-request").value, modality: "text", difficulty: $("#s-level").value || null };
     if (studio.module) studio.lesson = await api.post(`/api/me/modules/${studio.module}/lesson`, body);
     else if (body.modality === "video") studio.lesson = await api.post(`/api/me/trainings/${encodeURIComponent(t.code)}/video`, body);
     else studio.lesson = await api.post(`/api/me/trainings/${encodeURIComponent(t.code)}/lesson`, body);
     studio.lesson.training_code = t.code;
+    studio.lesson.delivery = delivery;
     renderLesson(t, studio.lesson);
     dash = null;
   } catch (e) { box.innerHTML = `<div class="card">${esc(e.message)}</div>`; }
@@ -488,7 +463,7 @@ async function finishLesson(t, l) {
   if (l.module_id) {
     const r = await api.post(`/api/me/modules/${l.module_id}/complete`);
     toast(`Module done · ${r.done} of ${r.total} · course ${r.progress ?? 0}% complete`);
-    dash = null; studio.lesson = null; studio.module = null; studioView();
+    dash = null; studio.lesson = null; studio.module = null; assignedStudioView();
     return;
   }
   const a = (dash || (await refresh())).assignments.find((x) => x.training.code === t.code);
@@ -507,6 +482,17 @@ function renderLesson(t, l) {
       onAnswer: (ok, q) => recordAnswer(t, l.skill || t.skills?.[0] || t.category, ok, "video", q),
       onDone: () => finishLesson(t, l),
     });
+    return;
+  }
+  if (["mindmap", "audio"].includes(l.delivery)) {
+    const points = l.sections.map(s => ({ point: s.heading || s.kind || "Key concept", explanation: [s.body, s.text, s.content, s.scenario, s.explanation].filter(v => typeof v === "string").join(" ") }));
+    const transcript = [l.title, l.overview, ...points.map(p => `${p.point}. ${p.explanation}`), ...l.key_points].join("\n\n");
+    box.innerHTML = `<div class="card"><h2>${esc(l.title)}</h2>${l.delivery === "mindmap" ? mindMap({ title: l.title, objective: l.overview, key_points: points }) : `<button class="btn" id="lesson-audio">Play audio</button> <button class="btn secondary" id="lesson-stop">Stop audio</button><details><summary>Audio transcript</summary><p style="white-space:pre-line">${esc(transcript)}</p></details>`}<button class="btn" id="finish">I finished this lesson</button></div>`;
+    $("#lesson-audio", box)?.addEventListener("click", event => speak(transcript, event.currentTarget));
+    $("#lesson-stop", box)?.addEventListener("click", stopSpeaking);
+    $("#finish", box).onclick = () => { stopSpeaking(); finishLesson(t, l); };
+    const observer = new MutationObserver(() => { if (!box.isConnected || !$("#finish", box)) { stopSpeaking(); observer.disconnect(); } });
+    observer.observe(view, { childList: true, subtree: true });
     return;
   }
   box.innerHTML = `
@@ -674,29 +660,23 @@ async function loadCatalog() {
 // ---- Profile ----------------------------------------------------------------
 
 async function profile() {
-  const d = dash || (await refresh());
-  const skills = Object.entries(d.employee.skills).sort((a, b) => b[1] - a[1]);
-  view.innerHTML = `
-    <div class="card-head"><h1>My learning profile</h1></div>
-    <div class="grid cols-2">
-      <section class="card">
-        <h3>How I like to learn</h3>
-        <p class="small muted">This is a starting point. The platform also watches which formats you do best with and adjusts.</p>
-        <div class="toolbar"><label class="field">Learning style
-          <select id="style">${["video", "visual", "reading", "hands_on", "auditory", "simulation", "practice", "unknown"].map((s) => `<option ${s === d.employee.learning_style ? "selected" : ""}>${s}</option>`).join("")}</select></label>
-          <button class="btn" id="save-style">Save</button></div>
-        ${profileSummary(d.profile)}
-      </section>
-      <section class="card">
-        <h3>My skills</h3>
-        <p class="small muted">Estimated from completed trainings, assessments, practice and your background.</p>
-        <div class="list">${skills.map(([s, v]) => `<div class="small">${esc(s)} <span class="muted num">${Math.round(v * 100)}%</span>${bar(v * 100, v >= 0.7 ? "ok" : "")}</div>`).join("") || `<p class="muted">No skills recorded yet.</p>`}</div>
-      </section>
-    </div>`;
-  $("#save-style").onclick = async () => { await api.patch("/api/me/profile", { learning_style: $("#style").value }); toast("Saved"); dash = null; profile(); };
+  loading(view);
+  const d = await refresh();
+  const state = readProgress(me);
+  const skills = Object.entries(d.employee.skills).map(([name,value])=>[name,Math.max(0,Number(value)||0)]).sort((a,b)=>b[1]-a[1]);
+  const colors = ["#153c87", "#2874ae", "#329c99", "#75af96", "#94a7c9", "#6e659c", "#b0bccc"];
+  const total = skills.reduce((sum,[,v])=>sum+v,0);
+  let angle = 0;
+  const slices = skills.map(([,v],i)=>{const start=angle;angle+=total?v/total*360:0;return `${colors[i%colors.length]} ${start}deg ${angle}deg`;});
+  view.innerHTML = `<div class="card-head"><h1>My learning profile</h1></div>
+    <div class="grid cols-2"><section class="card">${progressPanel(state)}</section>
+    <section class="card"><h3>My skills</h3><p class="small muted">Each slice shows a skill's share of your combined skill estimates. Scores are listed below.</p>
+    ${total?`<div role="img" aria-label="Skill distribution: ${esc(skills.map(([name,v])=>`${name} ${Math.round(v/total*100)} percent of total`).join(', '))}" style="width:210px;height:210px;margin:24px auto;border-radius:50%;background:conic-gradient(${slices.join(',')});border:7px solid #f2f5fa;box-shadow:0 6px 24px #112b6210"></div>`:'<div class="empty">No skill evidence recorded yet.</div>'}
+    <div class="list">${skills.map(([name,v],i)=>`<div class="small" style="display:flex;align-items:center;gap:10px"><span aria-hidden="true" style="width:11px;height:11px;border-radius:3px;background:${colors[i%colors.length]}"></span><span style="flex:1">${esc(name)}</span><strong>${Math.round(v*100)}%</strong></div>`).join('')}</div></section></div>
+    <section class="card" style="margin-top:18px">${inProgressPanel(state)}<a class="btn secondary" href="#studio" style="margin-top:16px">Continue in Learning Studio</a></section>`;
 }
 
-const go = router({ overview, trainings, calendar, studio: studioView, catalog, profile,
+const go = router({ overview, trainings, calendar, studio: studioView, "assigned-studio": assignedStudioView, catalog, profile,
   // AJ's source-grounded diagnostic: reviewed questions from the Resource_File documents.
   // queueMicrotask: these need `go`, which isn't assigned yet if the page opens directly on #diagnostic.
   diagnostic: () => queueMicrotask(() => diagnosticView(view, me, go)),

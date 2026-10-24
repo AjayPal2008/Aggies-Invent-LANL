@@ -73,12 +73,7 @@ function showQuestion(root, envelope, user, go, notice = "") {
 }
 
 function showFeedback(root, envelope, user, go) {
-  root.innerHTML = `<h1>Diagnostic branch finished</h1><p class="muted">Feedback is now available for the completed branch.</p>
-    <div class="list">${envelope.feedback.map((f) => `<section class="card">
-      <h3>Answer: ${f.answer_correct ? "correct" : "needs review"} · Reasoning: ${f.reason_correct ? "correct" : "needs review"}</h3>
-      ${[["Answer choices", f.answers], ["Reasoning choices", f.reasons]].map(([title, options]) => `<details><summary>${title}</summary>
-        ${options.map((o) => `<p><strong>${esc(o.text)}</strong><br>${esc(o.explanation)}</p>`).join("")}</details>`).join("")}</section>`).join("")}</div>
-    <button class="btn" id="diagnostic-continue" style="margin-top:16px">${envelope.complete ? "View concept-level results" : "Continue diagnostic"}</button>`;
+  root.innerHTML = `<button class="btn" id="diagnostic-continue">${envelope.complete ? "View results" : "Next question"}</button>`;
   $("#diagnostic-continue", root).onclick = () => envelope.complete ? go("diagnostic-results") : diagnosticView(root, user, go);
 }
 
