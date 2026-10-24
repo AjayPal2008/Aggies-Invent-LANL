@@ -30,10 +30,12 @@ def main():
             shutil.rmtree(settings.upload_dir, ignore_errors=True)
         result["demo_documents"] = load_demo_documents(db)
     for source, stats in result.items():
-        if isinstance(stats, dict):
+        if isinstance(stats, dict) and "created" in stats:
             print(f"{source}: {stats['created']} created, {stats['updated']} updated, {len(stats['errors'])} warnings")
             for err in stats["errors"][:5]:
                 print("   ", err)
+        elif isinstance(stats, dict):
+            print(f"{source}: " + ", ".join(f"{v} {k.replace('_', ' ')}" for k, v in stats.items()))
         else:
             print(f"{source}: {stats}")
     print("Demo logins (password from DEMO_PASSWORD, default demo1234): admin@lanl.gov, manager@lanl.gov, hire@lanl.gov")

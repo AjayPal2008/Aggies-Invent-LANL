@@ -183,4 +183,7 @@ def ensure_required_assignments(db: Session) -> int:
 def sync_all(db: Session) -> dict:
     result = {"directory": sync_directory(db), "utrain": sync_trainings(db), "oracle_hr": sync_employees(db)}
     result["auto_assigned"] = ensure_required_assignments(db)
+    from .library import sync_library
+
+    result["library"] = sync_library(db)  # institutional / division / role training library
     return result

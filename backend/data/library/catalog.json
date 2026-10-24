@@ -1,0 +1,1994 @@
+{
+ "about": "Training library for the prototype. Course titles, numbers and material links come from public LANL pages (extrain.lanl.gov, lanl.gov/engage/training/its and the Nuclear Fundamentals Orientation page). Division and role assignments are DRAFT defaults for the prototype, not official LANL training matrices: confirm with each division's training coordinator. Material files are downloaded into the admin library on demand and are not committed; original document terms apply.",
+ "sources": [
+  "https://extrain.lanl.gov/",
+  "https://www.lanl.gov/engage/training/its",
+  "https://www.lanl.gov/engage/training/nuclear-fundamentals-orientation"
+ ],
+ "programs": [
+  {
+   "key": "weapons",
+   "name": "Weapons",
+   "description": "Weapons Physics, Weapons Engineering, Weapons Production and Plutonium Infrastructure.",
+   "directorates": [
+    "ALDWP",
+    "ALDWE",
+    "ALDWEP",
+    "ALDPU"
+   ]
+  },
+  {
+   "key": "ste",
+   "name": "Science, Technology & Engineering",
+   "description": "Chemical, Earth & Life Sciences; Physical Sciences; Global Security; Simulation, Computing & Theory.",
+   "directorates": [
+    "ALDCELS",
+    "ALDPS",
+    "ALDGS",
+    "ALDSCT"
+   ]
+  },
+  {
+   "key": "operations",
+   "name": "Operations",
+   "description": "Business Services; Facilities & Operations; Defense Protection; Infrastructure & Capital Projects; Environment, Safety, Health & Quality.",
+   "directorates": [
+    "ALDBS",
+    "ALDFO",
+    "ALDDP",
+    "ALDICP",
+    "ALDESHQ"
+   ]
+  }
+ ],
+ "courses": [
+  {
+   "code": "UT-62676",
+   "number": "62676",
+   "title": "Initial Security Training",
+   "layer": "institutional",
+   "category": "security",
+   "audience": "new_hire",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "security basics"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-1425",
+   "number": "1425",
+   "title": "Annual Security Refresher Briefing",
+   "layer": "institutional",
+   "category": "security",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "security basics"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": "Required for badge reader access."
+  },
+  {
+   "code": "UT-9369",
+   "number": "9369",
+   "title": "Initial Information Security Briefing",
+   "layer": "institutional",
+   "category": "security",
+   "audience": "new_hire",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "cybersecurity"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": "Required for obtaining a LANL network account (zToken, WIN account, network authentication)."
+  },
+  {
+   "code": "UT-47075",
+   "number": "47075",
+   "title": "Information Security Refresher",
+   "layer": "institutional",
+   "category": "security",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "cybersecurity"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": "UT-9369",
+   "materials": [],
+   "note": "Required for LANL network account renewal (refresher for course 9369)."
+  },
+  {
+   "code": "UT-31112",
+   "number": "31112",
+   "title": "Department of Energy Insider Threat Awareness",
+   "layer": "institutional",
+   "category": "security",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "insider threat"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-57950",
+   "number": "57950",
+   "title": "CUI-100DE, Controlled Unclassified Information Overview",
+   "layer": "institutional",
+   "category": "security",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "controlled information"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-42095",
+   "number": "42095",
+   "title": "Substance Abuse Policy",
+   "layer": "institutional",
+   "category": "policy",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "workplace policy"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-10922",
+   "number": "10922",
+   "title": "Incident Reporting and Protective Actions",
+   "layer": "institutional",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "incident reporting",
+    "emergency response"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-27392",
+   "number": "27392",
+   "title": "LANL Ethics Training",
+   "layer": "institutional",
+   "category": "ethics",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "ethics"
+   ],
+   "assessment_type": "both",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-32461",
+   "number": "32461",
+   "title": "Environmental Management System (EMS) Awareness Training",
+   "layer": "institutional",
+   "category": "environment",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "environmental management"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-55173",
+   "number": "55173",
+   "title": "Beryllium: General Employee Overview",
+   "layer": "institutional",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "beryllium awareness"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-21208",
+   "number": "21208",
+   "title": "Export Control Fundamentals",
+   "layer": "institutional",
+   "category": "export",
+   "audience": "new_hire",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "export control"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-52144",
+   "number": "52144",
+   "title": "Export Control Annual Refresher",
+   "layer": "institutional",
+   "category": "export",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "export control"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": "UT-21208",
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-16028",
+   "number": "16028",
+   "title": "Classified Matter Protection",
+   "layer": "role",
+   "category": "security",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "classified handling"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-35043",
+   "number": "35043",
+   "title": "Classified Matter Protection and Control User Refresher Training",
+   "layer": "role",
+   "category": "security",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "classified handling"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": "UT-16028",
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-22925",
+   "number": "22925",
+   "title": "Protecting Unclassified Controlled Nuclear Information",
+   "layer": "role",
+   "category": "security",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "ucni"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-43094",
+   "number": "43094",
+   "title": "General Employee Training (GET) for Unescorted Nuclear Facility Access",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "nuclear facility access"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-47968",
+   "number": "47968",
+   "title": "General Employee Radiological Training (GERT)",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "radiation safety"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-15238",
+   "number": "15238",
+   "title": "Transferring Technology to a Foreign Country or to a Foreign National in the U.S.",
+   "layer": "role",
+   "category": "export",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "export control",
+    "technology transfer"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-15240",
+   "number": "15240",
+   "title": "High Risk Property",
+   "layer": "role",
+   "category": "export",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "property control"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "UT-38843",
+   "number": "38843",
+   "title": "TA-53 Activated Item and Sample Handling Requirements in Primary Beam Areas",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "UTrain (extrain.lanl.gov)",
+   "source_url": "https://extrain.lanl.gov/",
+   "skills": [
+    "radiation safety",
+    "accelerator facility"
+   ],
+   "assessment_type": "quiz",
+   "refresher_of": null,
+   "materials": [],
+   "note": ""
+  },
+  {
+   "code": "NFO-1",
+   "number": "",
+   "title": "Nuclear Fundamentals Orientation, Module 1",
+   "layer": "division",
+   "category": "culture",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "Nuclear Fundamentals Orientation",
+   "source_url": "https://www.lanl.gov/engage/training/nuclear-fundamentals-orientation",
+   "skills": [
+    "nuclear security enterprise",
+    "lab culture"
+   ],
+   "assessment_type": "quiz",
+   "description": "Virtual. LANL history, the Nuclear Security Enterprise, the Weapons Programs and key security principles. Three half-days, offered quarterly.",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "NFO brochure",
+     "url": "https://cdn.lanl.gov/files/nfo-brochure-print-la-ur-26-25318-_34c2e.pdf"
+    },
+    {
+     "kind": "pdf",
+     "title": "NFO 2027 schedule",
+     "url": "https://cdn.lanl.gov/files/nfo-2027-schedule_ce188.pdf"
+    }
+   ]
+  },
+  {
+   "code": "NFO-2",
+   "number": "",
+   "title": "Nuclear Fundamentals Orientation, Module 2",
+   "layer": "division",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "online",
+   "source_system": "Nuclear Fundamentals Orientation",
+   "source_url": "https://www.lanl.gov/engage/training/nuclear-fundamentals-orientation",
+   "skills": [
+    "stockpile stewardship",
+    "nuclear weapons science"
+   ],
+   "assessment_type": "quiz",
+   "prerequisites": [
+    "NFO-1"
+   ],
+   "description": "Virtual. Stockpile stewardship, nuclear weapons science, materials, design, testing, the U.S. stockpile and the weapons lifecycle.",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "NFO brochure",
+     "url": "https://cdn.lanl.gov/files/nfo-brochure-print-la-ur-26-25318-_34c2e.pdf"
+    }
+   ]
+  },
+  {
+   "code": "NFO-3",
+   "number": "",
+   "title": "Nuclear Fundamentals Orientation, Module 3 (classified)",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "Nuclear Fundamentals Orientation",
+   "source_url": "https://www.lanl.gov/engage/training/nuclear-fundamentals-orientation",
+   "skills": [
+    "nuclear weapons science"
+   ],
+   "assessment_type": "quiz",
+   "prerequisites": [
+    "NFO-1",
+    "NFO-2"
+   ],
+   "description": "In person in Los Alamos with subject matter experts. Requires Modules 1 and 2, U.S. citizenship and a DOE Q clearance or equivalent.",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "NFO brochure",
+     "url": "https://cdn.lanl.gov/files/nfo-brochure-print-la-ur-26-25318-_34c2e.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-8661",
+   "number": "8661",
+   "title": "Asbestos Awareness Live",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "asbestos awareness"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 8661 student manual",
+     "url": "https://cdn.lanl.gov/files/asbestos-aware-8661-sm-r22_944cf.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-725",
+   "number": "725",
+   "title": "Beryllium Worker Training",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "beryllium awareness",
+    "chemical safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 725 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-725-r50_6eb1c.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-7292",
+   "number": "7292",
+   "title": "Bloodborne Pathogens",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "bloodborne pathogens"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 7292 student manual",
+     "url": "https://cdn.lanl.gov/files/eshq-sm-7292--r31_db13f.pdf"
+    },
+    {
+     "kind": "link",
+     "title": "OSHA 29 CFR 1910.1030",
+     "url": "https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.1030/"
+    }
+   ]
+  },
+  {
+   "code": "UT-25418",
+   "number": "25418",
+   "title": "Chemical Hazard Communication Introduction Live",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "chemical safety",
+    "hazard awareness"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 25418 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-25418-r20_16fb4.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-52600",
+   "number": "52600",
+   "title": "Competent Person: Fall Protection",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "fall protection"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 52600 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-52600_09d41.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-30831",
+   "number": "30831",
+   "title": "Compression Fittings Assembly",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "pressure systems",
+    "mechanical assembly"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 30831 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-30831r20_0c3e7.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-55707",
+   "number": "55707",
+   "title": "Confined Space Air Monitoring Instrumentation - ALTAIR",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "confined space",
+    "air monitoring"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 55707 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-55707-r20_a9a4a.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-40439",
+   "number": "40439",
+   "title": "Confined Space Awareness",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "confined space"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 40439 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-40439-r30_c94ca.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-26941",
+   "number": "26941",
+   "title": "Confined Space Entry Supervisor",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "confined space",
+    "leadership"
+   ],
+   "assessment_type": "both",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 26941 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-26941--r40_9fd23.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-19613",
+   "number": "19613",
+   "title": "Confined Space Evaluation",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "confined space",
+    "hazard assessment"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 19613 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-19613--r30_b4465.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-40438",
+   "number": "40438",
+   "title": "Confined Space Nonentry Rescue Gear Training",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "confined space",
+    "rescue"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 40438 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-40438-r20_4046f.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-20295",
+   "number": "20295",
+   "title": "Crane: Incidental Classroom Instruction",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "crane operation",
+    "rigging"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 20295 student manual",
+     "url": "https://cdn.lanl.gov/files/crane-incidental-20295-sm-r13_739d8.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-20297",
+   "number": "20297",
+   "title": "Crane: Qualified Classroom Instruction",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "crane operation",
+    "rigging"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 20297 student manual",
+     "url": "https://cdn.lanl.gov/files/crane-qualified-sm-20297-r10_f3c46.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-8876",
+   "number": "8876",
+   "title": "Cryogen Safety",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "cryogen safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 8876 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-8876-r20_52c4c.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-12175",
+   "number": "12175",
+   "title": "Electrical Safety Program: Nonelectrical Crafts at LANL",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "electrical safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 12175 student manual",
+     "url": "https://cdn.lanl.gov/files/esp-nonelec-crafts-12175-sm-r12_17355.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-33462",
+   "number": "33462",
+   "title": "Fall Protection Introduction",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "fall protection"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 33462 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-33462-r60_d1754.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-9893",
+   "number": "9893",
+   "title": "Fire Extinguisher Live",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "fire safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 9893 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-9893--r40_bbb86.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-20355",
+   "number": "20355",
+   "title": "Forklift Proficiency Instructor",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "forklift operation",
+    "instructing"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 20355 student manual",
+     "url": "https://cdn.lanl.gov/files/eshq-sm-20355-r20_b13c9.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-20299",
+   "number": "20299",
+   "title": "Forklift Safety Fundamentals",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "forklift operation"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 20299 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-20299-r30_ac360.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-9518",
+   "number": "9518",
+   "title": "Gas Cylinder Safety",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "compressed gas"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 9518 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-9518-r20_35bb5.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-4464",
+   "number": "4464-4465",
+   "title": "HAZWOPER General Site Worker / Limited Site Worker",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hazardous waste operations"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 4464-4465 student manual",
+     "url": "https://cdn.lanl.gov/files/eshq-sm-44644465--r50_48d03.pdf"
+    },
+    {
+     "kind": "pdf",
+     "title": "Course handout",
+     "url": "https://cdn.lanl.gov/files/eshq-ho-44644465--r50_b4e2f.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-28652",
+   "number": "28652",
+   "title": "HAZWOPER: Refresher",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hazardous waste operations"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 28652 student manual",
+     "url": "https://cdn.lanl.gov/files/eshq-sm-28652--r200_f989e.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-2430",
+   "number": "2430",
+   "title": "Hearing Conservation",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hearing conservation"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 2430 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-2430r30_546a6.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-27916",
+   "number": "27916",
+   "title": "HMPT: Introduction",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hazmat transportation"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 27916 student manual",
+     "url": "https://cdn.lanl.gov/files/hmpt-introduction-27916-sm-r13_f6e85.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-27918",
+   "number": "27918",
+   "title": "HMPT: Identification of Hazardous Materials",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hazmat transportation"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 27918 student manual",
+     "url": "https://cdn.lanl.gov/files/log-sm-27918--r20_8a736.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-27928",
+   "number": "27928",
+   "title": "HMPT: Hazardous Waste Transportation",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hazmat transportation",
+    "waste management"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 27928 student manual",
+     "url": "https://cdn.lanl.gov/files/log-sm-27928-r50_cc602.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-27922",
+   "number": "27922",
+   "title": "HMPT: Movement by Highway",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hazmat transportation"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 27922 student manual",
+     "url": "https://cdn.lanl.gov/files/hmpt-movement-by-highway-27922-sm-r10_26436.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-27920",
+   "number": "27920",
+   "title": "HMPT: Preparing Shipments",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hazmat transportation"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 27920 student manual",
+     "url": "https://cdn.lanl.gov/files/hmpt-preparing-shipments-27920-sm-r10_ba607.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-38324",
+   "number": "38324",
+   "title": "HMPT: Radioactive Packaging and Transportation",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "hazmat transportation",
+    "radiation safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 38324 student manual",
+     "url": "https://cdn.lanl.gov/files/hmpt-ram-trans-38324-sm-r00_2ae4a.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-12985",
+   "number": "12985",
+   "title": "Ladder Safety",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "ladder safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 12985 student manual",
+     "url": "https://cdn.lanl.gov/files/ladder-safety-12985-sm-r40_158eb.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-41250",
+   "number": "41250",
+   "title": "Laser Safety: Laser Alignment Hands On",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "laser safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 41250 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-41250-r20_195cc.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-49594",
+   "number": "49594",
+   "title": "Lead Safety",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "lead safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 49594 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-49594-r02_ac854.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-43321",
+   "number": "43321",
+   "title": "Mechanical Material Handling Coordinator",
+   "layer": "role",
+   "category": "technical",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "material handling",
+    "coordination"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 43321 student manual",
+     "url": "https://cdn.lanl.gov/files/its-pg-43321-r30_a0faa.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-769",
+   "number": "769",
+   "title": "Pressure Safety Orientation",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "pressure safety"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 769 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-769r20_988a8.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-11459",
+   "number": "11459",
+   "title": "Pressure Safety: Advanced",
+   "layer": "role",
+   "category": "safety",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "pressure safety",
+    "pressure systems"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 11459 student manual",
+     "url": "https://cdn.lanl.gov/files/eshq-sm-11459-r70_0e763.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-7488",
+   "number": "7488",
+   "title": "RCRA Personnel Training",
+   "layer": "role",
+   "category": "compliance",
+   "audience": "all",
+   "frequency": "annual",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "waste management",
+    "environmental compliance"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 7488 student manual",
+     "url": "https://cdn.lanl.gov/files/eshq-sm-7488-r60_17ec8.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-37341",
+   "number": "37341",
+   "title": "TSQP: Fundamentals for On-The-Job Instructors and Evaluators",
+   "layer": "role",
+   "category": "culture",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "instructing",
+    "coaching"
+   ],
+   "assessment_type": "both",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 37341 student manual",
+     "url": "https://cdn.lanl.gov/files/ojt--notebook-pdf-05-06-26_6ac3a.pdf"
+    }
+   ]
+  },
+  {
+   "code": "UT-23263",
+   "number": "23263",
+   "title": "Waste Generation Overview",
+   "layer": "role",
+   "category": "compliance",
+   "audience": "all",
+   "frequency": "once",
+   "delivery": "in_person",
+   "source_system": "White Rock Training Center",
+   "source_url": "https://www.lanl.gov/engage/training/its",
+   "skills": [
+    "waste management"
+   ],
+   "assessment_type": "quiz",
+   "materials": [
+    {
+     "kind": "pdf",
+     "title": "Course 23263 student manual",
+     "url": "https://cdn.lanl.gov/files/its-sm-23263-r60_b26f0.pdf"
+    }
+   ]
+  }
+ ],
+ "division_requirements": {
+  "weapons": [
+   {
+    "code": "NFO-1",
+    "phase": 1,
+    "reason": "Weapons onboarding: Nuclear Security Enterprise and Weapons Programs overview"
+   },
+   {
+    "code": "NFO-2",
+    "phase": 2,
+    "reason": "Weapons onboarding: stockpile stewardship and the weapons lifecycle"
+   },
+   {
+    "code": "UT-22925",
+    "phase": 1,
+    "reason": "Weapons work involves Unclassified Controlled Nuclear Information"
+   },
+   {
+    "code": "UT-16028",
+    "phase": 1,
+    "reason": "Weapons work involves classified matter"
+   },
+   {
+    "code": "UT-35043",
+    "phase": 3,
+    "reason": "Annual classified matter refresher"
+   }
+  ],
+  "ste": [
+   {
+    "code": "UT-25418",
+    "phase": 1,
+    "reason": "Laboratory chemical hazards across STE divisions"
+   },
+   {
+    "code": "UT-23263",
+    "phase": 2,
+    "reason": "Research generates regulated waste"
+   },
+   {
+    "code": "UT-15238",
+    "phase": 2,
+    "reason": "International research collaboration and technology transfer"
+   }
+  ],
+  "operations": [
+   {
+    "code": "UT-25418",
+    "phase": 1,
+    "reason": "Facility and craft work involves hazardous chemicals"
+   },
+   {
+    "code": "UT-12175",
+    "phase": 1,
+    "reason": "Electrical safety for everyone working around facility systems"
+   },
+   {
+    "code": "UT-2430",
+    "phase": 2,
+    "reason": "Noise exposure in facilities and shops"
+   },
+   {
+    "code": "UT-9893",
+    "phase": 2,
+    "reason": "Fire extinguisher use for facility staff"
+   }
+  ]
+ },
+ "roles": [
+  {
+   "key": "project-lead",
+   "title": "Project Lead / Project Manager",
+   "family": "Leadership",
+   "in": [
+    "weapons",
+    "ste",
+    "operations"
+   ],
+   "description": "Owns scope, schedule, cost, risk and safety for a project and leads its team.",
+   "requirements": [
+    {
+     "code": "PM-200",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "PM-310",
+     "kind": "technical",
+     "phase": 3
+    },
+    {
+     "code": "QA-330",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "COM-320",
+     "kind": "soft",
+     "phase": 1
+    },
+    {
+     "code": "MEN-140",
+     "kind": "soft",
+     "phase": 2
+    }
+   ],
+   "by_division": {
+    "weapons": [
+     {
+      "code": "NFO-3",
+      "kind": "technical",
+      "phase": 3,
+      "reason": "Lead weapons projects with full program context (Q clearance)"
+     }
+    ],
+    "operations": [
+     {
+      "code": "UT-43321",
+      "kind": "technical",
+      "phase": 3,
+      "reason": "Coordinate material handling on facility projects"
+     }
+    ]
+   }
+  },
+  {
+   "key": "supervisor",
+   "title": "Supervisor / Group Leader",
+   "family": "Leadership",
+   "in": [
+    "weapons",
+    "ste",
+    "operations"
+   ],
+   "description": "Leads a group or line organization: people, safety, performance and training.",
+   "requirements": [
+    {
+     "code": "SUP-500",
+     "kind": "soft",
+     "phase": 1
+    },
+    {
+     "code": "COM-320",
+     "kind": "soft",
+     "phase": 1
+    },
+    {
+     "code": "MEN-140",
+     "kind": "soft",
+     "phase": 2
+    },
+    {
+     "code": "UT-37341",
+     "kind": "soft",
+     "phase": 3
+    }
+   ]
+  },
+  {
+   "key": "engineer",
+   "title": "Engineer (mechanical, electrical, systems)",
+   "family": "Engineering",
+   "in": [
+    "weapons",
+    "ste",
+    "operations"
+   ],
+   "description": "Designs, builds and qualifies hardware, systems and facilities.",
+   "requirements": [
+    {
+     "code": "UT-769",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-11459",
+     "kind": "technical",
+     "phase": 3
+    },
+    {
+     "code": "UT-30831",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "QA-330",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "COM-320",
+     "kind": "soft",
+     "phase": 3
+    }
+   ],
+   "by_division": {
+    "weapons": [
+     {
+      "code": "UT-43094",
+      "kind": "technical",
+      "phase": 1,
+      "reason": "Unescorted access to nuclear facilities"
+     },
+     {
+      "code": "UT-47968",
+      "kind": "technical",
+      "phase": 1,
+      "reason": "Radiological awareness for nuclear facility work"
+     }
+    ]
+   }
+  },
+  {
+   "key": "scientist",
+   "title": "Scientist (experimental)",
+   "family": "Science",
+   "in": [
+    "weapons",
+    "ste"
+   ],
+   "description": "Plans and runs experiments in laboratories and user facilities.",
+   "requirements": [
+    {
+     "code": "UT-25418",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-9518",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-8876",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-41250",
+     "kind": "technical",
+     "phase": 3
+    },
+    {
+     "code": "PY-150",
+     "kind": "technical",
+     "phase": 3
+    },
+    {
+     "code": "MEN-140",
+     "kind": "soft",
+     "phase": 3
+    }
+   ],
+   "by_division": {
+    "ste": [
+     {
+      "code": "UT-38843",
+      "kind": "technical",
+      "phase": 2,
+      "reason": "Experiments at LANSCE (TA-53) beam areas"
+     }
+    ],
+    "weapons": [
+     {
+      "code": "UT-47968",
+      "kind": "technical",
+      "phase": 1,
+      "reason": "Radiological awareness for weapons science"
+     }
+    ]
+   }
+  },
+  {
+   "key": "computational-scientist",
+   "title": "Computational Scientist",
+   "family": "Science",
+   "in": [
+    "weapons",
+    "ste"
+   ],
+   "description": "Builds models, simulations and data analysis on LANL computing systems.",
+   "requirements": [
+    {
+     "code": "HPC-101",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "HPC-210",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "PY-150",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "ML-250",
+     "kind": "technical",
+     "phase": 3
+    },
+    {
+     "code": "MEN-140",
+     "kind": "soft",
+     "phase": 3
+    }
+   ]
+  },
+  {
+   "key": "nuclear-technician",
+   "title": "Nuclear Facility Technician",
+   "family": "Technician",
+   "in": [
+    "weapons",
+    "operations"
+   ],
+   "description": "Performs hands-on work in nuclear facilities under conduct of operations.",
+   "requirements": [
+    {
+     "code": "UT-43094",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-47968",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "RAD-101",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "COO-320",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-725",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "COM-320",
+     "kind": "soft",
+     "phase": 3
+    }
+   ]
+  },
+  {
+   "key": "craft-worker",
+   "title": "Craft / Maintenance Worker",
+   "family": "Crafts",
+   "in": [
+    "operations"
+   ],
+   "description": "Maintains and repairs facilities, utilities and equipment.",
+   "requirements": [
+    {
+     "code": "UT-12985",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-33462",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-40439",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-20299",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-20295",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-8661",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-49594",
+     "kind": "technical",
+     "phase": 3
+    },
+    {
+     "code": "COM-320",
+     "kind": "soft",
+     "phase": 3
+    }
+   ]
+  },
+  {
+   "key": "hazmat-logistics",
+   "title": "Logistics / Hazardous Materials Shipper",
+   "family": "Logistics",
+   "in": [
+    "operations"
+   ],
+   "description": "Packages, documents and transports hazardous and radioactive materials.",
+   "requirements": [
+    {
+     "code": "UT-27916",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-27918",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-27920",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-27922",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-27928",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-38324",
+     "kind": "technical",
+     "phase": 3
+    },
+    {
+     "code": "UT-7488",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-15240",
+     "kind": "technical",
+     "phase": 3
+    }
+   ]
+  },
+  {
+   "key": "esh-professional",
+   "title": "Environment, Safety & Health Professional",
+   "family": "Safety",
+   "in": [
+    "operations"
+   ],
+   "description": "Industrial hygiene, safety and environmental compliance support for workers and facilities.",
+   "requirements": [
+    {
+     "code": "UT-19613",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-55707",
+     "kind": "technical",
+     "phase": 1
+    },
+    {
+     "code": "UT-4464",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-28652",
+     "kind": "technical",
+     "phase": 3
+    },
+    {
+     "code": "UT-7292",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-7488",
+     "kind": "technical",
+     "phase": 2
+    },
+    {
+     "code": "UT-26941",
+     "kind": "soft",
+     "phase": 3
+    },
+    {
+     "code": "COM-320",
+     "kind": "soft",
+     "phase": 3
+    }
+   ]
+  }
+ ],
+ "title_rules": [
+  {
+   "match": [
+    "project lead",
+    "project manager"
+   ],
+   "role": "project-lead"
+  },
+  {
+   "match": [
+    "group leader",
+    "superintendent",
+    "operations manager",
+    "supervisor"
+   ],
+   "role": "supervisor"
+  },
+  {
+   "match": [
+    "computational",
+    "data science",
+    "hpc systems"
+   ],
+   "role": "computational-scientist"
+  },
+  {
+   "match": [
+    "engineer"
+   ],
+   "role": "engineer"
+  },
+  {
+   "match": [
+    "scientist",
+    "chemist",
+    "physicist"
+   ],
+   "role": "scientist"
+  },
+  {
+   "match": [
+    "radiological control technician",
+    "plutonium facility technician",
+    "facility technician"
+   ],
+   "role": "nuclear-technician"
+  },
+  {
+   "match": [
+    "maintenance technician",
+    "craft"
+   ],
+   "role": "craft-worker"
+  }
+ ]
+}

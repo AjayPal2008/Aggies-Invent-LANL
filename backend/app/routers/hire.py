@@ -214,7 +214,7 @@ class PracticeIn(BaseModel):
 def practice(code: str, body: PracticeIn, user: models.Employee = Depends(current_user), db: Session = Depends(get_db)):
     t = _training(db, code)
     profile = adaptive.learner_profile(db, user, t)
-    if t.document_id:  # courses built from documents quiz on the document's own rules
+    if t.document_id and t.lessons_status != "draft":  # courses built from documents quiz on the document's own rules
         from ..services import courseware
 
         return cached_content(db, f"practice:{t.code}:{profile['difficulty']}:{body.count}",
@@ -250,7 +250,7 @@ def start_assessment(assignment_id: int, user: models.Employee = Depends(current
     """Issue a graded assessment. Answers stay on the server."""
     a = _own_assignment(db, user, assignment_id)
     profile = adaptive.learner_profile(db, user, a.training)
-    if a.training.document_id:
+    if a.training.document_id and a.training.lessons_status != "draft":
         from ..services import courseware
 
         qs = courseware.document_quiz(db, user, a.training, profile, n=10)

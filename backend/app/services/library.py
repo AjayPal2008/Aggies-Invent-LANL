@@ -1,0 +1,310 @@
+"""The admin training library: what everyone, each division and each role must complete, and the
+source materials (PDFs, slide decks) the AI builds lessons from.
+
+Three layers, mirroring how UTrain assigns training:
+  institutional  everyone at LANL (security, cyber, ethics, policy, safety); many repeat annually
+  division       required by a program: Weapons, Science Technology & Engineering (STE), or Operations
+  role           a role's technical and soft-skill training; roles are shared across divisions, with
+                 optional division-specific additions (a Project Lead in Weapons also needs NFO Module 3)
+
+How someone enters a role decides which layers apply:
+  new hire                     institutional (initial onboarding) + division + role
+  internal move, same division role only (institutional training continues on its annual cycle)
+  internal move, new division  division + role
+
+The structure comes from data/library/catalog.json (public LANL course titles, numbers and material
+links). Material files are downloaded into the admin library on demand, never committed.
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import logging
+from datetime import date, datetime, timedelta
+from functools import lru_cache
+from pathlib import Path
+from urllib.parse import urlsplit
+
+import httpx
+from sqlalchemy import select
+from sqlalchemy.orm import Session
+
+from .. import models
+from ..config import BACKEND_DIR, settings
+from . import documents
+
+log = logging.getLogger(__name__)
+
+CATALOG = BACKEND_DIR / "data" / "library" / "catalog.json"
+LAYERS = ("institutional", "division", "role")
+PROGRAMS = ("weapons", "ste", "operations")
+ATTRIBUTION = ("Los Alamos National Laboratory public training material. Original document terms apply; no redistribution "
+               "license is inferred. Lessons adapted from it are not official qualification.")
+
+
+@lru_cache(maxsize=1)
+def manifest() -> dict:
+    return json.loads(CATALOG.read_text(encoding="utf-8"))
+
+
+def program_names() -> dict[str, str]:
+    return {p["key"]: p["name"] for p in manifest()["programs"]}
+
+
+# ---- loading the library ---------------------------------------------------------------
+
+def sync_library(db: Session) -> dict:
+    """Create library trainings, materials, divisions' programs, roles and requirements.
+
+    Safe to run repeatedly: existing rows are kept as the admin left them; only missing ones are added.
+    """
+    m = manifest()
+    stats = {"trainings": 0, "materials": 0, "division_requirements": 0, "roles": 0, "role_requirements": 0, "positions_mapped": 0}
+    existing = {t.code: t for t in db.scalars(select(models.Training))}
+    for c in m["courses"]:
+        t = existing.get(c["code"])
+        if t is None:
+            t = models.Training(code=c["code"])
+            db.add(t)
+            existing[c["code"]] = t
+            stats["trainings"] += 1
+            t.title, t.category, t.delivery = c["title"], c["category"], c["delivery"]
+            t.description = c.get("description") or c.get("note") or (
+                f"Live, instructor-led course {c['number']} at the White Rock Training Center." if c["source_system"] == "White Rock Training Center"
+                else c["title"])
+            t.source_system, t.source_url = c["source_system"], c["source_url"]
+            t.skills, t.prerequisites = c.get("skills", []), c.get("prerequisites", [])
+            t.assessment_type = c.get("assessment_type", "quiz")
+            t.layer, t.audience, t.frequency = c["layer"], c["audience"], c["frequency"]
+            t.course_number, t.refresher_of = c.get("number", ""), c.get("refresher_of")
+            t.validity_months = 12 if c["frequency"] == "annual" else None
+            t.required = False  # library plans assign these by layer; the legacy auto-assign rule leaves them alone
+            t.job_roles = []
+            t.outline = c.get("description") or c.get("note") or ""
+            t.duration_minutes = 60 if c["delivery"] == "online" else 240
+    db.flush()
+    have = {(x.training_code, x.url) for x in db.scalars(select(models.TrainingMaterial))}
+    for c in m["courses"]:
+        for mat in c.get("materials", []):
+            if (c["code"], mat["url"]) not in have:
+                db.add(models.TrainingMaterial(training_code=c["code"], kind=mat["kind"], title=mat["title"], url=mat["url"],
+                                               status="linked"))
+                have.add((c["code"], mat["url"]))
+                stats["materials"] += 1
+    # Divisions belong to a program through their directorate.
+    by_directorate = {d: p["key"] for p in m["programs"] for d in p["directorates"]}
+    for d in db.scalars(select(models.Division)):
+        if not d.program:
+            d.program = by_directorate.get(d.parent_code or "") or by_directorate.get(d.code)
+    if not db.scalar(select(models.DivisionRequirement.id)):
+        for program, items in m["division_requirements"].items():
+            for it in items:
+                db.add(models.DivisionRequirement(program=program, training_code=it["code"], phase=it["phase"], reason=it["reason"]))
+                stats["division_requirements"] += 1
+    if not db.scalar(select(models.LibraryRole.key)):
+        for r in m["roles"]:
+            db.add(models.LibraryRole(key=r["key"], title=r["title"], family=r["family"], description=r["description"], programs=r["in"]))
+            stats["roles"] += 1
+            for it in r["requirements"]:
+                db.add(models.RoleRequirement(role_key=r["key"], program=None, training_code=it["code"], kind=it["kind"],
+                                              phase=it["phase"], reason=it.get("reason", "")))
+                stats["role_requirements"] += 1
+            for program, items in r.get("by_division", {}).items():
+                for it in items:
+                    db.add(models.RoleRequirement(role_key=r["key"], program=program, training_code=it["code"], kind=it["kind"],
+                                                  phase=it["phase"], reason=it.get("reason", "")))
+                    stats["role_requirements"] += 1
+    # Sample-catalog courses that roles use are role trainings.
+    used_by_roles = set(db.scalars(select(models.RoleRequirement.training_code)))
+    db.flush()
+    for t in db.scalars(select(models.Training).where(models.Training.layer.is_(None))):
+        if t.code in used_by_roles or t.code in {c for items in m["division_requirements"].values() for c in [i["code"] for i in items]}:
+            t.layer = "role"
+    for pos in db.scalars(select(models.Position)):
+        if not pos.library_role:
+            pos.library_role = role_for_title(pos.title)
+            stats["positions_mapped"] += 1 if pos.library_role else 0
+    db.commit()
+    return stats
+
+
+def role_for_title(title: str) -> str | None:
+    t = (title or "").lower()
+    for rule in manifest()["title_rules"]:
+        if any(w in t for w in rule["match"]):
+            return rule["role"]
+    return None
+
+
+def program_of(db: Session, division_code: str | None) -> str | None:
+    if not division_code:
+        return None
+    d = db.scalar(select(models.Division).where(models.Division.code == division_code))
+    return d.program if d else None
+
+
+# ---- materials -------------------------------------------------------------------------
+
+def allowed_url(url: str) -> bool:
+    """Only official public LANL PDFs: https://cdn.lanl.gov/files/*.pdf, no query or fragment."""
+    p = urlsplit(url)
+    return (p.scheme == "https" and p.netloc == "cdn.lanl.gov" and p.path.startswith("/files/")
+            and p.path.lower().endswith(".pdf") and not p.query and not p.fragment)
+
+
+def _download(url: str, target: Path) -> int:
+    if not allowed_url(url):
+        raise ValueError("Only official public LANL PDFs (cdn.lanl.gov/files) can be imported automatically")
+    size, limit = 0, settings.max_upload_mb * 1024 * 1024
+    with httpx.stream("GET", url, timeout=60, follow_redirects=False) as r:
+        r.raise_for_status()
+        with target.open("wb") as fh:
+            for chunk in r.iter_bytes():
+                size += len(chunk)
+                if size > limit:
+                    raise ValueError(f"File is larger than {settings.max_upload_mb} MB")
+                fh.write(chunk)
+    with target.open("rb") as fh:
+        if fh.read(5) != b"%PDF-":
+            raise ValueError("The download wasn't a PDF")
+    return size
+
+
+def import_material(db: Session, mat: models.TrainingMaterial) -> models.TrainingMaterial:
+    """Download a linked public PDF into the library and extract its text (no AI involved)."""
+    if mat.document_id or mat.kind not in ("pdf",):
+        return mat
+    folder = Path(settings.upload_dir) / "documents"
+    folder.mkdir(parents=True, exist_ok=True)
+    target = folder / f"library-{mat.id}.pdf"
+    try:
+        size = _download(mat.url, target)
+        digest = hashlib.sha256(target.read_bytes()).hexdigest()
+        twin = db.scalar(select(models.TrainingMaterial).where(models.TrainingMaterial.sha256 == digest,
+                                                               models.TrainingMaterial.document_id.is_not(None)))
+        if twin:  # same file already imported for another training (e.g. the NFO brochure)
+            target.unlink(missing_ok=True)
+            mat.document_id = twin.document_id
+        else:
+            doc = documents.save_document(db, target, mat.title, "manual", None, None)
+            doc.filename, doc.training_code = Path(urlsplit(mat.url).path).name, mat.training_code
+            doc.analysis = {"stored_as": target.name, "source_url": mat.url, "attribution": ATTRIBUTION}
+            mat.document_id = doc.id
+            if doc.status == "failed":
+                mat.error = doc.error
+        mat.sha256, mat.bytes, mat.retrieved_at = digest, size, datetime.utcnow()
+        mat.status, mat.error = ("imported", mat.error) if mat.document_id else ("failed", mat.error)
+    except Exception as exc:  # report per material, keep going
+        target.unlink(missing_ok=True)
+        mat.status, mat.error = "failed", str(exc)[:400]
+    db.commit()
+    return mat
+
+
+def import_all(db: Session, training_code: str | None = None) -> dict:
+    q = select(models.TrainingMaterial).where(models.TrainingMaterial.document_id.is_(None), models.TrainingMaterial.kind == "pdf")
+    if training_code:
+        q = q.where(models.TrainingMaterial.training_code == training_code)
+    results = {"imported": 0, "failed": 0, "errors": []}
+    for mat in list(db.scalars(q)):
+        import_material(db, mat)
+        if mat.status == "imported":
+            results["imported"] += 1
+        else:
+            results["failed"] += 1
+            results["errors"].append({"training_code": mat.training_code, "title": mat.title, "error": mat.error})
+    return results
+
+
+def add_uploaded(db: Session, training_code: str, path: Path, title: str, filename: str, uploader_id: int | None) -> models.TrainingMaterial:
+    """An admin-uploaded PDF, slide deck, Word file or text file for a training."""
+    kind = {".pdf": "pdf", ".pptx": "pptx", ".docx": "docx"}.get(path.suffix.lower(), "text")
+    doc = documents.save_document(db, path, title, "manual", None, uploader_id)
+    doc.filename, doc.training_code = filename, training_code
+    doc.analysis = {"stored_as": path.name}
+    mat = models.TrainingMaterial(training_code=training_code, kind=kind, title=title, url=f"upload:{path.name}",
+                                  status="uploaded" if doc.status != "failed" else "failed", document_id=doc.id,
+                                  sha256=hashlib.sha256(path.read_bytes()).hexdigest(), bytes=path.stat().st_size,
+                                  retrieved_at=datetime.utcnow(), error=doc.error)
+    db.add(mat)
+    db.commit()
+    return mat
+
+
+def primary_document(db: Session, training_code: str) -> models.Document | None:
+    """The richest material for a training (most words) is what the AI builds the course from."""
+    docs = [db.get(models.Document, m.document_id) for m in db.scalars(select(models.TrainingMaterial).where(
+        models.TrainingMaterial.training_code == training_code, models.TrainingMaterial.document_id.is_not(None)))]
+    docs = [d for d in docs if d and d.status != "failed" and d.words >= 30]
+    return max(docs, key=lambda d: d.words) if docs else None
+
+
+# ---- plans by layer --------------------------------------------------------------------
+
+def layer_items(db: Session, program: str | None, role_key: str | None) -> list[dict]:
+    """Every library training for a program + role, tagged with its layer and who it applies to.
+
+    audience: new_hire (institutional onboarding), new_to_division (division layer), all (role layer)
+    """
+    trainings = {t.code: t for t in db.scalars(select(models.Training).where(models.Training.layer.is_not(None)))}
+    known = set(db.scalars(select(models.Training.code)))
+    items: dict[str, dict] = {}
+
+    refreshers = {t.code for t in trainings.values() if t.refresher_of}
+
+    def add(code, phase, audience, layer, reason, kind=None):
+        # Refresher courses come round on the annual cycle; onboarding starts with the initial course.
+        if code in items or code not in known or code in refreshers:
+            return
+        items[code] = {"training_code": code, "phase": phase, "audience": audience, "required": True,
+                       "skip_if_years_at_least": None, "reason": reason, "layer": layer, "kind": kind}
+
+    for t in sorted(trainings.values(), key=lambda t: t.code):
+        if t.layer == "institutional":
+            add(t.code, 1, "new_hire", "institutional",
+                "Required for everyone at LANL" + (", then every year" if t.frequency == "annual" else ""))
+    if program:
+        name = program_names().get(program, program)
+        for r in db.scalars(select(models.DivisionRequirement).where(models.DivisionRequirement.program == program)
+                            .order_by(models.DivisionRequirement.phase)):
+            add(r.training_code, r.phase, "new_to_division", "division", f"{name}: {r.reason}" if r.reason else f"Required in {name}")
+    if role_key:
+        role = db.get(models.LibraryRole, role_key)
+        for r in db.scalars(select(models.RoleRequirement).where(models.RoleRequirement.role_key == role_key)
+                            .order_by(models.RoleRequirement.program.is_(None).desc(), models.RoleRequirement.phase)):
+            if r.program not in (None, program):
+                continue
+            label = role.title if role else role_key
+            where = f" in {program_names().get(program, program)}" if r.program else ""
+            add(r.training_code, r.phase, "all", "role",
+                r.reason or f"{label}{where}: {'soft skill' if r.kind == 'soft' else 'technical'} training", r.kind)
+    return list(items.values())
+
+
+def annual_cycle(db: Session, due: date, stagger_weeks: int = 0, codes: list[str] | None = None) -> dict:
+    """Assign this year's institutional annual trainings to everyone who isn't current, spreading due dates."""
+    from .adaptive import assignment_flags
+    from .loader import load_people
+
+    q = select(models.Training).where(models.Training.layer == "institutional", models.Training.frequency == "annual")
+    trainings = [t for t in db.scalars(q) if not codes or t.code in codes]
+    people = sorted(load_people(db, None), key=lambda e: (e.division_code, e.name))
+    created = refreshed = current = 0
+    window = stagger_weeks * 7
+    for i, emp in enumerate(people):
+        offset = window - round(i * window / max(1, len(people) - 1)) if window else 0
+        when = max(date.today() + timedelta(days=7), due - timedelta(days=offset))
+        have = {a.training_id: a for a in emp.assignments}
+        for t in trainings:
+            a = have.get(t.id)
+            if a is None:
+                emp.assignments.append(models.Assignment(training=t, due_date=when))
+                created += 1
+            elif a.status == "completed" and not assignment_flags(a)["needs_retake"] and a.expires_at and a.expires_at > due:
+                current += 1
+            elif a.status == "completed":
+                a.status, a.progress, a.due_date = "not_started", 0, when
+                refreshed += 1
+    db.commit()
+    return {"trainings": [t.code for t in trainings], "people": len(people), "assigned": created, "reopened": refreshed,
+            "already_current": current}

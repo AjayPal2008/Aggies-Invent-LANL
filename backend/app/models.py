@@ -26,6 +26,7 @@ class Division(Base):
     parent_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
     directorate: Mapped[str | None] = mapped_column(String(200), nullable=True)
     leader_email: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    program: Mapped[str | None] = mapped_column(String(16), nullable=True)  # weapons | ste | operations
 
 
 class Position(Base):
@@ -45,6 +46,7 @@ class Position(Base):
     hiring_manager_email: Mapped[str | None] = mapped_column(String(200), nullable=True)
     fiscal_year: Mapped[int | None] = mapped_column(Integer, nullable=True)
     headcount: Mapped[int] = mapped_column(Integer, default=1)
+    library_role: Mapped[str | None] = mapped_column(String(48), nullable=True)  # training library role key
 
 
 class Employee(Base):
@@ -105,6 +107,14 @@ class Training(Base):
     # quiz for technical skills; situational = interview-style scenarios (CASPer/MMI); both = quiz then interview
     assessment_type: Mapped[str] = mapped_column(String(16), default="quiz")
     document_id: Mapped[int | None] = mapped_column(ForeignKey("documents.id"), nullable=True)  # set for AI-built courses
+    # Training library (admin): which layer requires it, who it applies to, how often it repeats.
+    layer: Mapped[str | None] = mapped_column(String(16), nullable=True)  # institutional | division | role
+    audience: Mapped[str] = mapped_column(String(16), default="all")  # all | new_hire (initial onboarding only)
+    frequency: Mapped[str] = mapped_column(String(16), default="once")  # once | annual
+    course_number: Mapped[str] = mapped_column(String(32), default="")  # UTrain course number
+    refresher_of: Mapped[str | None] = mapped_column(String(32), nullable=True)  # code of the initial course this refreshes
+    # Lessons built from library materials stay drafts until an admin reviews and publishes them.
+    lessons_status: Mapped[str] = mapped_column(String(16), default="published")  # draft | published
 
     sessions: Mapped[list["TrainingSession"]] = relationship(back_populates="training", cascade="all, delete-orphan")
 
@@ -217,6 +227,7 @@ class Document(Base):
     error: Mapped[str] = mapped_column(Text, default="")
     generated_by: Mapped[str] = mapped_column(String(64), default="")
     analysis: Mapped[dict] = mapped_column(JSON, default=dict)  # job description analysis results
+    training_code: Mapped[str | None] = mapped_column(String(32), nullable=True)  # library training this material belongs to
 
     page_texts: Mapped[list["DocumentPage"]] = relationship(cascade="all, delete-orphan", order_by="DocumentPage.page")
 
@@ -341,3 +352,58 @@ class ContentCache(Base):
     key: Mapped[str] = mapped_column(String(200), unique=True, index=True)
     content: Mapped[dict] = mapped_column(JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utcnow)
+
+
+class TrainingMaterial(Base):
+    """A PDF, slide deck, video or link attached to a library training. The AI builds lessons from these."""
+
+    __tablename__ = "training_materials"
+    __table_args__ = (UniqueConstraint("training_code", "url", name="uq_material_url"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    training_code: Mapped[str] = mapped_column(String(32), index=True)
+    kind: Mapped[str] = mapped_column(String(16), default="pdf")  # pdf | pptx | docx | video | link
+    title: Mapped[str] = mapped_column(String(300))
+    url: Mapped[str] = mapped_column(String(600), default="")  # original public source, if any
+    status: Mapped[str] = mapped_column(String(16), default="linked")  # linked | imported | failed | uploaded
+    document_id: Mapped[int | None] = mapped_column(ForeignKey("documents.id"), nullable=True)  # local copy, text extracted
+    sha256: Mapped[str] = mapped_column(String(64), default="")
+    bytes: Mapped[int] = mapped_column(Integer, default=0)
+    retrieved_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    error: Mapped[str] = mapped_column(Text, default="")
+
+
+class DivisionRequirement(Base):
+    """A training every employee in a program (Weapons, STE, Operations) needs."""
+
+    __tablename__ = "division_requirements"
+    __table_args__ = (UniqueConstraint("program", "training_code", name="uq_division_req"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    program: Mapped[str] = mapped_column(String(16), index=True)
+    training_code: Mapped[str] = mapped_column(String(32))
+    phase: Mapped[int] = mapped_column(Integer, default=1)
+    reason: Mapped[str] = mapped_column(Text, default="")
+
+
+class LibraryRole(Base):
+    """A role defined once and reused across divisions (e.g. Project Lead in Weapons and in STE)."""
+
+    __tablename__ = "library_roles"
+    key: Mapped[str] = mapped_column(String(48), primary_key=True)
+    title: Mapped[str] = mapped_column(String(200))
+    family: Mapped[str] = mapped_column(String(48), default="")
+    description: Mapped[str] = mapped_column(Text, default="")
+    programs: Mapped[list] = mapped_column(JSON, default=list)  # divisions that have this role
+
+
+class RoleRequirement(Base):
+    """A training for a role. program=None applies in every division; otherwise only in that division."""
+
+    __tablename__ = "role_requirements"
+    __table_args__ = (UniqueConstraint("role_key", "program", "training_code", name="uq_role_req"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    role_key: Mapped[str] = mapped_column(String(48), index=True)
+    program: Mapped[str | None] = mapped_column(String(16), nullable=True)
+    training_code: Mapped[str] = mapped_column(String(32))
+    kind: Mapped[str] = mapped_column(String(16), default="technical")  # technical | soft
+    phase: Mapped[int] = mapped_column(Integer, default=2)
+    reason: Mapped[str] = mapped_column(Text, default="")

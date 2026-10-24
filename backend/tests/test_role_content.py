@@ -57,9 +57,10 @@ def test_internal_promotion_skips_onboarding_and_completed(client, manager):
     veteran = next(r for r in team if not r["is_new_hire"] and r["level"] == 2 and r["summary"]["completed"] >= 3)
     p = client.post("/api/manager/roles/CCS-PL3/preview", json={"employee_ids": [veteran["id"]]}, headers=manager).json()[0]
     assert p["entry_path"] in ("promotion", "transfer")
-    by_code = {i["training_code"]: i for i in p["items"]}
-    assert not by_code["ORI-101"]["include"]
-    assert any(not i["include"] and i["why"].startswith("Already completed") for i in p["items"])
+    institutional = [i for i in p["items"] if i["layer"] == "institutional"]
+    assert institutional and not any(i["include"] for i in institutional)  # an internal move doesn't redo onboarding
+    assert all("annual cycle" in i["why"] for i in institutional)
+    assert any(i["include"] and i["layer"] == "role" for i in p["items"])
     as_new = client.post("/api/manager/roles/CCS-PL3/preview", json={"employee_ids": [veteran["id"]], "entry_paths": {str(veteran["id"]): "new_hire"}},
                          headers=manager).json()[0]
     assert as_new["entry_path"] == "new_hire"

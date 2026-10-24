@@ -28,7 +28,7 @@ from .loader import all_trainings
 
 PHASE_DAYS = {1: 14, 2: 30, 3: 90}
 PHASE_LABEL = {1: "First 2 weeks", 2: "First 30 days", 3: "First 90 days"}
-AUDIENCES = {"all", "new_hire", "internal", "promotion", "transfer"}
+AUDIENCES = {"all", "new_hire", "internal", "promotion", "transfer", "new_to_division"}
 LEADERSHIP_WORDS = ("lead", "manager", "supervisor", "director", "leader", "superintendent", "head")
 
 
@@ -44,13 +44,42 @@ def detect_entry_path(emp: models.Employee, pos: models.Position) -> str:
     return "promotion" if pos.level > emp.level else "transfer"
 
 
-def audience_matches(audience: str, entry: str) -> bool:
+def audience_matches(audience: str, entry: str, same_division: bool = True) -> bool:
+    """new_to_division: new hires, and internal moves from a different division (Weapons, STE, Operations)."""
+    if audience == "new_to_division":
+        return entry == "new_hire" or not same_division
     return audience == "all" or audience == entry or (audience == "internal" and entry in ("promotion", "transfer"))
+
+
+def _same_division(db: Session, emp: models.Employee, pos: models.Position, from_position: str | None = None) -> bool:
+    from .library import program_of
+
+    before = emp.division_code
+    if from_position:
+        prev = db.scalar(select(models.Position).where(models.Position.code == from_position))
+        before = prev.division_code if prev else before
+    a, b = program_of(db, before), program_of(db, pos.division_code)
+    return a is None or b is None or a == b
 
 
 # ---- default plan -------------------------------------------------------------------
 
 def default_plan(db: Session, pos: models.Position) -> list[dict]:
+    from .library import layer_items, program_of
+
+    if pos.library_role or (program_of(db, pos.division_code) and db.scalar(select(models.LibraryRole.key))):
+        # Training library: institutional + the position's division + its role, plus anything the directory
+        # lists for this exact position and courses built from its documents.
+        items = {i["training_code"]: i for i in layer_items(db, program_of(db, pos.division_code), pos.library_role)}
+        for code in pos.required_trainings or []:
+            items.setdefault(code, {"training_code": code, "phase": 2, "audience": "all", "required": True,
+                                    "skip_if_years_at_least": None, "reason": f"Required for {pos.title}", "layer": "role"})
+        for t in all_trainings(db):
+            if t.document_id and pos.code in (t.job_roles or []) and not t.layer:
+                items.setdefault(t.code, {"training_code": t.code, "phase": 2, "audience": "all", "required": True,
+                                          "skip_if_years_at_least": None, "reason": "Built from this role's internal documents",
+                                          "layer": "role"})
+        return list(items.values())
     items: dict[str, dict] = {}
 
     def add(code, phase, audience, reason, required=True, skip_years=None):
@@ -188,14 +217,17 @@ def save_plan(db: Session, pos: models.Position, items: list[dict]) -> list[mode
 def plan_items(db: Session, pos: models.Position) -> list[dict]:
     saved = get_plan(db, pos)
     if saved:
+        layers = {t.code: t.layer for t in all_trainings(db)}
         return [{"training_code": i.training_code, "phase": i.phase, "audience": i.audience, "required": i.required,
-                 "skip_if_years_at_least": i.skip_if_years_at_least, "reason": i.reason} for i in saved]
+                 "skip_if_years_at_least": i.skip_if_years_at_least, "reason": i.reason,
+                 "layer": layers.get(i.training_code) or "role"} for i in saved]
     return default_plan(db, pos)
 
 
 def preview(db: Session, emp: models.Employee, pos: models.Position, entry: str | None, start: date | None) -> dict:
     entry = entry or detect_entry_path(emp, pos)
     start = start or date.today()
+    same_division = _same_division(db, emp, pos)
     by_code = {t.code: t for t in all_trainings(db)}
     current = {a.training.code: a for a in emp.assignments}
     rows = []
@@ -205,9 +237,13 @@ def preview(db: Session, emp: models.Employee, pos: models.Position, entry: str 
             continue
         a = current.get(t.code)
         flags = adaptive.assignment_flags(a) if a else {}
-        if not audience_matches(it["audience"], entry):
-            include, why = False, {"new_hire": "Only for people new to the Lab", "promotion": "Only for promotions",
-                                   "transfer": "Only for transfers", "internal": "Only for people already at LANL"}.get(it["audience"], "Not for this path")
+        if not audience_matches(it["audience"], entry, same_division):
+            include, why = False, {
+                "new_hire": ("Institutional training: already part of their annual cycle at LANL" if it.get("layer") == "institutional"
+                             else "Only for people new to the Lab"),
+                "new_to_division": "Already in this division: division training was done when they joined it",
+                "promotion": "Only for promotions", "transfer": "Only for transfers",
+                "internal": "Only for people already at LANL"}.get(it["audience"], "Not for this path")
         elif a and a.status == "completed" and not flags.get("needs_retake"):
             include, why = False, f"Already completed {a.completed_at.date().isoformat() if a.completed_at else ''}".strip()
         elif a and a.status != "completed":
@@ -219,6 +255,7 @@ def preview(db: Session, emp: models.Employee, pos: models.Position, entry: str 
         rows.append({"training_code": t.code, "title": t.title, "category": t.category, "phase": it["phase"],
                      "phase_label": PHASE_LABEL.get(it["phase"], f"Phase {it['phase']}"), "audience": it["audience"],
                      "required": it["required"], "include": include, "why": why,
+                     "layer": it.get("layer") or t.layer or "role", "kind": it.get("kind"),
                      "due_date": (start + timedelta(days=PHASE_DAYS.get(it["phase"], 30))).isoformat(),
                      "assessment_type": t.assessment_type})
     warnings = []
@@ -244,6 +281,7 @@ def apply(db: Session, mgr: models.Employee, emp: models.Employee, pos: models.P
     if emp.position_code != pos.code:
         emp.previous_position_code = emp.position_code
     emp.position_code, emp.job_title = pos.code, pos.title
+    emp.division_code = pos.division_code or emp.division_code  # moving into another division's role
     if p["entry_path"] == "promotion":
         emp.level = max(emp.level, pos.level)
     emp.entry_path, emp.role_start_date = p["entry_path"], date.fromisoformat(p["start_date"])
@@ -279,11 +317,12 @@ def my_plan(db: Session, emp: models.Employee) -> dict | None:
     if not pos:
         return None
     entry = emp.entry_path or detect_entry_path(emp, pos)
+    same_division = _same_division(db, emp, pos, emp.previous_position_code)
     by_code = {a.training.code: a for a in emp.assignments}
     start = emp.role_start_date or emp.hire_date or date.today()
     phases: dict[int, list] = {}
     for it in plan_items(db, pos):
-        if not audience_matches(it["audience"], entry):
+        if not audience_matches(it["audience"], entry, same_division):
             continue
         a = by_code.get(it["training_code"])
         if not a:
