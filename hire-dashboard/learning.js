@@ -10,9 +10,11 @@ import { settings, speakButton, speak } from "/shared/a11y.js?v=20261025a";
 const synth = typeof window !== "undefined" ? window.speechSynthesis : null;
 
 const sentencesOf = (text) => (text.match(/[^.!?]+[.!?]+["”’)]*|[^.!?]+$/g) || [text]).map((x) => x.trim()).filter(Boolean);
+let videoInstance = 0;
 
 export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
   const prefs = settings();
+  const transcriptId = `vp-tx-${++videoInstance}`;
   let i = 0, playing = false, speed = 1, voiceOn = !!synth, captions = prefs.captions !== "off", timer = null, revealTimers = [], capTimers = [];
   container.innerHTML = `
     <div class="vp" tabindex="0" aria-label="Video lesson. Space to play or pause, arrow keys to change scene.">
@@ -26,9 +28,9 @@ export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
         <label class="small">Speed <select data-act="speed">${[0.75, 1, 1.25, 1.5].map((x) => `<option value="${x}" ${x === 1 ? "selected" : ""}>${x}×</option>`).join("")}</select></label>
         <label class="small"><input type="checkbox" data-act="voice" ${voiceOn ? "checked" : ""} ${synth ? "" : "disabled"}> Narration</label>
         <label class="small"><input type="checkbox" data-act="cc" ${captions ? "checked" : ""}> Captions (CC)</label>
-        <button class="btn ghost small" data-act="transcript" aria-expanded="${prefs.showTranscript ? "true" : "false"}" aria-controls="vp-tx">Transcript</button>
+        <button class="btn ghost small" data-act="transcript" aria-expanded="${prefs.showTranscript ? "true" : "false"}" aria-controls="${transcriptId}">Transcript</button>
       </div>
-      <section id="vp-tx" class="card flat vp-transcript ${prefs.showTranscript ? "" : "hidden"}" aria-label="Transcript">
+      <section id="${transcriptId}" class="card flat vp-transcript ${prefs.showTranscript ? "" : "hidden"}" aria-label="Transcript">
         <h4>Transcript</h4>
         ${video.scenes.map((sc, k) => `<p data-tx="${k}"><a href="#" data-seg="${k}"><strong>${k + 1}. ${esc(sc.heading)}</strong></a><br>${esc(sc.narration)}</p>`).join("")}
       </section>
@@ -142,7 +144,7 @@ export function videoPlayer(container, video, { onAnswer, onDone } = {}) {
     if (act === "prev") play(Math.max(0, i - 1));
     if (act === "next") (i + 1 < video.scenes.length ? play(i + 1) : finish());
     if (act === "transcript") {
-      const tx = $("#vp-tx", container);
+      const tx = $(`#${transcriptId}`, container);
       tx.classList.toggle("hidden");
       e.target.setAttribute("aria-expanded", String(!tx.classList.contains("hidden")));
     }

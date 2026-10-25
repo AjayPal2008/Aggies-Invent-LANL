@@ -38,7 +38,9 @@ SETUP_MESSAGE = ("Diagnostic setup needed: generate a question bank with python 
 
 def configured_bank():
     try:
-        bank, source = read_bank(Path(settings.diagnostic_bank_path)), resources()
+        bank = read_bank(Path(settings.diagnostic_bank_path))
+        source = resources(include_materials=any(a.startswith("survey-") for a in bank.get("resource_fingerprints", {})))
+        source = {aid: value for aid, value in source.items() if aid in bank.get("resource_fingerprints", {})}
         if bank_errors(bank, source):
             raise BankError("Invalid or stale bank")
         return bank, source
@@ -156,6 +158,7 @@ class SessionStore:
             for table in ("diagnostic_submissions", "diagnostic_course_reviews"):
                 db.execute(f"DELETE FROM {table} WHERE session_id IN (SELECT id FROM diagnostic_sessions WHERE owner=? AND id<>?)", params)
             db.execute("DELETE FROM diagnostic_sessions WHERE owner=? AND id<>?", params)
+            db.execute("DELETE FROM diagnostic_course_reviews WHERE session_id=?", (f"materials:{owner}",))
         return fresh
 
     def availability(self):
@@ -239,14 +242,37 @@ class SessionStore:
                        (session_id, payload["question_id"], fingerprint, json.dumps(result)))
             return result
 
+    def material_courses(self, owner):
+        from backend.survey_materials import material_courses
+        courses = material_courses()
+        with self.connection() as db:
+            reviewed = {r["objective_id"] for r in db.execute(
+                "SELECT objective_id FROM diagnostic_course_reviews WHERE session_id=?", (f"materials:{owner}",)).fetchall()}
+        for course in courses:
+            if course["id"] in reviewed:
+                course["status"] = "reviewed"
+        return {"courses": courses}
+
+    def complete_material(self, course_id, owner):
+        from datetime import datetime, timezone
+        if course_id not in {c["id"] for c in self.material_courses(owner)["courses"]}:
+            raise DiagnosticError(404, "Source-based course not found")
+        with self.connection() as db:
+            db.execute("INSERT INTO diagnostic_course_reviews VALUES(?,?,?) ON CONFLICT(session_id,objective_id) DO NOTHING",
+                       (f"materials:{owner}", course_id, datetime.now(timezone.utc).isoformat()))
+        return {"status": "reviewed", "objective_id": course_id}
+
     def review_courses(self, owner):
+        from backend.lesson_sections import lesson_sections
         latest = self.latest_completed(owner)
         if not latest["available"]:
             return {"session_id": None, "courses": []}
         report = latest["report"]
         with self.connection() as db:
             row = self.owned(db, report["session_id"], owner)
-            source = json.loads(row["snapshot"])["source"]
+            snapshot = json.loads(row["snapshot"])
+            source = snapshot["source"]
+            concepts = {c["id"]: c for c in snapshot["bank"]["concepts"]}
             reviewed = {r["objective_id"] for r in db.execute(
                 "SELECT objective_id FROM diagnostic_course_reviews WHERE session_id=?", (report["session_id"],)).fetchall()}
         objectives = {o["objective_id"]: o for o in report["objectives"]}
@@ -255,10 +281,11 @@ class SessionStore:
             objective = objectives[cid]
             resource = source[objective["article_id"]]["data"]
             refs = objective["review_resources"]["resource_point_ids"]
-            courses.append({"id": cid, "title": objective["name"], "article_id": objective["article_id"],
+            courses.append({"id": cid, "prerequisites": [p["concept_id"] for p in concepts[cid]["prerequisites"]], "title": objective["name"], "article_id": objective["article_id"],
                 "importance": objective["importance"], "objective": objective["objective"],
                 "observed_gap": objective["observed_gap"], "recommended_review": objective["recommended_review"],
                 "status": "reviewed" if cid in reviewed else "not_started",
+                "learning_sections": lesson_sections(source[objective["article_id"]], [p for p in resource["key_points"] if p["id"] in refs], objective["objective"]),
                 "source_excerpt": objective["review_resources"]["excerpt"], "attribution": resource["source"],
                 "key_points": [{"id": point["id"], "point": point["point"], "explanation": point["explanation"]}
                                for point in resource["key_points"] if point["id"] in refs]})

@@ -5,7 +5,7 @@ import {
 import { videoPlayer, interviewFlow, rolePlanCard, showResult } from "./learning.js";
 import { speak, stopSpeaking, speakButton } from "/shared/a11y.js?v=20261025a";
 import { diagnosticView, diagnosticResults } from "./diagnostic.js";
-import { reviewStudio, mindMap, readProgress, progressPanel, inProgressPanel } from "./review-studio.js?v=20261025d";
+import { reviewStudio, mindMap, readProgress, progressPanel, inProgressPanel } from "./review-studio.js?v=20261025g";
 
 const me = await requireRole(["hire", "manager", "admin"]);
 topbar(me, "My Training");
@@ -660,21 +660,62 @@ async function loadCatalog() {
 
 // ---- Profile ----------------------------------------------------------------
 
+const demoProfiles = new Map();
+function demoLearningProfile(user) {
+  const storageKey = `lanl_profile_demo_${user.id}`;
+  if (demoProfiles.has(user.id)) return demoProfiles.get(user.id);
+  try {
+    const stored = JSON.parse(sessionStorage.getItem(storageKey) || "null");
+    if (stored?.skills?.length && stored.skills.every(skill=>Number.isFinite(skill.score)&&Number.isFinite(skill.completed))) {
+      demoProfiles.set(user.id,stored);return stored;
+    }
+  } catch { /* The preview also works without browser storage. */ }
+  const roster = [
+    ["Cybersecurity", "Technical"], ["Data analysis", "Technical"], ["Python programming", "Technical"],
+    ["Radiation awareness", "Safety"], ["Chemical safety", "Safety"], ["Laboratory practices", "Safety"],
+    ["Project planning", "Professional"], ["Communication", "Professional"], ["Problem solving", "Professional"], ["Risk assessment", "Safety"],
+  ];
+  const sample = { skills: roster.map(([name,category])=>({name,category,score:45+Math.floor(Math.random()*50),completed:1+Math.floor(Math.random()*6)})), streak:3+Math.floor(Math.random()*12) };
+  sample.completed=sample.skills.reduce((sum,skill)=>sum+skill.completed,0);
+  sample.points=sample.completed*50+sample.streak*10;
+  demoProfiles.set(user.id,sample);
+  try { sessionStorage.setItem(storageKey,JSON.stringify(sample)); } catch { /* In-memory preview remains available. */ }
+  return sample;
+}
+
 async function profile() {
   loading(view);
-  const d = await refresh();
-  const state = readProgress(me);
-  const skills = Object.entries(isNewEmployee() ? {} : d.employee.skills).map(([name,value])=>[name,Math.max(0,Number(value)||0)]).sort((a,b)=>b[1]-a[1]);
-  const colors = ["#153c87", "#2874ae", "#329c99", "#75af96", "#94a7c9", "#6e659c", "#b0bccc"];
-  const total = skills.reduce((sum,[,v])=>sum+v,0);
-  let angle = 0;
-  const slices = skills.map(([,v],i)=>{const start=angle;angle+=total?v/total*360:0;return `${colors[i%colors.length]} ${start}deg ${angle}deg`;});
-  view.innerHTML = `<div class="card-head"><h1>My learning profile</h1></div>
-    <div class="grid cols-2"><section class="card">${progressPanel(state)}</section>
-    <section class="card"><h3>My skills</h3><p class="small muted">Each slice shows a skill's share of your combined skill estimates. Scores are listed below.</p>
-    ${total?`<div role="img" aria-label="Skill distribution: ${esc(skills.map(([name,v])=>`${name} ${Math.round(v/total*100)} percent of total`).join(', '))}" style="width:210px;height:210px;margin:24px auto;border-radius:50%;background:conic-gradient(${slices.join(',')});border:7px solid #f2f5fa;box-shadow:0 6px 24px #112b6210"></div>`:'<div class="empty">No skill evidence recorded yet.</div>'}
-    <div class="list">${skills.map(([name,v],i)=>`<div class="small" style="display:flex;align-items:center;gap:10px"><span aria-hidden="true" style="width:11px;height:11px;border-radius:3px;background:${colors[i%colors.length]}"></span><span style="flex:1">${esc(name)}</span><strong>${Math.round(v*100)}%</strong></div>`).join('')}</div></section></div>
-    <section class="card" style="margin-top:18px">${inProgressPanel(state)}<a class="btn secondary" href="#studio" style="margin-top:16px">Continue in Learning Studio</a></section>`;
+  await refresh();
+  const state=readProgress(me),sample=demoLearningProfile(me);
+  const colors=["#153c87","#2874ae","#329c99","#75af96","#94a7c9","#6e659c","#b0bccc","#357f86","#9b7ba7","#5e7c58"];
+  const total=sample.skills.reduce((sum,skill)=>sum+skill.score,0);
+  let angle=0;
+  const slices=sample.skills.map((skill,i)=>{const start=angle;angle+=skill.score/total*360;return `${colors[i%colors.length]} ${start}deg ${angle}deg`;});
+  view.innerHTML=`<div class="card-head"><h1>My learning profile</h1><span class="badge plain">Demo profile</span></div>
+    <p class="muted">Explore your skills and learning achievements. The skills preview uses sample data; your recorded course activity is in its own tab.</p>
+    <div role="tablist" aria-label="Learning profile" class="toolbar" style="margin:20px 0"><button class="btn" role="tab" id="profile-skills-tab" aria-selected="true" aria-controls="profile-skills" data-profile-tab="skills">Skills &amp; achievements</button><button class="btn secondary" role="tab" id="profile-activity-tab" aria-selected="false" tabindex="-1" aria-controls="profile-activity" data-profile-tab="activity">My course activity</button></div>
+    <section role="tabpanel" id="profile-skills" aria-labelledby="profile-skills-tab">
+      <p class="small muted">Randomized demo values, kept consistent during this browser session.</p>
+      <div class="grid cols-4" style="margin:16px 0 24px"><div class="stat"><div class="label">Courses completed</div><div class="value">${sample.completed}</div><p class="small muted">Across ${sample.skills.length} skill areas</p></div><div class="stat"><div class="label">Daily streak</div><div class="value"><span aria-hidden="true">&#128293;</span> ${sample.streak}</div><p class="small muted">Consecutive learning days</p></div><div class="stat"><div class="label">Learning points</div><div class="value">${sample.points}</div><p class="small muted">Demo achievement points</p></div><div class="stat"><div class="label">Skills explored</div><div class="value">${sample.skills.length}</div><p class="small muted">Technical, safety and professional</p></div></div>
+      <div class="grid cols-2"><section class="card"><h2>My skills</h2><p class="small muted">Slice sizes show the relative share of the sample skill scores.</p><div role="img" aria-label="Demo skill distribution: ${esc(sample.skills.map(skill=>`${skill.name}: ${skill.score} percent skill score`).join(', '))}" style="width:min(250px,100%);aspect-ratio:1;margin:24px auto;border-radius:50%;background:conic-gradient(${slices.join(',')});border:7px solid #f2f5fa;box-shadow:0 6px 24px #112b6210"></div><div class="list">${sample.skills.map((skill,i)=>`<div class="small" style="display:flex;align-items:center;gap:10px"><span aria-hidden="true" style="width:11px;height:11px;border-radius:3px;background:${colors[i]}"></span><span style="flex:1">${esc(skill.name)}</span><strong>${skill.score}%</strong></div>`).join('')}</div></section>
+      <section class="card"><h2>Skills breakdown</h2><p class="small muted">Sample proficiency and completed courses for each skill.</p><div class="chips" style="margin:16px 0" aria-label="Filter skills">${["All","Technical","Safety","Professional"].map(category=>`<button class="chip ${category==="All"?"active":""}" data-skill-category="${category}" aria-pressed="${category==="All"}">${category}</button>`).join('')}</div><div id="profile-skill-list" class="list"></div></section></div>
+    </section>
+    <section role="tabpanel" id="profile-activity" aria-labelledby="profile-activity-tab" hidden><div class="grid cols-2"><section class="card">${progressPanel(state)}</section><section class="card">${inProgressPanel(state)}</section></div><a class="btn secondary" href="#studio" style="margin-top:16px">Continue in Learning Studio</a></section>`;
+  function renderSkills(category="All") {
+    $("#profile-skill-list",view).innerHTML=sample.skills.filter(skill=>category==="All"||skill.category===category).map(skill=>`<article style="padding:14px 0;border-bottom:1px solid var(--border)"><div class="card-head"><strong>${esc(skill.name)}</strong><span class="badge plain">${skill.category}</span></div>${bar(skill.score,skill.score>=75?"ok":"")}<div class="small muted" style="display:flex;justify-content:space-between;margin-top:8px"><span>${skill.score}% proficiency</span><strong>${skill.completed} course${skill.completed===1?"":"s"} completed</strong></div></article>`).join('');
+    $$("[data-skill-category]",view).forEach(button=>{button.classList.toggle("active",button.dataset.skillCategory===category);button.setAttribute("aria-pressed",String(button.dataset.skillCategory===category));});
+  }
+  renderSkills();
+  $$("[data-skill-category]",view).forEach(button=>button.onclick=()=>renderSkills(button.dataset.skillCategory));
+  const tabs=$$("[data-profile-tab]",view);
+  function activateTab(tab){tabs.forEach(button=>{const active=button===tab;button.setAttribute("aria-selected",String(active));button.tabIndex=active?0:-1;button.classList.toggle("secondary",!active);$("#profile-"+button.dataset.profileTab,view).hidden=!active;});}
+  tabs.forEach((tab,index)=>{
+    tab.onclick=()=>activateTab(tab);
+    tab.onkeydown=event=>{
+      let next;if(event.key==="ArrowRight")next=(index+1)%tabs.length;else if(event.key==="ArrowLeft")next=(index+tabs.length-1)%tabs.length;else if(event.key==="Home")next=0;else if(event.key==="End")next=tabs.length-1;else return;
+      event.preventDefault();activateTab(tabs[next]);tabs[next].focus();
+    };
+  });
 }
 
 const go = router({ overview, trainings, calendar, studio: studioView, "assigned-studio": assignedStudioView, catalog, profile,

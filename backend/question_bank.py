@@ -46,7 +46,7 @@ def atomic_json(path, data):
     temp.replace(path)
 
 
-def resources(folder=RESOURCE_DIR, raw_folder=RAW_DIR):
+def resources(folder=RESOURCE_DIR, raw_folder=RAW_DIR, *, include_materials=None):
     result = {}
     for path in sorted(Path(folder).glob("*.json")):
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -57,6 +57,9 @@ def resources(folder=RESOURCE_DIR, raw_folder=RAW_DIR):
         text = raw.read_text(encoding="utf-8") if raw.exists() else ""
         result[article_id] = {"data": data, "raw": text,
                               "fingerprint": digest({"data": data, "raw": text})}
+    if include_materials is True or (include_materials is None and Path(folder) == RESOURCE_DIR):
+        from backend.survey_materials import material_resources
+        result.update(material_resources())
     if not result:
         raise BankError("No extracted resources found")
     return result

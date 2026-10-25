@@ -281,3 +281,14 @@ def test_demo_restart_clears_only_demo_history(client, hire, manager, diagnostic
     with store.connection() as db:
         assert not db.execute("SELECT * FROM diagnostic_submissions WHERE session_id=?", (old["session_id"],)).fetchall()
         assert not db.execute("SELECT * FROM diagnostic_course_reviews WHERE session_id=?", (old["session_id"],)).fetchall()
+
+
+def test_material_courses_review_is_scoped_to_owner(client, hire, manager, diagnostic, monkeypatch):
+    monkeypatch.setattr("backend.survey_materials.material_courses", lambda: [
+        {"id": "survey-test", "title": "Equipment basics", "status": "not_started", "key_points": []}
+    ])
+    assert client.get("/api/diagnostic/material-courses", headers=hire).json()["courses"][0]["title"] == "Equipment basics"
+    assert client.post("/api/diagnostic/materials/missing/complete", headers=hire, json={}).status_code == 404
+    assert client.post("/api/diagnostic/materials/survey-test/complete", headers=hire, json={}).status_code == 200
+    assert client.get("/api/diagnostic/material-courses", headers=hire).json()["courses"][0]["status"] == "reviewed"
+    assert client.get("/api/diagnostic/material-courses", headers=manager).json()["courses"][0]["status"] == "not_started"

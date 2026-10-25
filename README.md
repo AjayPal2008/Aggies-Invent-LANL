@@ -101,3 +101,15 @@ The backend doesn't assume our column names. Drop exports from Oracle HR, UTrain
 Everything in `backend/data/sample/` is fictional: people, emails, salaries, course codes and URLs. Directorate names follow LANL's public org chart. Dates are relative to the day you run `scripts.seed --reset`, so re-run it before a demo.
 
 The logo in `shared/assets/` is a recreation for the prototype. Swap in the official file from LANL brand resources before presenting.
+
+
+### Learning Studio paths and PDF topics
+
+Learning Studio's **Generate paths** requires at least one selected unfinished course. It recommends related foundation and follow-on courses, orders known prerequisites first, and merges routes with overlapping courses. Each path is collapsed under a numbered Path card until opened. Selected courses appear green; suggested courses are not automatically enrolled. Routes usually contain 3?5 courses when suitable topics exist, while shared prerequisites are listed once. Topic-based preparation suggestions are distinguished from official prerequisites. Each course has review, concept practice, and a required topic quiz; earned momentum provides a shortcut to that quiz.
+
+PDFs under `Resource_File/Survey & Materials/documents` supply additional source-based Learning Studio topics and practice questions. The importer preserves original passages and page citations, caches extraction under `Resource_File/cache/survey_materials`, and skips documents without usable text. These files are local and git-ignored; each checkout needs its own copy. Scanned documents require OCR before they can supply topics.
+
+`python scripts/generate_question_bank.py` now includes these PDF sources as well as the original extracted articles. Use `--article survey-<pdf-stem>` to generate one PDF's scenarios. This makes live AI calls and writes pending questions; the existing manual approval step still applies before new scenarios enter the diagnostic. Learning Studio's PDF practice is available without changing the approved diagnostic bank.
+
+
+Learning Studio displays course selection above a full-width lesson workspace. Delivery choices include structured text, visual evidence cards, narrated slide videos, audio with transcripts, and a comprehensive mind map with fullscreen and zoom controls. Review lessons expand existing source knowledge with relevant raw-text passages and key terms, and place two-question checkpoints between sections. Checkpoint answers contribute to concept momentum without awarding duplicate points when a completed question is reopened. The final topic quiz covers the expanded sections.

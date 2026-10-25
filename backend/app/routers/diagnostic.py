@@ -78,3 +78,13 @@ def demo_new_hire(response: Response, user=Depends(current_user), store: Session
     if user.email.lower() != "hire@lanl.gov":
         raise HTTPException(403, "Only the new hire demo account can be reset")
     return run(response, store.restart_demo, user.id)
+
+
+@router.get("/material-courses")
+def material_courses(response: Response, user=Depends(current_user), store: SessionStore = Depends(get_store)):
+    return run(response, store.material_courses, user.id)
+
+
+@router.post("/materials/{course_id}/complete")
+def complete_material(course_id: str, response: Response, user=Depends(current_user), store: SessionStore = Depends(get_store)):
+    return run(response, store.complete_material, course_id, user.id)

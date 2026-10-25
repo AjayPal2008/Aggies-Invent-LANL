@@ -1,5 +1,6 @@
 import { api, esc, $, $$, loading } from "/shared/api.js?v=20261025a";
-import { speak, stopSpeaking, canSpeak } from "/shared/a11y.js?v=20261025a";
+import { stopSpeaking } from "/shared/a11y.js?v=20261025a";
+import { DELIVERY_MODES, getLessonSections, renderLessonContent } from "./lesson-content.js?v=20261025a";
 
 let selected = null;
 let format = "text";
@@ -84,6 +85,78 @@ export function conceptQuestion(point, variant = 0) {
   return { prompt: `Complete this statement about ${point.point}:`, statement: text.replace(answer, "________"), answer, options };
 }
 
+function courseFamily(course) {
+  const title = course.title.toLowerCase();
+  const families = [
+    ["transport", /hmpt|transportation|movement by highway|preparing shipments/],
+    ["confined", /confined space/], ["forklift", /forklift/], ["pressure", /pressure safety|compression fittings|gas cylinder/],
+    ["crane", /crane|materials handling/], ["fall", /fall protection|ladder/],
+    ["waste", /hazwoper|hazardous waste|rcra|waste generation/], ["chemical", /chemical|asbestos|beryllium|lead safety/],
+    ["radiation", /radiation|nuclear|radioactive/], ["electrical", /electrical/], ["laser", /laser/],
+  ];
+  return families.find(([,pattern])=>pattern.test(title))?.[0] || null;
+}
+function foundationLevel(course) {
+  const title=course.title.toLowerCase();
+  if(/introduction|fundamentals|awareness|orientation/.test(title))return 0;
+  if(/advanced|supervisor|qualified|instructor|competent person|rescue/.test(title))return 2;
+  return 1;
+}
+
+export function generateLearningPaths(courses, state, session) {
+  const saved = c => trackCourse(state,c,c.progress_session || session);
+  const targets = courses.filter(c=>saved(c).enrolled&&!saved(c).passed);
+  if(!targets.length)return [];
+  const byId=new Map(courses.map(c=>[c.id,c]));
+  const targetIds=new Set(targets.map(c=>c.id));
+  const rank=(a,b)=>foundationLevel(a)-foundationLevel(b) || (b.importance||0)-(a.importance||0) || a.title.localeCompare(b.title);
+  const routes=targets.sort(rank).map(target=>{
+    const entries=new Map(),visiting=new Set();
+    function add(course,reason) {
+      if(visiting.has(course.id)||entries.has(course.id)||saved(course).passed)return;
+      visiting.add(course.id);
+      (course.prerequisites||[]).forEach(id=>{if(byId.has(id))add(byId.get(id),"Prerequisite for "+course.title);});
+      visiting.delete(course.id);entries.set(course.id,{course,reason});
+    }
+    // These title-based preparation suggestions are recommendations, not official prerequisites.
+    const family=courseFamily(target);
+    const related=courses.filter(c=>c.id!==target.id && family && courseFamily(c)===family && !saved(c).passed).sort(rank);
+    const foundations=related.filter(c=>foundationLevel(c)===0);
+    const candidates=[...foundations,...related.filter(c=>!foundations.includes(c))];
+    const needed=Math.max(0,Math.min(4,4-(target.prerequisites||[]).length));
+    candidates.slice(0,needed).forEach(c=>add(c,(foundationLevel(c)>foundationLevel(target)?"Suggested next course: ":"Suggested preparation: ")+family+" concepts"));
+    add(target,"Your selected course");
+    return {targets:[target.id],entries};
+  });
+  // Connected routes become one path, including transitive overlaps (A/B and B/C).
+  for(let i=0;i<routes.length;i++)for(let j=i+1;j<routes.length;){
+    if([...routes[j].entries.keys()].some(id=>routes[i].entries.has(id))){
+      routes[j].entries.forEach((entry,id)=>{if(!routes[i].entries.has(id))routes[i].entries.set(id,entry);});
+      routes[i].targets.push(...routes[j].targets);routes.splice(j,1);j=i+1;
+    }else j++;
+  }
+  return routes.map((route,index)=>{
+    const ordered=[],visited=new Set(),visiting=new Set();
+    const entries=[...route.entries.values()].sort((a,b)=>rank(a.course,b.course));
+    function visit(entry){
+      const c=entry.course;if(visited.has(c.id)||visiting.has(c.id))return;
+      visiting.add(c.id);
+      (c.prerequisites||[]).forEach(id=>{if(route.entries.has(id))visit(route.entries.get(id));});
+      visiting.delete(c.id);visited.add(c.id);ordered.push(entry);
+    }
+    entries.forEach(visit);
+    return {id:`path-${index+1}`,targets:[...new Set(route.targets)],title:route.targets.map(id=>byId.get(id).title).join(" + "),courses:ordered.map(({course:c,reason})=>{
+      const item=saved(c),concepts=Object.values(item.concepts),momentum=concepts.length>0&&concepts.every(p=>p.momentum);
+      return {id:c.id,title:c.title,selected:targetIds.has(c.id),reason:targetIds.has(c.id)?"Your selected course":reason,next:momentum?"quiz":item.reviewed?"practice":"review",steps:momentum?["Momentum earned","Pass topic quiz"]:["Review","Practice concepts","Pass topic quiz"]};
+    })};
+  });
+}
+
+export function learningPathsHtml(paths) {
+  if(!paths?.length)return '<p class="small muted">Select at least one unfinished course, then generate your recommendations.</p>';
+  return paths.map((path,index)=>`<details style="border:1px solid #dce4ee;border-radius:14px;padding:16px;margin-top:12px;background:#fafbfd"><summary style="cursor:pointer;color:#153c87;font-weight:700">Path ${String(index+1).padStart(2,"0")} <span style="font-weight:400;color:#6a7585;font-size:13px"> ? ${path.courses.length} courses ? ${path.targets.length} selected</span></summary><p class="small muted" style="margin-top:14px">${esc(path.title)}</p><ol style="padding-left:22px">${path.courses.map(t=>`<li style="margin:12px 0;padding:14px;border-radius:12px;border:1px solid ${t.selected?"#96c9ac":"#e0e5ec"};background:${t.selected?"#ecf8f0":"white"}"><strong style="color:${t.selected?"#1d7247":"#182747"}">${esc(t.title)}</strong>${t.selected?'<span class="badge ok" style="margin-left:8px">Selected</span>':""}<p class="small muted">${esc(t.reason)}</p><p class="small muted">${t.steps.map(esc).join(" &rarr; ")}</p><button class="btn secondary small" data-path-course="${esc(t.id)}" data-path-action="${esc(t.next)}">Open course</button></li>`).join("")}</ol></details>`).join("");
+}
+
 export function mindMap(course) {
   const palette = [
     { ink: "#3156ba", light: "#eef3ff", edge: "#a9bdef" },
@@ -138,35 +211,52 @@ export async function reviewStudio(view, go, assignedCourses, user) {
   stopSpeaking();
   loading(view);
   try {
-    const data = await api.get("/api/diagnostic/review-courses");
+    const [data, materials] = await Promise.all([api.get("/api/diagnostic/review-courses"),api.get("/api/diagnostic/material-courses")]);
+    data.courses = [...data.courses, ...materials.courses];
     if (!view.isConnected) return;
     const state = readProgress(user);
-    data.courses.forEach(c => trackCourse(state, c, data.session_id));
+    data.courses.forEach(c => trackCourse(state, c, c.progress_session || data.session_id));
     if (!data.courses.some(c => c.id === selected)) selected = data.courses[0]?.id || null;
+    const selectedCourses=data.courses.filter(c=>trackCourse(state,c,c.progress_session||data.session_id).enrolled);
+    const canGenerate=selectedCourses.some(c=>!trackCourse(state,c,c.progress_session||data.session_id).passed);
+    if(state.pathGroups?.length)state.pathGroups=generateLearningPaths(data.courses,state,data.session_id);
     const course = data.courses.find(c => c.id === selected);
-    const item = course ? trackCourse(state, course, data.session_id) : null;
+    const item = course ? trackCourse(state, course, course.progress_session || data.session_id) : null;
     const redraw = () => reviewStudio(view, go, assignedCourses, user);
-    view.innerHTML = `<div class="card-head"><h1>Learning studio</h1></div>
+    view.innerHTML = `<link rel="stylesheet" href="/hire/studio.css?v=20261025a"><div class="card-head"><h1>Learning studio</h1></div>
       <p class="muted">Choose a course and a format. Build momentum with practice, then pass the topic quiz to finish.</p>
+      <section class="card" style="margin-bottom:18px"><div class="card-head"><h2>Your learning paths</h2><button class="btn" id="generate-path" ${canGenerate?"":"disabled"}>Generate paths</button></div><p class="small muted">Check the courses you want to take. Recommendations usually contain 3&ndash;5 related courses, with foundations first. Paths sharing courses are merged; selected courses appear in green. Preparation suggestions are not official training prerequisites.</p><p class="small muted">${selectedCourses.length} course${selectedCourses.length===1?"":"s"} selected${canGenerate?"":" ? Select an unfinished course to enable generation"}.</p><div id="generated-path">${learningPathsHtml(state.pathGroups)}</div></section>
       <section class="card" id="studio-progress" style="margin-bottom:18px">${progressPanel(state)}</section>
-      <div class="grid side"><section class="card"><h2>Your review courses</h2>
-      <div class="list">${data.courses.map(c => {
-        const saved = trackCourse(state,c,data.session_id);
-        return `<button class="item ${c.id === selected ? "active" : ""}" style="text-align:left;font:inherit;cursor:pointer;display:block" data-course="${esc(c.id)}" aria-pressed="${c.id === selected}"><strong>${esc(c.title)}</strong><p class="small muted">Priority ${esc(c.importance)} ? ${saved.passed ? "Quiz passed" : saved.enrolled ? "In progress" : "Ready to start"}</p><div data-course-progress="${esc(c.id)}">${saved.enrolled ? greenBar(subjectProgress(saved),c.title) : ""}</div></button>`;
+      <div class="studio-layout"><section class="card studio-selection"><h2>1. Select your courses</h2><p class="small muted">Diagnostic reviews and Survey &amp; Materials PDF topics</p>
+      <div class="studio-course-grid">${data.courses.map(c => {
+        const saved = trackCourse(state,c,c.progress_session || data.session_id);
+        return `<button class="item ${c.id === selected ? "active" : ""}" style="text-align:left;font:inherit;cursor:pointer;display:block;${saved.enrolled?"background:#ecf8f0;border:1px solid #96c9ac;box-shadow:inset 4px 0 #248558;":""}" data-course="${esc(c.id)}" aria-pressed="${c.id === selected}"><strong style="${saved.enrolled?"color:#1d7247":""}">${esc(c.title)}</strong>${saved.enrolled?'<span class="badge ok" style="margin-left:8px">Selected</span>':""}<p class="small muted">Priority ${esc(c.importance)} ? ${c.origin === "survey-materials" ? "PDF topic ? " : "Diagnostic review ? "}${saved.passed ? "Quiz passed" : saved.enrolled ? "In progress" : "Ready to start"}</p><div data-course-progress="${esc(c.id)}">${saved.enrolled ? greenBar(subjectProgress(saved),c.title) : ""}</div></button>`;
       }).join("") || `<p>${data.session_id ? "No review courses indicated by your latest diagnostic." : "Complete a diagnostic to build your review courses."}</p><button class="btn" id="studio-diagnostic">Take diagnostic</button>`}</div>
       <button class="btn secondary" id="assigned-courses" style="margin-top:16px">Browse assigned courses</button></section>
-      <section id="review-workspace" class="card">${course ? `<h2>${esc(course.title)}</h2>
-        <label style="display:flex;gap:8px;align-items:center;color:#7a8391;font-size:13px;font-weight:300;margin:4px 0 18px"><span>[</span><input id="course-enroll" type="checkbox" ${item.enrolled ? "checked" : ""} style="accent-color:#248558;width:18px;height:18px"><span>${item.enrolled ? '<span style="color:#248558">? Added to courses in progress</span>' : "Select if you want to add to courses in progress"}</span><span>]</span></label>
+      <section id="review-workspace" class="card studio-lesson">${course ? `<h2 style="${item.enrolled?"color:#1d7247":""}">${esc(course.title)}</h2>
+        <label style="display:flex;gap:8px;align-items:center;color:#7a8391;font-size:13px;font-weight:300;margin:4px 0 18px"><span>[</span><input id="course-enroll" type="checkbox" ${item.enrolled ? "checked" : ""} style="accent-color:#248558;width:18px;height:18px"><span>${item.enrolled ? '<span style="color:#248558">&#10003; Added to courses in progress</span>' : "Select if you want to add to courses in progress"}</span><span>]</span></label>
         <div id="subject-progress">${greenBar(subjectProgress(item),course.title)}<p class="small muted">${subjectProgress(item)}% ? ${item.passed ? "Topic quiz passed" : "A topic quiz is required for completion"}</p></div>
-        <div class="toolbar"><label class="field">Delivery<select id="review-format"><option value="text">Text</option><option value="mindmap">Mind map</option><option value="audio">Audio</option></select></label><button class="btn secondary" id="start-topic-quiz">${item.passed ? "Retake topic quiz" : "Start topic quiz"}</button></div>
-        <section id="concept-practice" style="margin:20px 0"></section>
-        <div id="topic-quiz"></div><div id="review-content" style="margin-top:20px"></div>
+        <section class="studio-delivery" aria-labelledby="delivery-heading"><span class="studio-eyebrow">2. Choose how to learn</span><h3 id="delivery-heading">Your lesson, in your preferred format</h3><p class="muted">Each format covers the same expanded material. Short checkpoints are woven through the lesson, and the final quiz completes the topic.</p><label class="sr-only">Delivery<select id="review-format">${DELIVERY_MODES.map(m=>`<option value="${m.id}">${esc(m.title)}</option>`).join("")}</select></label><div class="studio-media-options">${DELIVERY_MODES.map(m=>`<button type="button" class="studio-media-option" data-media-mode="${m.id}" aria-pressed="${m.id===format}"><span class="studio-mode-icon" aria-hidden="true">${m.icon}</span><strong>${esc(m.title)}</strong><span class="small muted">${esc(m.description)}</span></button>`).join("")}</div><div class="toolbar"><p class="small muted" style="flex:1">Your checkpoint answers contribute to concept momentum. Switching format keeps your progress.</p><button class="btn secondary" id="start-topic-quiz">${item.passed ? "Retake final topic quiz" : "Start final topic quiz"}</button></div></section>
+        <div id="review-content"></div><section id="concept-practice" style="margin:24px 0"></section><div id="topic-quiz"></div>
         <p class="small muted">Momentum lets you skip the remaining review and go straight to the quiz. Required training obligations remain separately tracked.</p>
         <button class="btn secondary" id="review-complete">${item.reviewed ? "Material reviewed" : "Mark material reviewed"}</button><p id="review-status" role="status"></p>` : '<h2>Learn your way</h2><p>Select a course to get started.</p>'}</section></div>`;
     $("#studio-diagnostic",view)?.addEventListener("click",()=>go("diagnostic"));
     $("#assigned-courses",view)?.addEventListener("click",assignedCourses);
-    $$("[data-course]",view).forEach(b=>b.onclick=()=>{selected=b.dataset.course;redraw();});
+    $$("[data-course]",view).forEach(b=>b.onclick=async()=>{selected=b.dataset.course;await redraw();$("#review-workspace",view)?.scrollIntoView({behavior:"smooth",block:"start"});});
+    $("#generate-path",view).onclick=()=>{
+      try {
+        if(!canGenerate)return;
+        state.pathGroups=generateLearningPaths(data.courses,state,data.session_id);
+        delete state.path;
+        saveProgress(user,state);redraw();
+      } catch(error){$("#generated-path",view).textContent="Could not save path: "+error.message;}
+    };
+    $$("[data-path-course]",view).forEach(b=>b.onclick=async()=>{
+      selected=b.dataset.pathCourse;await redraw();
+      if(b.dataset.pathAction==="quiz")$("#start-topic-quiz",view)?.click();
+    });
     if (!course) return;
+    const completionUrl=course.origin==="survey-materials"?`/api/diagnostic/materials/${encodeURIComponent(course.id)}/complete`:`/api/diagnostic/sessions/${encodeURIComponent(data.session_id)}/review-courses/${encodeURIComponent(course.id)}/complete`;
     const persist = () => { saveProgress(user,state); };
     const refreshProgress = () => {
       $("#studio-progress",view).innerHTML=progressPanel(state);
@@ -175,26 +265,35 @@ export async function reviewStudio(view, go, assignedCourses, user) {
     };
     $("#course-enroll",view).onchange = event => {
       item.enrolled = event.target.checked;
+      delete state.pathGroups;
+      delete state.path;
       try { persist(); redraw(); } catch(error) { event.target.checked=!item.enrolled; $("#review-status",view).textContent="Unable to save progress in this browser. " + error.message; }
     };
+    let disposeLesson=()=>{};
     const render = () => {
-      stopSpeaking();
-      const text = `<h3>Learning objective</h3><p>${esc(course.objective)}</p>${course.key_points.map(p=>`<h3>${esc(p.point)}</h3><p>${esc(p.explanation)}</p>`).join("")}<h3>Source material</h3><blockquote>${esc(course.source_excerpt)}</blockquote><p>${esc(course.recommended_review)}</p>`;
-      const content = $("#review-content",view);
-      content.innerHTML = format === "mindmap" ? mindMap(course) : format === "audio" ? `<h3>Listen to this course</h3><div class="toolbar"><button class="btn" id="review-play" ${canSpeak()?"":"disabled"}>Play audio</button><button class="btn secondary" id="review-stop">Stop audio</button></div>${!canSpeak()?'<p>Audio is unavailable in this browser. Read the transcript below.</p>':""}<details><summary>Audio transcript</summary>${text}</details>` : text;
-      const url = /^https:\/\//i.test(course.attribution.url || "") ? course.attribution.url : null;
-      content.innerHTML += `<p class="small muted">${url?`<a href="${esc(url)}" target="_blank" rel="noopener">${esc(course.attribution.name)}</a>`:esc(course.attribution.name)} ? ${esc(course.attribution.license)}</p>`;
-      $("#review-play",view)?.addEventListener("click",e=>speak([course.title,course.objective,...course.key_points.map(p=>`${p.point}. ${p.explanation}`),course.source_excerpt,course.recommended_review].join("\n\n"),e.currentTarget));
-      $("#review-stop",view)?.addEventListener("click",stopSpeaking);
+      disposeLesson();
+      item.checkpoints ||= {};
+      $$("[data-media-mode]",view).forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.mediaMode===format)));
+      disposeLesson=renderLessonContent($("#review-content",view),course,{
+        mode:format,mindMap,makeQuestion:conceptQuestion,
+        getCheckpoint:key=>item.checkpoints[key],
+        onCheckpoint:(conceptId,key,correct,choice)=>{
+          if(item.checkpoints[key]?.correct)return;
+          const id=item.concepts[conceptId]?conceptId:Object.keys(item.concepts)[0];
+          if(id)recordPractice(state,item,id,"lesson:"+key,correct);
+          item.checkpoints[key]={correct,choice};persist();refreshProgress();renderConcepts();
+        },
+      });
     };
     $("#review-format",view).value=format;
-    $("#review-format",view).onchange=e=>{format=e.target.value;render();};
+    $("#review-format",view).onchange=event=>{format=event.target.value;render();};
+    $$("[data-media-mode]",view).forEach(button=>button.onclick=()=>{format=button.dataset.mediaMode;$("#review-format",view).value=format;render();});
     render();
     function renderConcepts() {
-      $("#concept-practice",view).innerHTML=`<h3>Concept momentum</h3><p class="small muted">Three correct answers in a row unlock momentum for that concept.</p><div class="list">${course.key_points.map((p,i)=>{
+      $("#concept-practice",view).innerHTML=`<details class="studio-more"><summary>Concept momentum and extra practice</summary><p class="small muted">Three correct answers in a row unlock momentum for that concept. Lesson checkpoints also count.</p><div class="list">${course.key_points.map((p,i)=>{
         const c=item.concepts[p.id||p.point];
         return `<section style="border:1px solid #e0e7e4;border-radius:12px;padding:14px"><strong>${esc(p.point)}</strong>${greenBar(c.momentum?100:c.streak/3*100,p.point+" momentum")}<p class="small muted">${c.momentum?"Momentum unlocked ? review shortcut earned":`${c.streak} / 3 consecutive correct`}</p><button class="btn secondary small" data-practice="${i}">Practice concept</button>${c.momentum?'<button class="btn small" data-skip-review style="margin-left:8px">Skip review ? topic quiz</button>':""}<div data-practice-question="${i}"></div></section>`;
-      }).join("")}</div>`;
+      }).join("")}</div></details>`;
       $$("[data-practice]",view).forEach(b=>b.onclick=()=>practiceConcept(Number(b.dataset.practice)));
       $$("[data-skip-review]",view).forEach(b=>b.onclick=startQuiz);
     }
@@ -215,7 +314,8 @@ export async function reviewStudio(view, go, assignedCourses, user) {
     }
     function startQuiz() {
       stopSpeaking();
-      const questions=course.key_points.map((p,i)=>conceptQuestion(p,(i+1)%3));
+      const quizSections=getLessonSections(course);
+      const questions=quizSections.map((section,i)=>conceptQuestion({point:section.title,explanation:section.explanation},(i+1)%3));
       const box=$("#topic-quiz",view);
       if (!questions.length) {box.innerHTML='<p role="alert">This course has no quiz material available yet.</p>';return;}
       box.innerHTML=`<section style="background:#f5f8fe;border:1px solid #cfdbef;border-radius:14px;padding:18px"><h3>Topic quiz</h3><p>Answer every question. Score at least 80% to complete this course.</p><form id="topic-quiz-form">${questions.map((q,i)=>`<fieldset style="border:0;padding:10px 0"><legend>${i+1}. ${esc(q.prompt)}</legend><p>${esc(q.statement)}</p>${q.options.map((o,j)=>`<label class="item"><input type="radio" required name="quiz-${i}" value="${j}"> ${esc(o)}</label>`).join("")}</fieldset>`).join("")}<button class="btn">Submit topic quiz</button><p id="quiz-result" role="status"></p></form></section>`;
@@ -232,9 +332,9 @@ export async function reviewStudio(view, go, assignedCourses, user) {
         try {
           persist();
           if(passed){
-            await api.post(`/api/diagnostic/sessions/${encodeURIComponent(data.session_id)}/review-courses/${encodeURIComponent(course.id)}/complete`,{}, {retry:false});
+            await api.post(completionUrl,{}, {retry:false});
             item.reviewed=true;persist();await redraw();$("#review-status",view).textContent=`Quiz passed: ${score} / ${questions.length}. Course complete!`;
-          } else {$("#quiz-result",view).innerHTML=`${score} / ${questions.length} correct. Review the concepts and try again. ${questions.map((q,i)=>`<p>${i+1}. ${esc(course.key_points[i].explanation)}</p>`).join("")}`;button.disabled=false;}
+          } else {$("#quiz-result",view).innerHTML=`${score} / ${questions.length} correct. Review the concepts and try again. ${questions.map((q,i)=>`<p>${i+1}. ${esc(quizSections[i].explanation)}</p>`).join("")}`;button.disabled=false;}
         } catch(error){$("#quiz-result",view).textContent="Your browser progress was saved if storage is available, but syncing the review failed. "+error.message;button.disabled=false;}
       };
     }
@@ -243,10 +343,10 @@ export async function reviewStudio(view, go, assignedCourses, user) {
     const button=$("#review-complete",view);button.disabled=item.reviewed;
     button.onclick=async()=>{
       button.disabled=true;
-      try {await api.post(`/api/diagnostic/sessions/${encodeURIComponent(data.session_id)}/review-courses/${encodeURIComponent(course.id)}/complete`,{},{retry:false});item.reviewed=true;reward(state,`${item.session}:${item.id}:review`,5);persist();await redraw();}
+      try {await api.post(completionUrl,{},{retry:false});item.reviewed=true;reward(state,`${item.session}:${item.id}:review`,5);persist();await redraw();}
       catch(error){$("#review-status",view).textContent=error.message;button.disabled=false;}
     };
-    const observer=new MutationObserver(()=>{if(!view.contains(button)){stopSpeaking();observer.disconnect();}});
+    const observer=new MutationObserver(()=>{if(!view.contains(button)){disposeLesson();observer.disconnect();}});
     observer.observe(view,{childList:true,subtree:true});
   } catch(error) {
     view.innerHTML=`<section class="card"><h1>Learning studio</h1><p role="alert">${esc(error.message)}</p><button class="btn" id="studio-retry">Try again</button></section>`;

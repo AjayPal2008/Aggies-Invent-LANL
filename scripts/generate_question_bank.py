@@ -11,7 +11,7 @@ from backend.question_bank import BANK_PATH, BankError, atomic_json, bank_errors
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--bank", type=Path, default=BANK_PATH)
-    parser.add_argument("--article", help="Article ID, e.g. ionizing-radiation; omit for all four")
+    parser.add_argument("--article", help="Article ID, e.g. ionizing-radiation; omit for all extracted topics and Survey & Materials PDFs")
     parser.add_argument("--objectives-per-article", type=int, default=3,
                         help="Scenario objectives per article, plus their prerequisites; all important concepts are mapped")
     args = parser.parse_args()
