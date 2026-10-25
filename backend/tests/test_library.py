@@ -379,3 +379,15 @@ def test_unbuilt_lessons_still_use_the_library_text(client, admin):
         t = db.query(models.Training).filter_by(code="UT-21208").one()
         block = ai._training_block(t)
     assert "<source>" in block and "foreign person" in block
+
+
+def test_offline_builds_do_not_change_course_skills(client, admin):
+    from app import models
+    from app.database import SessionLocal
+
+    with SessionLocal() as db:
+        before = list(db.query(models.Training).filter_by(code="UT-1425").one().skills or [])
+    _upload_text(client, admin, "UT-1425", "refresher.txt", "Chapter 1. Security Badges. Part 2 pages. Badges must be worn at all times. " * 8)
+    with SessionLocal() as db:
+        library.build_missing(db, codes=["UT-1425"], rebuild_drafts=True)
+        assert sorted(db.query(models.Training).filter_by(code="UT-1425").one().skills or []) == sorted(before)
