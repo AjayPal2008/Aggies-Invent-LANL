@@ -241,7 +241,8 @@ def _attach_modules(db: Session, t: models.Training, doc: models.Document, data:
     t.document_id = doc.id
     t.lessons_status = "draft"  # learners see these only after an admin reviews and publishes them
     t.outline = "\n".join(m["title"] for m in data["modules"])
-    t.skills = sorted(set(t.skills or []) | {s.lower().strip() for s in data.get("skills", []) if s.strip()})[:20]
+    if doc.generated_by not in ("", "offline"):  # offline "skills" are words from headings, not real skills
+        t.skills = sorted(set(t.skills or []) | {s.lower().strip() for s in data.get("skills", []) if s.strip()})[:20]
     if doc.generated_by not in ("", "offline") and (not t.description or t.description == t.title):
         t.description = data["summary"]  # only an AI summary is better than the catalog's own description
     t.duration_minutes = max(t.duration_minutes or 0, int(doc.words / 230 / 3))

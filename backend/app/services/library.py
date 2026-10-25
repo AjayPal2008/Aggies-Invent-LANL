@@ -127,6 +127,7 @@ def sync_library(db: Session) -> dict:
         row = db.get(models.LibraryRole, r["key"])
         if row is not None and not row.skills and r.get("skills"):
             row.skills = r["skills"]
+    stats["skills_repaired"] = repair_offline_skills(db, {c["code"]: c.get("skills", []) for c in m["courses"]})
     # Sample-catalog courses that roles use are role trainings.
     used_by_roles = set(db.scalars(select(models.RoleRequirement.training_code)))
     db.flush()
@@ -582,3 +583,25 @@ def source_excerpt(db: Session, training_code: str, limit: int = 12000) -> str:
     if doc is None:
         return ""
     return f"Source: {doc.title} ({doc.pages} pages)\n" + documents.document_text(doc, 1, doc.pages, limit)
+
+
+def repair_offline_skills(db: Session, catalog_skills: dict[str, list[str]]) -> int:
+    """Older offline builds merged heading words ("part pages", "u s c") into training skills. Restore the source
+    skills (catalog or training CSV) for trainings whose lessons weren't built by the AI."""
+    import csv
+    import glob
+
+    orig = {k: [s.lower() for s in v] for k, v in catalog_skills.items()}
+    for f in glob.glob(str(Path(settings.data_dir) / "trainings*.csv")):
+        with open(f, newline="") as fh:
+            for r in csv.DictReader(fh):
+                tags = (r.get("skill_tags") or "").replace(";", ",").replace("|", ",")
+                orig.setdefault(r.get("course_code", ""), [x.strip().lower() for x in tags.split(",") if x.strip()])
+    fixed = 0
+    for t in db.scalars(select(models.Training).where(models.Training.document_id.is_not(None))):
+        doc = db.get(models.Document, t.document_id)
+        want = orig.get(t.code)
+        if want is not None and doc is not None and doc.generated_by in ("", "offline", None) and sorted(t.skills or []) != sorted(want):
+            t.skills = want
+            fixed += 1
+    return fixed

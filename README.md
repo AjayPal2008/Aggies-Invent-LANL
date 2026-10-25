@@ -9,6 +9,9 @@ An AI-powered training platform for Los Alamos National Laboratory. It pulls eve
 | Backend, data integration, hosting | [`backend/`](backend/) | Roa |
 | Login page, styles, API client (shared) | [`shared/`](shared/) | everyone |
 
+
+**Walkthrough video:** [docs/demo/LANL-Learn-demo.mp4](docs/demo/LANL-Learn-demo.mp4) (5 min, sign-in through every page). Pitch notes: [docs/SALES_PITCH.md](docs/SALES_PITCH.md).
+
 ## Run it
 
 Needs Python 3.11+. No Node or build step.
